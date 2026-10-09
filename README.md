@@ -7,15 +7,15 @@ agent ruleset (`.agents/`) that keeps generated code consistent.
 
 ## Requirements
 
-| Requirement         | Version                                                                            | Notes                                                                                                                                                   |
-| ------------------- | ---------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Node.js             | **≥ 22** (22 LTS or 24 recommended — CI runs 24)                                   | Vite 8 needs ≥ 20.19, wrangler 4 needs ≥ 22 — so 22 is the practical floor                                                                              |
-| pnpm                | **12.5.1** (pinned via `packageManager` in package.json)                           | `corepack enable` — the pinned version is then used automatically                                                                                       |
-| Git                 | any recent version                                                                 | branching model in [Branching & Git workflow](#branching--git-workflow)                                                                                 |
-| Cloudflare account  | free plan is enough                                                                | **not needed for local dev** — every binding (D1, R2, KV, Queues, DO, email) is emulated locally. Needed only for `pnpm bootstrap --remote` and deploys |
-| Cloudflare auth     | `wrangler login` **or** `CLOUDFLARE_ACCOUNT_ID` + `CLOUDFLARE_API_TOKEN` in `.env` | required for remote resources, migrations against remote D1, `wrangler secret put`                                                                      |
-| Email Routing       | verified domain on your Cloudflare account                                         | only for real email delivery from deployed environments; locally, preview templates at `/api/mail-previews`                                             |
-| Playwright Chromium | `pnpm exec playwright install --with-deps chromium`                                | only for `pnpm test:e2e`                                                                                                                                |
+| Requirement         | Version                                                                            | Notes                                                                                                                                                                                       |
+| ------------------- | ---------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Node.js             | **≥ 22** (22 LTS or 24 recommended — CI runs 24)                                   | Vite 8 needs ≥ 20.19, wrangler 4 needs ≥ 22 — so 22 is the practical floor                                                                                                                  |
+| npm **or** pnpm     | pnpm **12.5.1** pinned via `packageManager` (npm ships with Node)                  | every script is package-manager agnostic — `npm run <script>` ≡ `pnpm <script>`; docs use the `pnpm` shorthand. With corepack enabled the pin forces pnpm — don't enable it if you want npm |
+| Git                 | any recent version                                                                 | branching model in [Branching & Git workflow](#branching--git-workflow)                                                                                                                     |
+| Cloudflare account  | free plan is enough — **except the email system, which needs a paid plan**         | **not needed for local dev** — every binding (D1, R2, KV, Queues, DO, email) is emulated locally. Needed only for `pnpm bootstrap --remote` and deploys                                     |
+| Cloudflare auth     | `wrangler login` **or** `CLOUDFLARE_ACCOUNT_ID` + `CLOUDFLARE_API_TOKEN` in `.env` | required for remote resources, migrations against remote D1, `wrangler secret put` — [token scopes](#cloudflare_api_token-scopes)                                                           |
+| Email Routing       | **paid plan required** + verified domain on your Cloudflare account                | the only part that needs a paid plan — everything else works on the free plan; locally, preview templates at `/api/mail-previews`                                                           |
+| Playwright Chromium | `pnpm exec playwright install --with-deps chromium`                                | only for `pnpm test:e2e`                                                                                                                                                                    |
 
 **Machine-local files are never committed** (all gitignored): `wrangler.jsonc`, `.dev.vars`,
 `.env`, `worker-configuration.d.ts`, `.build/`, `.wrangler/`. Every fresh clone regenerates
@@ -24,10 +24,14 @@ them via `pnpm bootstrap` — never copy secrets between machines through the re
 ## Setup
 
 ```bash
-pnpm install                     # first — bootstrap itself runs via tsx (devDependency)
-pnpm bootstrap                   # wrangler.jsonc + .dev.vars + JWT keys + local D1, idempotent
-pnpm dev                         # http://localhost:5173 — all bindings run locally
+npm install                      # or: pnpm install (first — bootstrap itself runs via tsx, a devDependency)
+npm run bootstrap                # or: pnpm bootstrap — wrangler.jsonc + .dev.vars + JWT keys + local D1, idempotent
+npm run dev                      # or: pnpm dev → http://localhost:5173 — all bindings run locally
 ```
+
+Both package managers work here: every script is package-manager agnostic
+(`npm run <script>` ≡ `pnpm <script>`) and `bootstrap`/`check:setup` detect which one
+invoked them. The rest of this README uses the `pnpm` shorthand.
 
 `pnpm bootstrap` bootstraps a fresh copy of the template (idempotent — safe to re-run):
 
@@ -59,6 +63,21 @@ pnpm db:migrate:local            # apply migrations to the local (emulated) D1
 - `.env` — **never read by the Worker.** For Node tooling only (`drizzle-kit` d1-http,
   `tsx` scripts): `CLOUDFLARE_ACCOUNT_ID`, `CLOUDFLARE_API_TOKEN`, D1 database IDs.
 - If both exist, `.dev.vars` wins for the local Worker (`.env` values are excluded).
+
+### CLOUDFLARE_API_TOKEN scopes
+
+Create a **Custom Token** in the Cloudflare dashboard (My Profile → API Tokens).
+The only scope strictly required for migrations is **D1: Edit** — the rest is only needed
+when you use the token (instead of `wrangler login`) for `pnpm bootstrap --remote` and deploys:
+
+| Scope | Level | Needed for |
+| --- | --- | --- |
+| D1 | Edit | **migrations** — the D1 HTTP API: `drizzle-kit` d1-http (`drizzle.config.*.ts`) and `wrangler d1 migrations apply` |
+| Workers Scripts | Edit | `wrangler deploy`, `wrangler secret put` |
+| Workers KV Storage | Edit | `wrangler kv namespace create` (`pnpm bootstrap --remote`) |
+| Workers R2 Storage | Edit | `wrangler r2 bucket create` (`pnpm bootstrap --remote`) |
+| Queues | Edit | `wrangler queues create` (`pnpm bootstrap --remote`) |
+| User Details | Read | `wrangler whoami` (optional sanity check) |
 
 **`pnpm check:setup`** — read-only health check anytime. `✗ FAIL` = local dev broken (with
 the exact fix command), `! warn` = only blocks remote/deploy (placeholder IDs in
@@ -128,6 +147,8 @@ The repo ships an agent ruleset + skills (`.agents/`) — the fastest way to add
 
 - Rules: `.agents/rules/README.md` (index) — MD3 design, components, styling, tokens,
   routes, server/services, submit forms, localization, SEO, aliases, naming.
+- Human docs: `.agents/docs/README.md` — narrative explanations of how the template works
+  (request lifecycle, response/error flow, decorators, form submission flow).
 - Skills: `gen-module` (generate a route/component/service/hook following all rules),
   `auto-test` / `auto-test-browser` (run + verify), `refr-module` (refactor to rules).
 - Two hard conventions worth knowing first:

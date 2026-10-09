@@ -20,6 +20,9 @@ interface CheckResult {
 const strict = process.argv.includes("--strict");
 const results: CheckResult[] = [];
 
+// npm or pnpm — whichever invoked this script (`npm_config_user_agent` is set by both).
+const pm = process.env.npm_config_user_agent?.startsWith("npm/") ? "npm" : "pnpm";
+
 function check(name: string, status: CheckStatus, hint: string | null = null): void {
   results.push({ name, status, hint });
 }
@@ -31,14 +34,14 @@ const failIf = (bad: boolean, name: string, hint: string): void =>
 failIf(
   !existsSync("node_modules"),
   "Dependencies installed",
-  "run `pnpm install` (or `pnpm bootstrap`)"
+  `run \`${pm} install\` (or \`${pm} run bootstrap\`)`
 );
 
 // 2. Wrangler config
 failIf(
   !existsSync("wrangler.jsonc"),
   "wrangler.jsonc exists",
-  "run `cp wrangler.example.jsonc wrangler.jsonc` (or `pnpm bootstrap`)"
+  `run \`cp wrangler.example.jsonc wrangler.jsonc\` (or \`${pm} run bootstrap\`)`
 );
 
 // 3. Local secrets + JWT keys
@@ -46,24 +49,32 @@ const devVars = existsSync(".dev.vars") ? readFileSync(".dev.vars", "utf8") : ""
 failIf(
   !existsSync(".dev.vars"),
   ".dev.vars exists",
-  "run `cp .dev.vars.example .dev.vars` (or `pnpm bootstrap`)"
+  `run \`cp .dev.vars.example .dev.vars\` (or \`${pm} run bootstrap\`)`
 );
 failIf(
   !/^JWT_PRIVATE_KEY=\S/m.test(devVars) || !/^JWT_PUBLIC_KEY=\S/m.test(devVars),
   "JWT keypair in .dev.vars",
-  "run `pnpm gen:keys`"
+  `run \`${pm} run gen:keys\``
 );
 
 // 4. Migrations generated from Drizzle schema
 const hasMigrations =
   existsSync("drizzle") && readdirSync("drizzle").some((f) => f.endsWith(".sql"));
-failIf(!hasMigrations, "D1 migrations generated", "run `pnpm db:generate`");
+failIf(!hasMigrations, "D1 migrations generated", `run \`${pm} run db:generate\``);
 
 // 5. Local D1 state (migrations applied to the emulated database)
-failIf(!existsSync(".wrangler/state/v3/d1"), "Local D1 migrated", "run `pnpm db:migrate:local`");
+failIf(
+  !existsSync(".wrangler/state/v3/d1"),
+  "Local D1 migrated",
+  `run \`${pm} run db:migrate:local\``
+);
 
 // 6. Generated types (postinstall normally creates these)
-failIf(!existsSync("worker-configuration.d.ts"), "Worker types generated", "run `pnpm typegen`");
+failIf(
+  !existsSync("worker-configuration.d.ts"),
+  "Worker types generated",
+  `run \`${pm} run typegen\``
+);
 
 // --- warnings: only relevant for remote dev/prod ---------------------------
 const config = existsSync("wrangler.jsonc") ? readFileSync("wrangler.jsonc", "utf8") : "";
@@ -74,7 +85,7 @@ if (
   check(
     "Real resource IDs in wrangler.jsonc",
     "warn",
-    "placeholder IDs remain — needed for `dev:wrangler`/deploy (`pnpm bootstrap --remote` or manual)"
+    `placeholder IDs remain — needed for \`dev:wrangler\`/deploy (\`${pm} run bootstrap --remote\` or manual)`
   );
 }
 if (

@@ -4,6 +4,8 @@
 
 This is the **always-on index**. For rules, architecture, conventions, and decision matrices → read `.agents/rules/README.md` first, then the relevant rule file.
 
+**Package manager:** npm and pnpm — both supported; `npm run <script>` ≡ `pnpm <script>`. This file uses the `pnpm` shorthand.
+
 ## Rule Files
 
 Rules live in `.agents/rules/`. Read the index first, then only the files relevant to the task.

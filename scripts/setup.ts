@@ -1,6 +1,8 @@
 /**
  * `pnpm bootstrap` — bootstraps a new project from this template.
  * (Named `bootstrap`, not `setup` — `setup` is a pnpm builtin command and would be shadowed.)
+ * npm works too: `npm run bootstrap` — all invoked scripts go through the detected
+ * package manager (`npm_config_user_agent`).
  *
  * Local (default — no Cloudflare credentials needed):
  *   1. `pnpm install` (skipped when node_modules exists)
@@ -32,11 +34,15 @@ const ok = (msg: string): void => console.log(`  ✓ ${msg}`);
 const warn = (msg: string): void => console.log(`  ! ${msg}`);
 const remote = process.argv.includes("--remote");
 
+// npm or pnpm — whichever invoked this script (`npm_config_user_agent` is set by both
+// when running scripts, e.g. "npm/11.2.4 node/v22…" or "pnpm/12.5.1 npm/10.9.2 …").
+const pm = process.env.npm_config_user_agent?.startsWith("npm/") ? "npm" : "pnpm";
+
 // 1. Dependencies
 if (existsSync("node_modules")) ok("dependencies installed (node_modules present)");
 else {
   step("installing dependencies");
-  run("pnpm install");
+  run(`${pm} install`);
 }
 
 // 2. Wrangler config
@@ -60,11 +66,11 @@ if (/^JWT_PRIVATE_KEY=\S/m.test(readFileSync(".dev.vars", "utf8"))) {
 
 // 4–6. Types + database
 step("generating types (wrangler types + react-router typegen)");
-run("pnpm typegen");
+run(`${pm} run typegen`);
 step("generating D1 migrations from Drizzle schema");
-run("pnpm db:generate");
+run(`${pm} run db:generate`);
 step("applying migrations to local D1");
-run("pnpm db:migrate:local");
+run(`${pm} run db:migrate:local`);
 
 // 7. Remote resources (opt-in — creates real Cloudflare resources)
 if (remote) await setupRemote();
@@ -85,7 +91,7 @@ async function setupRemote(): Promise<void> {
     output: process.stdout
   }).question("Create remote resources now? [y/N] ");
   if (answer.trim().toLowerCase() !== "y") {
-    warn("skipped remote setup — run `pnpm bootstrap --remote` later");
+    warn(`skipped remote setup — run \`${pm} run bootstrap --remote\` later`);
     return;
   }
 
@@ -145,7 +151,7 @@ async function setupRemote(): Promise<void> {
   }
 
   step("applying migrations to remote dev D1");
-  run("pnpm db:migrate");
+  run(`${pm} run db:migrate`);
 }
 
 function printNextSteps(remoteDone: boolean): void {
@@ -158,10 +164,10 @@ Setup complete. Remaining manual steps:
      wrangler secret put JWT_PRIVATE_KEY
      wrangler secret put JWT_PUBLIC_KEY
      wrangler secret put PRIV_API_KEY
-${remoteDone ? "3. Prod migrations when ready: pnpm db:migrate:prod" : "3. Remote resources (when needed): pnpm bootstrap --remote"}
+${remoteDone ? `3. Prod migrations when ready: ${pm} run db:migrate:prod` : `3. Remote resources (when needed): ${pm} run bootstrap --remote`}
 4. Create an admin: register in the app, then flip user_rights.user_admin
    (exact command: AGENTS.md § Setup, step 8).
 
-Verify anytime: pnpm check:setup
+Verify anytime: ${pm} run check:setup
 ──────────────────────────────────────────────────────────────`);
 }
