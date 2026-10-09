@@ -6,21 +6,21 @@
 
 **Everything is `kebab-case`** — every file and directory in `app/`, `server/`, `shared/`. No `camelCase`, `PascalCase`, or `snake_case` file names — even when the exported symbol is `PascalCase` (component, context) or `camelCase` (hook, store). The file name describes the module, not the symbol inside it.
 
-| What              | Pattern                              | Example                                                  |
-| ----------------- | ------------------------------------ | -------------------------------------------------------- |
-| Hook              | `use-{name}.ts`                      | `use-ripple.ts`, `use-breakpoint.ts`                     |
-| Context           | `{name}-context.tsx`                 | `pad-context.tsx`, `panel-context.tsx`                   |
-| Store             | `{name}.ts`                          | `item-edit.ts`, `search.ts`                              |
-| Component         | `{name}.tsx`                         | `nav-aside.tsx`, `two-factor-setup-modal.tsx`            |
-| Util / lib module | `{name}.ts`                          | `time-utils.ts`, `validator.ts`                          |
-| Barrel            | `index.ts`                           | `hooks/index.ts`, `utils/index.ts`                       |
-| Co-located styles | `{name}.css` matching companion file | `use-floating-label.css` ↔ `use-floating-label.ts`       |
-| Route files       | `{segment}.{type}.tsx` (dots)        | `users.$userId.tsx`, `index.hero.tsx`, `admin/users.tsx` |
+| What | Pattern | Example |
+| --- | --- | --- |
+| Hook | `use-{name}.ts` | `use-ripple.ts`, `use-breakpoint.ts` |
+| Context | `{name}-context.tsx` | `pad-context.tsx`, `panel-context.tsx` |
+| Store | `{name}.ts` | `item-edit.ts`, `search.ts` |
+| Component | `{name}.tsx` | `nav-aside.tsx`, `two-factor-setup-modal.tsx` |
+| Util / lib module | `{name}.ts` | `time-utils.ts`, `validator.ts` |
+| Barrel | `index.ts` | `hooks/index.ts`, `utils/index.ts` |
+| Co-located styles | `{name}.css` matching companion file | `use-floating-label.css` ↔ `use-floating-label.ts` |
+| Route files | `{segment}.{type}.tsx` (dots) | `users.$userId.tsx`, `admin/users.tsx`, `home.tsx` |
 
 ## Rules
 
 - `useRipple` lives in `use-ripple.ts`; `ToastContainer` in `toast.tsx`. Renaming a file never changes the exported identifiers — they stay `camelCase`/`PascalCase`.
-- Dots in file names are reserved for semantic suffixes: route types (`*.client.tsx`, `*.server.tsx`), route params (`$id`), co-located `.css`, generated `+types`.
+- Dots in file names are reserved for semantic suffixes: environment types (`*.client.tsx` in `app/components/pages/**`, `*.server.tsx` in routes), route params (`$id`), co-located `.css`, generated `+types`.
 - Directories are also `kebab-case`: `router/`, `seo/`, `admin/`.
 - When renaming a file, update every path reference (imports, exports, `.css` side-effect imports) **and** doc mentions — symbol references in prose stay as-is.
 

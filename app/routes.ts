@@ -16,7 +16,10 @@ export default [
   ]),
 
   // Main
-  layout("routes/main/layout.tsx", [index("routes/main/home.tsx")]),
+  layout("routes/main/layout.tsx", [
+    index("routes/main/home.tsx"),
+    route("docs", "routes/main/docs.tsx")
+  ]),
 
   // Status (global standalone)
   route("status", "routes/status.tsx"),

@@ -7,65 +7,22 @@ agent ruleset (`.agents/`) that keeps generated code consistent.
 
 ## Stack
 
-```table
-columns: Layer, Tech
-
-row:
-  Layer: Runtime
-  Tech: Cloudflare Workers (workerd) — `nodejs_compat`
-
-row:
-  Layer: HTTP
-  Tech: Hono (`/api/*` + services middleware) → React Router v8 SSR handler for everything else
-
-row:
-  Layer: Frontend
-  Tech: React 19 · React Router v8 (SSR, `.server.tsx` route split) · React Compiler (prod build)
-
-row:
-  Layer: Styling
-  Tech: Tailwind CSS v4 (`@theme` tokens, no config file) · MD3 design system · stylelint + tw-order
-
-row:
-  Layer: UI
-  Tech: Hand-rolled MD3 component set in `app/components/ui/` (Button, TextField, Select, Dialog,…)
-
-row:
-  Layer: Data
-  Tech: Cloudflare D1 — Drizzle schema + migrations, Kysely as the type-safe runtime query builder
-
-row:
-  Layer: Files
-  Tech: Cloudflare R2 (`R2FileUploader`, avatar upload example with queued old-file deletion)
-
-row:
-  Layer: Cache
-  Tech: Cloudflare KV — versioned cache regions
-
-row:
-  Layer: Rate limiting
-  Tech: Durable Object (`RateLimiterDO`) — atomic per-key counters
-
-row:
-  Layer: Async
-  Tech: Cloudflare Queues (typed handlers registry) + Cron Triggers (lazy handler registry)
-
-row:
-  Layer: Email
-  Tech: Workers `send_email` + React Email templates (ConfirmRegistration example)
-
-row:
-  Layer: Auth
-  Tech: PBKDF2 password hashing · RS256 JWT sessions (jose) · httpOnly cookies · email verification
-
-row:
-  Layer: Validation
-  Tech: Zod — one schema per form, shared client/server
-
-row:
-  Layer: Tooling
-  Tech: oxc (oxfmt + oxlint) · stylelint · vitest · Playwright · `tsc -b` composite typecheck
-```
+| Layer | Tech |
+| --- | --- |
+| Runtime | Cloudflare Workers (workerd) — `nodejs_compat` |
+| HTTP | Hono (`/api/*` + services middleware) → React Router v8 SSR handler for everything else |
+| Frontend | React 19 · React Router v8 (SSR, `.server.tsx` route split) · React Compiler (prod build) |
+| Styling | Tailwind CSS v4 (`@theme` tokens, no config file) · MD3 design system · stylelint + tw-order |
+| UI | Hand-rolled MD3 component set in `app/components/ui/` (Button, TextField, Select, Dialog,…) |
+| Data | Cloudflare D1 — Drizzle schema + migrations, Kysely as the type-safe runtime query builder |
+| Files | Cloudflare R2 (`R2FileUploader`, avatar upload example with queued old-file deletion) |
+| Cache | Cloudflare KV — versioned cache regions |
+| Rate limiting | Durable Object (`RateLimiterDO`) — atomic per-key counters |
+| Async | Cloudflare Queues (typed handlers registry) + Cron Triggers (lazy handler registry) |
+| Email | Workers `send_email` + React Email templates (ConfirmRegistration example) |
+| Auth | PBKDF2 password hashing · RS256 JWT sessions (jose) · httpOnly cookies · email verification |
+| Validation | Zod — one schema per form, shared client/server |
+| Tooling | oxc (oxfmt + oxlint) · stylelint · vitest · Playwright · `tsc -b` composite typecheck |
 
 ## Quick start
 
@@ -162,61 +119,21 @@ Two hard conventions worth knowing first:
 
 ## Commands
 
-```table
-columns: Command, Purpose
-
-row:
-  Command: `pnpm dev`
-  Purpose: Dev server (filtered wrangler noise)
-
-row:
-  Command: `pnpm typecheck`
-  Purpose: `wrangler types` + `react-router typegen` + `tsc -b`
-
-row:
-  Command: `pnpm db:generate`
-  Purpose: Generate D1 migrations from Drizzle schema
-
-row:
-  Command: `pnpm db:migrate` / `db:migrate:local`
-  Purpose: Apply migrations to remote / local D1
-
-row:
-  Command: `pnpm fmt` / `lint`
-  Purpose: oxfmt (import sort) / oxlint
-
-row:
-  Command: `pnpm fmt:style`
-  Purpose: stylelint --fix + Tailwind class sorting
-
-row:
-  Command: `pnpm test`
-  Purpose: vitest (unit)
-
-row:
-  Command: `pnpm test:e2e`
-  Purpose: Playwright (boots `pnpm dev`) — smoke tests in `test/e2e/`
-
-row:
-  Command: `pnpm check:docs`
-  Purpose: Validate agent docs — `.md` refs exist, `pnpm` scripts exist
-
-row:
-  Command: `pnpm gen:keys`
-  Purpose: Generate local JWT keypair into `.dev.vars`
-
-row:
-  Command: `pnpm bootstrap`
-  Purpose: Bootstrap the template (local; `--remote` creates CF resources)
-
-row:
-  Command: `pnpm check:setup`
-  Purpose: Read-only setup health check (`--strict` = fail on warnings)
-
-row:
-  Command: `pnpm deploy`
-  Purpose: build + `wrangler deploy`
-```
+| Command | Purpose |
+| --- | --- |
+| `pnpm dev` | Dev server (filtered wrangler noise) |
+| `pnpm typecheck` | `wrangler types` + `react-router typegen` + `tsc -b` |
+| `pnpm db:generate` | Generate D1 migrations from Drizzle schema |
+| `pnpm db:migrate` / `db:migrate:local` | Apply migrations to remote / local D1 |
+| `pnpm fmt` / `lint` | oxfmt (import sort) / oxlint |
+| `pnpm fmt:style` | stylelint --fix + Tailwind class sorting |
+| `pnpm test` | vitest (unit) |
+| `pnpm test:e2e` | Playwright (boots `pnpm dev`) — smoke tests in `test/e2e/` |
+| `pnpm check:docs` | Validate agent docs — `.md` refs exist, `pnpm` scripts exist |
+| `pnpm gen:keys` | Generate local JWT keypair into `.dev.vars` |
+| `pnpm bootstrap` | Bootstrap the template (local; `--remote` creates CF resources) |
+| `pnpm check:setup` | Read-only setup health check (`--strict` = fail on warnings) |
+| `pnpm deploy` | build + `wrangler deploy` |
 
 ## What's intentionally NOT included
 

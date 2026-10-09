@@ -7,23 +7,37 @@
 
 - **UI** — `app/components/ui/` — pure MD3 (`md3-*` BEM, `useRipple`, state layer)
 - **Custom** — `app/components/custom/` — business logic (Nav, Slider, FileDrop), minimal intervention. Not present in the template — add per project.
-- **Pages** — `app/components/pages/` — groups per page (`pages/home/`, `pages/main/play/`)
+- **Pages** — `app/components/pages/` — ONLY location for route-specific components, one folder per route (`pages/main/home/`, `pages/main/play/`). Not present in the template — add per project.
 - **Utils** — `app/components/utils/` — `cn.ts` (clsx wrapper), `variants.ts` (CVA `createVariants`), `modifiers.ts` (`getModifierClasses`)
 
-Category choice = scope and convention decision. A UI component must be generic, without business domain — if it refers to Pad state, game logic, or an endpoint → custom or pages. A custom component may import UI; UI does NOT import custom/pages. Pages may import UI and custom.
+Category choice = scope and convention decision. A UI component must be generic, without business domain — if it refers to Pad state, game logic, or an endpoint → custom or pages. A custom component may import UI; UI does NOT import custom/pages. Pages may import UI and custom. A route-specific component NEVER lives inline in `route.tsx` or in `app/routes/**` — always `pages/{page}/`.
 
 ## Styles — layers
 
-Components ALWAYS use `@apply` in co-located `.css` (never long inline). UI → `@layer components`, custom → `@layer custom`, mix → both. Keyframes outside `@layer`. Full cascade rules → `styling.md` § "@layer cascade".
+UI/custom components ALWAYS use `@apply` in co-located `.css` (never long inline). Pages components: inline Tailwind by default, `.css` only when complicated → § "Pages components (route-specific)". UI → `@layer components`, custom → `@layer custom`, pages → `@layer custom` (or `routes`), mix → both. Keyframes outside `@layer`. Full cascade rules → `styling.md` § "@layer cascade".
 
 ## File naming
 
 - UI MD3: `button.tsx` + `button.css` (BEM `md3-*`, `@apply`)
 - Custom: `pad.tsx` + `pad.css` (BEM, `@apply`)
-- Route: `index.tsx` — inline Tailwind by default; `@apply` in route `.css` RARE. See `styling.md` § "3-tier hybrid".
-- Split route section: `index.hero.tsx` / sub-section `index.about.tsx` — inline Tailwind by default; `.css` rarely (like route)
-- Client-only: `beams.client.tsx` + `beams.css`
-- Styles always `.css` (e.g. `index.about.css`) — never another extension
+- Pages (route-specific): `pages/{page}/{component}.tsx` (e.g. `hero.tsx`, `loading.tsx`) — inline Tailwind by default; `.css` ONLY when complicated. Client-only: `beams.client.tsx`. See § "Pages components (route-specific)".
+- Route file: `home.tsx` / `users.tsx` — composition + meta + re-exports only, NO components. Inline Tailwind; route `.css` RARE. See `styling.md` § "3-tier hybrid".
+- Styles always `.css` — never another extension
+
+## Pages components (route-specific)
+
+ALL route-specific components live in `app/components/pages/{page}/` — one folder per route, mirroring the route path (`routes/main/home.tsx` → `pages/main/home/`, `routes/main/play.tsx` → `pages/main/play/`); param-specific components in the parent page folder (`pages/admin/users/`). The route file only composes them (`<Hero />`, `<About />`), never defines them.
+
+**Styling — inline Tailwind by default** (like routes; no class threshold, long inline is OK and expected). Co-located `{component}.css` ONLY when the styling is genuinely complicated:
+
+1. **`@keyframes` / signature animations** — keyframes cannot be inline; guard with `@media (prefers-reduced-motion: reduce) { animation: none }`.
+2. **Selectors Tailwind variants cannot express** — `:has()`, sibling combinators (`+`/`~`), multi-level descendant chains, pseudo-elements with many properties or nesting.
+3. **Complex `@media` combos** — `@media (a) and (b)` / `or` logic unexpressible with breakpoint variants (`phone:`…`huge:`).
+4. **Explicit user request.**
+
+NOT complicated (stays inline): long class lists (length alone is NEVER a reason), hover/focus/active, breakpoint variants (`phone:`…`huge:`), `before:`/`after:` with a few props, arbitrary values (`bg-[color-mix(...)]`, `rounded-[inherit]`), `data-[state=…]:` variants.
+
+When `.css` is created: BEM, block = `{page}-{component}` (`home-hero`, `users-toolbar`), `@apply`, `@layer custom` — or `@layer routes` when purely route layout. `@keyframes` outside `@layer`. Client-only: `{component}.client.tsx` + `{component}.css`, wrapped in `<ClientOnly>` at the usage site.
 
 ## BEM
 
@@ -222,10 +236,10 @@ Both `__ripple` and `__state-layer` MUST use `rounded-[inherit]` — NEVER a har
 
 `app/styles/utilities/md3.css` defines two `@utility` primitives that encapsulate the full overlay pattern. Use them via `@apply` in component `__ripple` / `__state-layer` instead of repeating 6-7 declarations:
 
-| Utility              | Replaces                                                                                         | Used on                 |
-| -------------------- | ------------------------------------------------------------------------------------------------ | ----------------------- |
-| `md3-ripple-surface` | `absolute inset-0 z-below overflow-hidden rounded-[inherit] pointer-events-none`                 | `__ripple` overlay      |
-| `md3-state-layer`    | `absolute inset-0 bg-current rounded-[inherit] opacity-0 pointer-events-none transition-opacity` | `__state-layer` overlay |
+| Utility | Replaces | Used on |
+| --- | --- | --- |
+| `md3-ripple-surface` | `absolute inset-0 z-below overflow-hidden rounded-[inherit] pointer-events-none` | `__ripple` overlay |
+| `md3-state-layer` | `absolute inset-0 bg-current rounded-[inherit] opacity-0 pointer-events-none transition-opacity` | `__state-layer` overlay |
 
 ```css
 /* PREFERRED — one line, no boilerplate */
@@ -265,17 +279,17 @@ Applies to ALL components in `app/components/` (ui, custom, pages) that render a
 
 `data-state` values used in code (TSX + CSS selectors). Interactive state (hover/focus/pressed) is NOT via `data-state` — via `__state-layer` overlay.
 
-| Value             | When                                                          | Where                                        |
-| ----------------- | ------------------------------------------------------------- | -------------------------------------------- |
-| `enabled`         | default; `state="default"` maps to `enabled`                  | Button, Chip, Select, Switch, Checkbox, etc. |
-| `disabled`        | `state="disabled"` or `disabled` prop                         | all interactive                              |
-| `loading`         | `state="loading"`                                             | Button                                       |
-| `selected`        | toggle (Button `selected`), SegmentedButton item, Chip filter | Button, SegmentedButton, Chip, Select item   |
-| `checked`         | Checkbox, Switch, Radio — checked state                       | Checkbox, Switch                             |
-| `indeterminate`   | Checkbox — indeterminate state (tri-state)                    | Checkbox                                     |
-| `open` / `closed` | Dialog, Menu, NavDrawer, Select — open state                  | Menu, Select, (Dialog/NavDrawer)             |
-| `error`           | validation error state                                        | TextField, TextArea, Select                  |
-| `focused`         | manually managed focus (e.g. TextArea)                        | TextArea                                     |
+| Value | When | Where |
+| --- | --- | --- |
+| `enabled` | default; `state="default"` maps to `enabled` | Button, Chip, Select, Switch, Checkbox, etc. |
+| `disabled` | `state="disabled"` or `disabled` prop | all interactive |
+| `loading` | `state="loading"` | Button |
+| `selected` | toggle (Button `selected`), SegmentedButton item, Chip filter | Button, SegmentedButton, Chip, Select item |
+| `checked` | Checkbox, Switch, Radio — checked state | Checkbox, Switch |
+| `indeterminate` | Checkbox — indeterminate state (tri-state) | Checkbox |
+| `open` / `closed` | Dialog, Menu, NavDrawer, Select — open state | Menu, Select, (Dialog/NavDrawer) |
+| `error` | validation error state | TextField, TextArea, Select |
+| `focused` | manually managed focus (e.g. TextArea) | TextArea |
 
 Mapping in TSX: `const md3State = isError ? "error" : props.disabled ? "disabled" : "enabled"` (TextField) or `selected ? "selected" : state === "default" ? "enabled" : state` (Button/Chip). Never keep `hover`/`focus`/`pressed` in `data-state`.
 
@@ -290,10 +304,10 @@ Mapping in TSX: `const md3State = isError ? "error" : props.disabled ? "disabled
 Every inline icon rendered inside a component (`__icon`, `__chevron`, `__check`, `__trailing`, etc.) MUST scale with the component's `size` — never a hardcoded fixed size that ignores `size`. Default mapping (no token needed, hardcoded in `.css`):
 
 | `size` | icon `width`/`height` |
-| ------ | --------------------- |
-| `sm`   | `1.5rem`              |
-| `md`   | `1.75rem`             |
-| `lg`   | `2rem`                |
+| --- | --- |
+| `sm` | `1.5rem` |
+| `md` | `1.75rem` |
+| `lg` | `2rem` |
 
 Implementation:
 
@@ -332,11 +346,11 @@ By default a component's `--sm`/`--md`/`--lg` only swaps **height** (`h-btn-md`)
 
 ### Which components currently use size-driven spacing & shape
 
-| Component | `px`/`py`/`gap`/`rounded` per size   | Where (size modifier)                                                                                       |
-| --------- | ------------------------------------ | ----------------------------------------------------------------------------------------------------------- |
-| `Button`  | `gap` only (`px`/`rounded` constant) | `app/styles/components/button.css` — `.md3-btn--{size}`, `.play-btn--{size}`                                |
-| `Select`  | trigger + popover items              | `select.css` — `.md3-select--{size} .md3-select__trigger`, `.md3-select__popover--{size} .md3-select__item` |
-| `Menu`    | content + items                      | `menu.css` — `.md3-menu__content--{size}`, `.md3-menu__content--{size} .md3-menu__item`                     |
+| Component | `px`/`py`/`gap`/`rounded` per size | Where (size modifier) |
+| --- | --- | --- |
+| `Button` | `gap` only (`px`/`rounded` constant) | `app/styles/components/button.css` — `.md3-btn--{size}`, `.play-btn--{size}` |
+| `Select` | trigger + popover items | `select.css` — `.md3-select--{size} .md3-select__trigger`, `.md3-select__popover--{size} .md3-select__item` |
+| `Menu` | content + items | `menu.css` — `.md3-menu__content--{size}`, `.md3-menu__content--{size} .md3-menu__item` |
 
 ### How it looks (+ example)
 
@@ -499,9 +513,9 @@ Full SSR rules (guard, `useEffect` for listeners, `window.matchMedia` only in `u
 
 Before creating a new file, go through the list:
 
-1. **Location.** UI (`app/components/ui/`) when pure MD3, generic, without domain. Custom (`app/components/custom/`) when business logic (Nav, Slider, FileDrop). Pages (`app/components/pages/<route>/`) when specific to one page. If a component is shared between pages → UI or custom.
-2. **Naming.** kebab-case file = BEM block. UI → `md3-` prefix (`md3-btn`, `md3-text-field`). Custom → no prefix (`pad`, `nav`, `file-drop`). Pages → no `md3-`, page prefix if collision (`play-btn`).
-3. **Co-located CSS.** `.css` file next to `.tsx` (`button.tsx` + `button.css`). Always `.css`, never another extension. UI → `@layer components`, custom → `@layer custom`, mix → both.
+1. **Location.** UI (`app/components/ui/`) when pure MD3, generic, without domain. Custom (`app/components/custom/`) when business logic (Nav, Slider, FileDrop). Pages (`app/components/pages/{page}/`) when specific to one route — the ONLY location for route-specific components (never inline in `route.tsx`, never in `app/routes/**`). If a component is shared between pages → UI or custom.
+2. **Naming.** kebab-case file = BEM block. UI → `md3-` prefix (`md3-btn`, `md3-text-field`). Custom → no prefix (`pad`, `nav`, `file-drop`). Pages → no `md3-`, block = `{page}-{component}` (`home-hero`, `play-btn`).
+3. **Co-located CSS.** UI/custom: `.css` next to `.tsx` (`button.tsx` + `button.css`), ALWAYS. Pages: inline Tailwind by default, `.css` only when complicated (criteria → § "Pages components (route-specific)"). Always `.css`, never another extension. UI → `@layer components`, custom → `@layer custom`, pages → `@layer custom`/`routes`, mix → both.
 4. **Ripple if interactive.** `useRipple<T>(disabled)` on every clickable component (Button, Chip interactive, Switch, Checkbox, SegmentedButton item). `surfaceRef` on `<span __ripple>`, `handlers` on root, `rippleState.pressed` → `--pressed`. Non-interactive components (TextField input, display-only Chip) skip ripple.
 5. **CVA if variants.** `createVariants(block, { variants: { variant, size, ... }, defaultVariants })` when component has `variant` (color role) or `size`. Classes `--{value}`. `VariantProps<typeof x>` in props interface. If no variants (e.g. TextField has no color role `variant`, has `size` and glass `variant`) — still CVA for `size`, glass as structural variant.
 6. **`data-state` if states.** `data-state` on root for `enabled`/`disabled`/`loading`/`selected`/`checked`/`indeterminate`/`open`/`closed`/`error`/`focused`. Interactive state (hover/focus/pressed) via `__state-layer`, NOT via `data-state`. Mapping in TSX: `const md3State = isError ? "error" : disabled ? "disabled" : "enabled"`.

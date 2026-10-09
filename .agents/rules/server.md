@@ -21,6 +21,7 @@ server/
     ├── cookies/    cookies.ts (definitions), helpers.ts (cookiesModify)
     ├── crypto/     password.ts (PBKDF2)
     ├── decorators/ service-methods.ts (dataMethod/actionMethod), route-service.ts
+    ├── markdown/   index.ts (renderMarkdown — marked + sanitize-html, fenced `table` blocks)
     ├── mail/       provider.ts, templates/
     ├── utils/      files.ts (R2FileUploader)
     ```
@@ -137,10 +138,10 @@ export async function loader({ context, request }: RouteLoaderArgs) {
 
 Every **public** service method must have one. The asymmetry: `@dataMethod` **throws** errors, `@actionMethod` **catches and wraps** them into `formError`.
 
-| Decorator            | Usage                  | Success              | Error                                                                                              |
-| -------------------- | ---------------------- | -------------------- | -------------------------------------------------------------------------------------------------- |
-| `@dataMethod()`      | Loaders, fetch, guards | `this.ok(data)`      | `Response` re-thrown; `{ fields }` → 400; unknown → logs + 500                                     |
-| `@actionMethod(err)` | Actions, forms         | `this.formSuccess()` | `{ fields }` → `formError`; `Response` → `formError({ general })`; unknown → logs + fallback `err` |
+| Decorator | Usage | Success | Error |
+| --- | --- | --- | --- |
+| `@dataMethod()` | Loaders, fetch, guards | `this.ok(data)` | `Response` re-thrown; `{ fields }` → 400; unknown → logs + 500 |
+| `@actionMethod(err)` | Actions, forms | `this.formSuccess()` | `{ fields }` → `formError`; `Response` → `formError({ general })`; unknown → logs + fallback `err` |
 
 - `@actionMethod` **never** re-throws — a thrown `Response` (from `this.responses.*` or another service) is extracted into `formError({ general })`.
 - `@actionMethod` argument = fallback `FormErrors` for every non-field error — always set a meaningful message (`{ general: "Failed to update user" }`). Omitted → `{ general: "OPERATION_FAILED" }`.
@@ -149,12 +150,12 @@ Every **public** service method must have one. The asymmetry: `@dataMethod` **th
 
 ## Response systems — one per context, never mixed
 
-| Context         | Success                                    | Error                                                   | Import               |
-| --------------- | ------------------------------------------ | ------------------------------------------------------- | -------------------- |
-| Route loader    | `this.ok(data)` / `this.none()` + `data()` | `this.throw(this.responses.*)` → re-thrown `Response`   | `$/lib/decorators`   |
-| Route action    | `this.formSuccess(data)`                   | `this.throw({ fields })` → `formError`                  | `$/lib/decorators`   |
-| REST API (Hono) | `c.json(apiSuccess(data))`                 | `c.json(apiError(msg), status)` / `apiValidationError`  | `$/lib/response`     |
-| Queue handler   | `queueOk(data)`                            | `queueFailed(error, retryable)` — `retryable` re-queues | `$/cloudflare/queue` |
+| Context | Success | Error | Import |
+| --- | --- | --- | --- |
+| Route loader | `this.ok(data)` / `this.none()` + `data()` | `this.throw(this.responses.*)` → re-thrown `Response` | `$/lib/decorators` |
+| Route action | `this.formSuccess(data)` | `this.throw({ fields })` → `formError` | `$/lib/decorators` |
+| REST API (Hono) | `c.json(apiSuccess(data))` | `c.json(apiError(msg), status)` / `apiValidationError` | `$/lib/response` |
+| Queue handler | `queueOk(data)` | `queueFailed(error, retryable)` — `retryable` re-queues | `$/cloudflare/queue` |
 
 Dispatching in loader/action:
 
@@ -165,17 +166,17 @@ Dispatching in loader/action:
 
 Each builder accepts `message?: string | { general?: string }` and falls back to a default key from `en_server_errors.json` when omitted:
 
-| Method                           | Status | Default key                       |
-| -------------------------------- | ------ | --------------------------------- |
-| `getBadRequest()`                | 400    | `BAD_REQUEST`                     |
-| `getUnauthorized()`              | 401    | `UNAUTHORIZED`                    |
-| `getNoAccess()`                  | 403    | `NO_ACCESS`                       |
-| `getNotFound()`                  | 404    | `RESOURCE_NOT_FOUND`              |
-| `getConflict()`                  | 409    | `CONFLICT`                        |
-| `getUnprocessableEntity(errors)` | 422    | JSON `{ success: false, errors }` |
-| `getTooManyRequests()`           | 429    | `RATE_LIMIT_EXCEEDED`             |
-| `getInternalError()`             | 500    | `INTERNAL_SERVER_ERROR`           |
-| `getServiceUnavailable()`        | 503    | `SERVICE_UNAVAILABLE`             |
+| Method | Status | Default key |
+| --- | --- | --- |
+| `getBadRequest()` | 400 | `BAD_REQUEST` |
+| `getUnauthorized()` | 401 | `UNAUTHORIZED` |
+| `getNoAccess()` | 403 | `NO_ACCESS` |
+| `getNotFound()` | 404 | `RESOURCE_NOT_FOUND` |
+| `getConflict()` | 409 | `CONFLICT` |
+| `getUnprocessableEntity(errors)` | 422 | JSON `{ success: false, errors }` |
+| `getTooManyRequests()` | 429 | `RATE_LIMIT_EXCEEDED` |
+| `getInternalError()` | 500 | `INTERNAL_SERVER_ERROR` |
+| `getServiceUnavailable()` | 503 | `SERVICE_UNAVAILABLE` |
 
 Plus generic: `json(data, status, statusText?)` · `success(data)` · `created(data)` · `noContent()`.
 
@@ -185,9 +186,9 @@ Plus generic: `json(data, status, statusText?)` · `success(data)` · `created(d
 
 `this.responses.*("KEY")` produces a proper `Response` with a message key the client can resolve via `getMessageByKey` — prefer it over raw `{ general }` strings in services, so web and API clients get a consistent, resolvable error.
 
-| Layer                                          | Allowed forms                                                                                                                                          |
-| ---------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| **Services** (`server/services/*`)             | **Only** `this.throw(this.responses.<method>("KEY"))` — key must exist in `en_server_errors.json`                                                      |
+| Layer | Allowed forms |
+| --- | --- |
+| **Services** (`server/services/*`) | **Only** `this.throw(this.responses.<method>("KEY"))` — key must exist in `en_server_errors.json` |
 | **`RouteService`** (`app/routes/*.server.tsx`) | `{ general: "TEXT" }` or `this.responses.*("KEY")` — prefer `this.responses.*` when a key fits; `{ general }` only for ad-hoc, route-specific messages |
 
 ```ts
@@ -272,14 +273,18 @@ Without `useSubmitAction` (e.g. quick search): `await route.rateLimit({ time: 2 
 
 Two layers, each with a single responsibility — never skip straight to raw `this.cache.get/set` for cache-like data:
 
-| Layer  | File                                                               | Responsibility                                                                           |
-| ------ | ------------------------------------------------------------------ | ---------------------------------------------------------------------------------------- |
-| Raw KV | `server/cloudflare/kv/cache/manager.ts` (`this.cache`)             | JSON + TTL wrapper over KV. Only for transient KV records (e.g. OAuth state), not caches |
-| Region | `server/cloudflare/kv/cache/region.ts` (`this.cache.region(name)`) | Versioned namespace: `getOrSet` / `get` / `set` / `update` / `invalidate`                |
+| Layer | File | Responsibility |
+| --- | --- | --- |
+| Raw KV | `server/cloudflare/kv/cache/manager.ts` (`this.cache`) | JSON + TTL wrapper over KV. Only for transient KV records (e.g. OAuth state), not caches |
+| Region | `server/cloudflare/kv/cache/region.ts` (`this.cache.region(name)`) | Versioned namespace: `getOrSet` / `get` / `set` / `update` / `invalidate` |
+
+**When to cache:** KV is eventually consistent (a write takes up to ~60 s to propagate) and caps writes at ~1/s per key — cache only data that is **read often, written rarely, shared across requests**: expensive DB reads (list pages, joins, aggregates), external API responses, precomputed views. The TTL is the staleness window you accept — pass it explicitly (omitted → 24 h fallback).
+
+**When NOT to cache:** anything that must be read-after-write consistent — counters, rate limiting (→ Durable Objects, § "Rate limiting"); a single-row PK lookup (a KV read is no faster than a D1 read — you only add a failure mode); personalized data under a **shared** key (poisoning) — only with a user-scoped sub-key, invalidated on change.
 
 - **Region invalidation is O(1):** each region keeps a version counter (`__ver:<region>`) in KV; `invalidate()` bumps it — one write orphans every entry (they expire via TTL, fallback 24 h). `invalidate(key)` deletes a single entry.
 - **`region.update(key, updater)` mutates a cached value in place** — warm, no cold miss. No-op on miss; skips the write when the updater returns the same reference.
-- **Cache syncs are best-effort** — a KV failure after a successful DB write is logged, never thrown.
+- **Failure semantics:** `get`/`delete` are best-effort (logged, swallowed — a failed read is a cold miss); `set` — and with it `update()` and the version-bumping `invalidate()` — **throws**. Do the version bump **before** the DB write: a failed write then costs only a cold miss, and a failed bump never breaks an already-committed request.
 - New domain cache modules follow `cloudflare/kv/cache/`: declare regions + sub-keys + TTLs once, expose typed read helpers and semantic mutation methods. Call sites never inline region strings.
 
 ```ts
@@ -289,11 +294,13 @@ const userData = await this.cache
   .region("user")
   .getOrSet(userId, () => this.getUserById(userId), 3600);
 
-// Warm in-place mutation
-await this.cache.region("user").update(userId, (user) => ({ ...user, user_name: "New" }));
-// Invalidate one entry / the whole region
-await this.cache.region("user").invalidate(userId);
+// Write — bump the version before the DB write (a failed write then costs only a cold miss)
 await this.cache.region("users").invalidate();
+await this.updateUser(userId, { user_name: "New" });
+
+// After the write — mirror warm, or drop the single entry
+await this.cache.region("user").update(userId, (u) => ({ ...u, user_name: "New" }));
+await this.cache.region("user").invalidate(userId);
 ```
 
 ## Database
@@ -318,7 +325,7 @@ const user = await this.exDbOperation(() =>
 ## Auth & sessions
 
 - RS256 JWT via `getKeyPair()` — env `JWT_PRIVATE_KEY` / `JWT_PUBLIC_KEY` (base64), cached per isolate. Implementation: `server/services/auth.ts`.
-- `AuthService.createToken(userId, noExpire?)` — `4h` default, `5y` when `noExpire = true`.
+- `AuthService.createToken(userId, noExpire?)` — `30d` default, `5y` when `noExpire = true`.
 - `AuthService.verifyToken(token)` / `verifyRequest()` — parse `sessionCookie`.
 - User resolution: `this.auth.getUserFromRequest()` — record from `users` + `user_rights`, `null` when no session.
 - Passwords: `hashPassword(password)` / `verifyPassword(password, storedHash)` from `$/lib/crypto` (PBKDF2).
@@ -342,6 +349,7 @@ const user = await this.exDbOperation(() =>
 - Don't serialize cookies or build `Set-Cookie` manually.
 - Don't put sensitive data in the response body — httpOnly cookies.
 - Don't use `rateLimit` in actions with `useSubmitAction` — use `rateLimitForm`; don't call either inside a service method.
+- Don't cache read-after-write data (counters, rate limiting → Durable Objects) or personalized data under a shared key — user-scoped sub-key + invalidation instead.
 - Don't use `RouteService` on static pages / without auth or services.
 - Don't skip decorators on public service methods.
 - Don't cast `as` on form data or define `*Payload` types — Zod only.

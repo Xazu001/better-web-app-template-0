@@ -13,32 +13,29 @@
 
 ## Route file types
 
-| Suffix                | Example                          | Environment       | Purpose                                                                                                                                |
-| --------------------- | -------------------------------- | ----------------- | -------------------------------------------------------------------------------------------------------------------------------------- |
-| `*.tsx`               | `routes/admin/users.tsx`         | Client + Server   | Page component + `meta`/`links` + re-export `loader`/`action` from `*.server.tsx`                                                      |
-| `*.server.tsx`        | `routes/admin/users.server.tsx`  | Server only       | `RouteService` + `loader`/`action`. Never imported by the client bundle (exception: re-export in `*.tsx`)                              |
-| `*.css`               | `routes/admin/users.css`         | —                 | Co-located styles. Rare — only named `@keyframes`/animations, shared sibling layout, complex `@media`, ordered `@apply` → `styling.md` |
-| `*.client.tsx`        | `routes/main/home.client.tsx`    | Client only       | Page section needing browser DOM/APIs (canvas, WebGL, clipboard). Wrap in `<ClientOnly>` in `*.tsx`                                    |
-| `index.{section}.tsx` | `routes/main/index.hero.tsx`     | Client (imported) | Section file — page subsection. Exports a named component (`Hero`). Inline Tailwind by default; `.css` only when justified             |
-| `*.{helper}.tsx`      | `routes/admin/users.loading.tsx` | Client            | Helper component specific to the route (loading state, preview panel). Not a route itself                                              |
-| `layout.tsx`          | `routes/auth/layout.tsx`         | Client + Server   | Shared layout wrapper with `<Outlet />`                                                                                                |
-| `layout.server.tsx`   | `routes/admin/layout.server.tsx` | Server only       | `loader`/`action` for the layout (shared data for child routes)                                                                        |
-| `layout.css`          | `routes/main/layout.css`         | —                 | Styles shared by child routes. Rare → `styling.md`                                                                                     |
-| `$.tsx`               | `routes/$.tsx`                   | Client + Server   | Catch-all 404 (`route("*", "routes/$.tsx")` in `app/routes.ts`)                                                                        |
+| Suffix | Example | Environment | Purpose |
+| --- | --- | --- | --- |
+| `*.tsx` | `routes/admin/users.tsx` | Client + Server | Page component + `meta`/`links` + re-export `loader`/`action` from `*.server.tsx` |
+| `*.server.tsx` | `routes/admin/users.server.tsx` | Server only | `RouteService` + `loader`/`action`. Never imported by the client bundle (exception: re-export in `*.tsx`) |
+| `*.css` | `routes/admin/users.css` | — | Co-located styles. Rare — only named `@keyframes`/animations, shared sibling layout, complex `@media`, ordered `@apply` → `styling.md` |
+| `layout.tsx` | `routes/auth/layout.tsx` | Client + Server | Shared layout wrapper with `<Outlet />` |
+| `layout.server.tsx` | `routes/admin/layout.server.tsx` | Server only | `loader`/`action` for the layout (shared data for child routes) |
+| `layout.css` | `routes/main/layout.css` | — | Styles shared by child routes. Rare → `styling.md` |
+| `$.tsx` | `routes/$.tsx` | Client + Server | Catch-all 404 (`route("*", "routes/$.tsx")` in `app/routes.ts`) |
 
 - **`.ts` is never used for routes** — loader/action-only files are `*.server.tsx` even if they contain only `loader` or `action`.
-- **Default styles:** inline Tailwind. Route `*.css` is the exception; components in `app/components/` always have co-located `*.css` (BEM). → `styling.md`
+- **Default styles:** inline Tailwind. Route `*.css` is the exception; UI/custom components always have co-located `*.css` (BEM); pages components inline by default. → `styling.md`
 - **Name colocation:** `pad.tsx` + `pad.css` for components; `route.tsx` + `route.server.tsx` + `route.css` (optional) in routes.
 
-## Section files (file-based splitting)
+## Route-specific components → `app/components/pages/`
 
-Landing/product routes are split into named section files:
+Components specific to one route NEVER live in route files — always `app/components/pages/{page}/`, one folder per route mirroring the route path:
 
-- **Pattern:** `index.{section}.tsx` — same or subordinate location as the main route.
-- **Repo example:** `routes/main/index.tsx` imports and composes `index.hero.tsx` → `<Hero />`, `index.about.tsx` → `<About />` (each wraps its `index.*.client.tsx` in `<ClientOnly>` where needed).
-- **Section component** exports a named component (TitleCase matching the section name), e.g. `export function Hero()`. Default no `loader`/`action` — data comes from the main route or hooks/store.
-- **Sub-helpers:** inside a section you can extract further files (`users.loading.tsx` for a loading state, `settings.delete-section.tsx` for a form fragment). Descriptive names (`{route}.{feature}.tsx`), never numbered.
-- **Section files are not routes** — never registered in `app/routes.ts`; imported by the main route.
+- `routes/main/home.tsx` composes `<Hero />`, `<About />` from `#/components/pages/main/home/` — the route file only composes, never defines components (no `Route Helpers (Components specific to route)` section, no `index.{section}.tsx`, no `*.{helper}.tsx` in `app/routes/**`).
+- Sub-components of a page component → same page folder (`pages/admin/users/loading.tsx` for a loading state, `pages/main/home/delete-section.tsx` for a form fragment). Descriptive kebab names, never numbered.
+- Client-only component (browser DOM/APIs — canvas, WebGL, clipboard): `{component}.client.tsx` in the page folder, wrapped in `<ClientOnly>` at the usage site.
+- Styling: inline Tailwind by default; `.css` only when complicated → `components.md` § "Pages components (route-specific)".
+- Never registered in `app/routes.ts` — imported by the route.
 
 ## Comment splitters (inside files)
 
@@ -59,10 +56,10 @@ Format (70 characters, labeled):
 
 ## Standard labels (Title Case, closed set — don't invent)
 
-- **`route.tsx`:** `Route Helpers (Types, other utils)` · `Route Loader & Action` · `Route Revalidation` · `Route Links` · `Route Meta` · `Route Component` · `Route Helpers (Components specific to route)` · `Route Helpers (Lazy Components)`
+- **`route.tsx`:** `Route Helpers (Types, other utils)` · `Route Loader & Action` · `Route Revalidation` · `Route Links` · `Route Meta` · `Route Component` · `Route Helpers (Lazy Components)`
 - **`.server.tsx`:** `Route Helpers (Types, other utils)` · `Route Service` · `Route Loader` · `Route Action`
-- **`*.component.tsx` / section file:** `Component Helpers (Types, other utils)` · `Component` / `Components`
-- **`layout.tsx`:** `Route Helpers (Types, other utils)` · `Route Links` · `Route Meta` · `Route Loader & Action` · `Route Component` · `Route Helpers (Components specific to route)`
+- **Pages component (`app/components/pages/**`):** `Component Helpers (Types, other utils)` · `Component` / `Components`
+- **`layout.tsx`:** `Route Helpers (Types, other utils)` · `Route Links` · `Route Meta` · `Route Loader & Action` · `Route Component`
 
 No match = the section probably doesn't need a splitter.
 
@@ -72,7 +69,7 @@ The reader should first see what the page needs, then where it gets data, finall
 
 ### `route.tsx`
 
-`Imports` → `Route Helpers (Types, other utils)` → `Route Loader & Action` → `Route Revalidation` → `Route Links` → `Route Meta` → `Route Component` → `Route Helpers (Components specific to route)` → `Route Helpers (Lazy Components)`
+`Imports` → `Route Helpers (Types, other utils)` → `Route Loader & Action` → `Route Revalidation` → `Route Links` → `Route Meta` → `Route Component` → `Route Helpers (Lazy Components)`
 
 1. **Imports** — no label. External libs, aliases, relative imports from `*.server.tsx`.
 2. **Route Helpers (Types, other utils)** — types used by loader/action (e.g. `type Inputs` for `useSubmitAction`) and component constants — they define the data interface, so before loader/action.
@@ -81,8 +78,7 @@ The reader should first see what the page needs, then where it gets data, finall
 5. **Route Links** — `export const links`. Rare; skip if empty.
 6. **Route Meta** — `export const meta` via `createMeta` from `#/lib/seo`. Depends on `Route` type / `matches`, not on the component.
 7. **Route Component** — `export default function` — the center of the file.
-8. **Route Helpers (Components specific to route)** — sub-components after the main view.
-9. **Route Helpers (Lazy Components)** — `React.lazy` etc. at the very end (optional optimizations).
+8. **Route Helpers (Lazy Components)** — `React.lazy` etc. at the very end (optional optimizations). Lazy imports point to `app/components/pages/**` — the route never defines components inline.
 
 ### `route.server.tsx`
 
@@ -96,11 +92,11 @@ The reader should first see what the page needs, then where it gets data, finall
 
 ### `layout.tsx`
 
-`Imports` → `Route Helpers (Types, other utils)` → `Route Links` → `Route Meta` → `Route Loader & Action` → `Route Component` → `Route Helpers (Components specific to route)`
+`Imports` → `Route Helpers (Types, other utils)` → `Route Links` → `Route Meta` → `Route Loader & Action` → `Route Component`
 
 - **Note:** `Route Loader & Action` comes AFTER `Route Meta` (opposite of `route.tsx`) — the layout mainly manages document structure/SEO; data is for child routes. No loader/action → skip the section.
 
-### `*.component.tsx` / section file
+### Pages component (`app/components/pages/**`)
 
 `Imports` → `Component Helpers (Types, other utils)` → `Component` / `Components`
 
@@ -220,7 +216,8 @@ export { loader };
 ## Don't
 
 - Don't put server-only logic in `route.tsx` → `*.server.tsx`.
-- Don't register section files (`index.{section}.tsx`) as routes; never import `*.server.tsx` in `routes.ts`.
+- Don't define components in route files — route-specific components → `app/components/pages/{page}/` (→ `components.md` § "Pages components").
+- Don't register pages components in `app/routes.ts`; never import `*.server.tsx` in `routes.ts`.
 - Don't use the array index as a React key → stable unique IDs.
 - Don't define `*Payload` types in `.server.tsx` → Zod schemas in service methods.
 - Don't define explicit return types for loader/action → infer.

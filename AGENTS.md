@@ -1,6 +1,6 @@
 # AGENTS.md — better-web-app-template
 
-> **Stack:** React Router v8 · React 19 · TypeScript 5 · Drizzle · Cloudflare Workers · Tailwind v4
+> **Stack:** React Router v8 · React 19 · Drizzle · Cloudflare Workers · Tailwind v4
 
 This is the **always-on index**. For rules, architecture, conventions, and decision matrices → read `.agents/rules/README.md` first, then the relevant rule file.
 
@@ -8,34 +8,34 @@ This is the **always-on index**. For rules, architecture, conventions, and decis
 
 Rules live in `.agents/rules/`. Read the index first, then only the files relevant to the task.
 
-| File              | Topic                                                                             |
-| ----------------- | --------------------------------------------------------------------------------- |
-| `README.md`       | Index — start here                                                                |
-| `md3-design.md`   | MD3 concepts: color roles, elevation, state layer, ripple, shape, motion          |
-| `components.md`   | React component implementation: BEM, CVA, `useRipple`, `data-state`, TSX/CSS      |
-| `styling.md`      | CSS mechanics: `@layer`, `color-mix`, hover gating, property order, no-dupes      |
-| `tokens.md`       | Design tokens: colors, typography, sizes, motion, breakpoints, z-index            |
-| `routes.md`       | Routes: file types, section splitters, loader/action/service wiring               |
-| `server.md`       | Server + services: BaseService, RouteService, DB, auth, cookies, rate limiting    |
-| `submit.md`       | Action/Form submission: `useSubmitAction`, typed submit, client/server validation |
-| `localization.md` | L10n: `getMessageByKey`, serialized keys                                          |
-| `seo.md`          | SEO: `createMeta`, noindex, JSON-LD                                               |
-| `aliases.md`      | Import aliases: boundaries, examples, forbidden patterns, diagnostics             |
-| `naming.md`       | File/directory naming: `kebab-case` everywhere, patterns, enforcement             |
+| File | Topic |
+| --- | --- |
+| `README.md` | Index — start here |
+| `md3-design.md` | MD3 concepts: color roles, elevation, state layer, ripple, shape, motion |
+| `components.md` | React component implementation: BEM, CVA, `useRipple`, `data-state`, TSX/CSS |
+| `styling.md` | CSS mechanics: `@layer`, `color-mix`, hover gating, property order, no-dupes |
+| `tokens.md` | Design tokens: colors, typography, sizes, motion, breakpoints, z-index |
+| `routes.md` | Routes: file types, section splitters, loader/action/service wiring |
+| `server.md` | Server + services: BaseService, RouteService, DB, auth, cookies, rate limiting, KV cache |
+| `submit.md` | Action/Form submission: `useSubmitAction`, typed submit, client/server validation |
+| `localization.md` | L10n: `getMessageByKey`, serialized keys |
+| `seo.md` | SEO: `createMeta`, noindex, JSON-LD |
+| `aliases.md` | Import aliases: boundaries, examples, forbidden patterns, diagnostics |
+| `naming.md` | File/directory naming: `kebab-case` everywhere, patterns, enforcement |
 
 ## Import Aliases
 
-| Alias | Maps to      | Scope  |
-| ----- | ------------ | ------ |
-| `#/`  | `./app/*`    | App    |
-| `$/`  | `./server/*` | Server |
-| `@/`  | `./shared/*` | Shared |
+| Alias | Maps to | Scope |
+| --- | --- | --- |
+| `#/` | `./app/*` | App |
+| `$/` | `./server/*` | Server |
+| `@/` | `./shared/*` | Shared |
 
-| From     | Can import       | Cannot import |
-| -------- | ---------------- | ------------- |
-| `server` | `$/`, `@/`       | `#/`          |
-| `app`    | `#/`, `@/`, `$/` | —             |
-| `shared` | `@/`             | `#/`, `$/`    |
+| From | Can import | Cannot import |
+| --- | --- | --- |
+| `server` | `$/`, `@/` | `#/` |
+| `app` | `#/`, `@/`, `$/` | — |
+| `shared` | `@/` | `#/`, `$/` |
 
 Always use aliases, never `../../` across directories. Within same directory, `./utils` is fine.
 
@@ -43,15 +43,15 @@ Always use aliases, never `../../` across directories. Within same directory, `.
 
 Skills live in `.agents/skills/<name>/SKILL.md`. Use `/skill-name` or invoke via the skill tool.
 
-| Skill               | Purpose                                                          |
-| ------------------- | ---------------------------------------------------------------- |
-| `gen-module`        | Generate route, component, service, hook, etc.                   |
-| `refr-module`       | Refactor file(s) to comply with rules                            |
-| `auto-test`         | Run app, check terminal for build/runtime/server errors, fix     |
-| `auto-test-browser` | Test via browser (Puppeteer), check console/visuals, fix         |
-| `gen-tokens`        | Generate design tokens docs from Tailwind v4 CSS + UI components |
-| `opt-tokens`        | Read rules once, work from memory                                |
-| `min-opt-tokens`    | Zero filler, act don't narrate                                   |
+| Skill | Purpose |
+| --- | --- |
+| `gen-module` | Generate route, component, service, hook, etc. |
+| `refr-module` | Refactor file(s) to comply with rules |
+| `auto-test` | Run app, check terminal for build/runtime/server errors, fix |
+| `auto-test-browser` | Test via browser (Puppeteer), check console/visuals, fix |
+| `gen-tokens` | Generate design tokens docs from Tailwind v4 CSS + UI components |
+| `opt-tokens` | Read rules once, work from memory |
+| `min-opt-tokens` | Zero filler, act don't narrate |
 
 ## Verification (definition of done)
 
@@ -74,6 +74,7 @@ pnpm fmt && pnpm fmt:style   # formatting + class sorting, then re-check the dif
 - Read each rule file **once**, extract constraints, work from memory — don't re-read the same file in a session.
 - Ask only when genuinely blocked (ambiguous intent, conflicting rules, destructive action).
 - Edits over code blocks in chat; smallest correct diff.
+- Repo `.md` docs use standard Markdown tables — the fenced `table` block format (`columns:` / `row:`) is only for formatter-processed `public/` files (as in crosspad-web) → `.agents/rules/README.md` § "Markdown tables".
 
 ## Trimming the template (per project)
 
@@ -89,8 +90,8 @@ After trimming: `pnpm typecheck && pnpm lint && pnpm test` — delete tests that
 
 ## What's in the template
 
-- **Server (`server/`)** — Hono app + React Router handler in `worker.ts`; services (`BaseService` + `auth`/`user`/`admin`/`preferences`), decorators, cookies (session + theme + consent system), PBKDF2 passwords, RS256 JWT (jose), mail (React Email), R2FileUploader, D1 (Kysely queries + Drizzle schema/migrations), KV cache, Durable Object rate limiting, Queue + Cron registries with example handlers.
-- **App (`app/`)** — MD3 UI component set (`components/ui/`), form submission system (`useSubmitAction` + typed submit), SEO meta (`createMeta`), status/404/error pages, auth routes (login/register/confirm), admin panel (dashboard + user management), toasts, theme toggle (light/dark/system cookie).
+- **Server (`server/`)** — Hono app + React Router handler in `worker.ts`; services (`BaseService` + `auth`/`user`/`admin`/`preferences`), decorators, cookies (session + theme + consent system), PBKDF2 passwords, RS256 JWT (jose), mail (React Email), markdown transformer (`renderMarkdown` — marked + sanitize-html), R2FileUploader, D1 (Kysely queries + Drizzle schema/migrations), KV cache, Durable Object rate limiting, Queue + Cron registries with example handlers.
+- **App (`app/`)** — MD3 UI component set (`components/ui/`), form submission system (`useSubmitAction` + typed submit), SEO meta (`createMeta`), status/404/error pages, auth routes (login/register/confirm), admin panel (dashboard + user management), `/docs` markdown example (`.md` from `public/` via the ASSETS binding), toasts, theme toggle (light/dark/system cookie).
 - **Shared (`shared/`)** — constants (site/env/R2), validators (Zod), message keys (`en_server_errors.json` + `getMessageByKey`), enums, preferences.
 - **Cloudflare bindings** — D1, R2, KV, Queues, Cron Triggers, Email, static assets, Durable Object (`RATE_LIMITER`). All configured in `wrangler.jsonc` with placeholder IDs — replace before deploying.
 - **Auth system** — email/password (PBKDF2), email verification (send_email binding), RS256 JWT in httpOnly session cookie, admin rights (`user_rights.user_admin`), banned emails, cookie consent. No 2FA/TOTP, no OAuth — add per project.

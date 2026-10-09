@@ -7,6 +7,7 @@
   "CANNOT_DELETE_OWN_ACCOUNT_ADMIN": "Cannot delete your own account via admin panel",
   "CANNOT_REVOKE_OWN_ADMIN": "You cannot revoke your own admin rights",
   "CONFLICT": "Conflict",
+  "DOCUMENT_NOT_FOUND": "Document not found",
   "EMAIL_ALREADY_IN_USE": "Email already in use",
   "EMAIL_BANNED": "This email address is banned from registration",
   "FAILED_TO_BAN_USER": "Failed to ban user",

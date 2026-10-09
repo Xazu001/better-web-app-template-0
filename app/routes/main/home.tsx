@@ -1,6 +1,6 @@
-import { useLoaderData } from "react-router";
+import { Link } from "react-router";
 
-import { Button } from "#/components/ui/button";
+import { Chip } from "#/components/ui/chip";
 import { createMeta } from "#/lib/seo";
 
 import { loader } from "./home.server";
@@ -28,6 +28,8 @@ export const meta: Route.MetaFunction = ({ matches }) => {
 // Route Helpers (Types, other utils)
 // ──────────────────────────────────────────────────────────────
 
+const STACK = ["React Router v8", "React 19", "Drizzle", "Cloudflare Workers", "Tailwind v4"];
+
 const CURRENT_YEAR = new Date().getFullYear();
 
 // ──────────────────────────────────────────────────────────────
@@ -35,39 +37,32 @@ const CURRENT_YEAR = new Date().getFullYear();
 // ──────────────────────────────────────────────────────────────
 
 export default function Index() {
-  const { user } = useLoaderData<typeof loader>();
-
   return (
-    <main className="min-h-dvh px-site">
-      <section className="flex flex-col items-start gap-4 py-16 cont">
-        <h1 className="m-0 font-header font-semibold text-3xl text-on-surface">
-          {user ? `Welcome back, ${user.user_name}!` : "Welcome!"}
-        </h1>
-        <p className="max-w-mod-unit-6 m-0 text-lg text-on-surface-variant">
-          This is the home page of the template — replace it with your app's landing content.
+    <main className="flex flex-col min-h-dvh px-site">
+      <section className="flex flex-1 flex-col items-center justify-center gap-6 py-16 cont">
+        <h1 className="m-0 text-3xl">better-web-app-template</h1>
+        <p className="m-0 text-center text-lg text-on-surface-variant">
+          A template built for React Router v8 on the Cloudflare Workers runtime.
         </p>
-        <div className="flex flex-wrap gap-2">
-          {user ? (
-            <Button to="/admin" variant="primary" size="lg">
-              Admin panel
-            </Button>
-          ) : (
-            <>
-              <Button to="/login" variant="primary" size="lg">
-                Login
-              </Button>
-              <Button to="/register" variant="outline" size="lg">
-                Register
-              </Button>
-            </>
-          )}
+        <div className="flex flex-wrap justify-center gap-2">
+          {STACK.map((item) => (
+            <Chip key={item} variant="outline">
+              {item}
+            </Chip>
+          ))}
         </div>
       </section>
       <footer className="pb-0 px-site bg-surface border-outline-variant border-t">
-        <div className="relative flex items-center justify-center gap-2 py-3 cont">
+        <div className="relative flex flex-wrap items-center justify-center gap-2 py-3 cont">
           <p className="m-0 text-on-surface-variant">
             &copy; {CURRENT_YEAR} App — built with better-web-app-template
           </p>
+          <span className="text-on-surface-variant" aria-hidden="true">
+            ·
+          </span>
+          <Link to="/docs" className="link-muted">
+            Example .md → transformer
+          </Link>
         </div>
       </footer>
     </main>

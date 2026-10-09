@@ -20,6 +20,7 @@
 @import "./utilities/theme.css";
 @import "./components/button.css";
 @import "./components/dialog.css";
+@import "./components/markdown.css";
 @import "./components/select.css";
 @import "../components/ui/alert.css";
 @import "../components/ui/button.css";

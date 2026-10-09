@@ -4,16 +4,18 @@
 
 ## 3-tier hybrid (CRITICAL)
 
-| Tier                 | Where               | Convention                                                           | When                                      |
-| -------------------- | ------------------- | -------------------------------------------------------------------- | ----------------------------------------- |
-| UI/custom components | `app/components/**` | BEM `block__element--modifier` + `@apply` in co-located `.css`       | **ALWAYS**                                |
-| Routes — default     | `app/routes/**`     | inline Tailwind in TSX                                               | **ALWAYS** (no class threshold)           |
-| Routes — `@apply`    | `app/routes/**`     | BEM with route prefix = block + `@apply` in `.css` (`@layer routes`) | **RARE — only when explicitly requested** |
+| Tier | Where | Convention | When |
+| --- | --- | --- | --- |
+| UI/custom components | `app/components/ui/**`, `custom/**` | BEM `block__element--modifier` + `@apply` in co-located `.css` | **ALWAYS** |
+| Pages components — default | `app/components/pages/**` | inline Tailwind in TSX | **ALWAYS** (no class threshold) |
+| Pages components — `@apply` | `app/components/pages/**` | BEM block `{page}-{component}` + `@apply` in `.css` (`@layer custom`/`routes`) | **RARE — only complicated** (→ `components.md`) |
+| Routes — default | `app/routes/**` | inline Tailwind in TSX | **ALWAYS** (no class threshold) |
+| Routes — `@apply` | `app/routes/**` | BEM with route prefix = block + `@apply` in `.css` (`@layer routes`) | **RARE — only when explicitly requested** |
 
 - **Route `@apply` is NOT triggered by class count.** Long inline in routes is OK and expected. `@apply` in route `.css` = only when: (a) `@keyframes`/signature animations with `prefers-reduced-motion`, (b) shared layout sibling-routes (e.g. `main/plans.css` — `::before` glow effects used in `main/plans`), (c) very complex `@media` combos unexpressible with variants (`@media (…) and (…)`), (d) explicit user instruction. When used → BEM with route prefix = block (`auth__field`, `plans__glow`, `users__toolbar`), `__` IS used (this IS BEM).
-- Page-specific components in `app/components/pages/**` are treated as custom components: BEM with page prefix, `@apply` in co-located `.css`, usually `@layer custom` or `@layer routes` when the layout is route-specific.
+- Page-specific components in `app/components/pages/**` — inline Tailwind by default (like routes). Co-located `.css` ONLY when complicated (`@keyframes`, selectors unexpressible with variants, complex `@media`) → BEM block `{page}-{component}` + `@apply`, `@layer custom` (or `routes` when purely route layout). Criteria → `components.md` § "Pages components (route-specific)".
 - **Decision test for a route element:**
-  1. Default → inline Tailwind (any number of classes).
+  1. Default → inline Tailwind (any number of classes) — routes and pages components.
   2. Pattern repeated 3+ times cross-route → `@utility` in `tailwind.css` or `app/styles/utilities/*.css` + rest inline.
   3. Animation → `@keyframes` in `tailwind.css` (cross-route) or route `.css` (route-specific).
   4. `@apply` in route `.css` → ONLY ordered.
@@ -21,7 +23,7 @@
 - **Mixing rules (CRITICAL):**
   - `@utility` (`link-muted`, `nav-link`, `cont`, `px-site`, `flex`, `gap-4`, …) + inline Tailwind on the same element → **OK** (both are generic Tailwind utilities, same cascade).
   - Route BEM class (`plans__glow`, `users__toolbar`) + inline Tailwind → **NO** (one element = one convention for route classes; children can have inline).
-  - Component BEM (`md3-btn`, `pad`, `nav`) + inline → **NO** (components ALWAYS `@apply` in `.css`; exception: `@utility` like `cont`/`px-site`).
+  - UI/custom BEM (`md3-btn`, `pad`, `nav`) + inline → **NO** (they ALWAYS `@apply` in `.css`; exception: `@utility` like `cont`/`px-site`). Pages components are inline Tailwind — BEM only when a `.css` exists.
 - **Semantic signal in `className`:** `__` in the name → component OR route BEM (`@apply` in `.css`, reusable). Utility chain → route element (inline — default).
 
 ## Core rules
@@ -68,15 +70,15 @@ The root is fluid (`--f-font-size`): `1rem ≈ 6.86–8px`, frozen at `8px` abov
 
 ### Matrix
 
-| Width is…                                                              | Use (in order)                              | Examples in code                                         |
-| ---------------------------------------------------------------------- | ------------------------------------------- | -------------------------------------------------------- |
-| Content `max-w`/`w`/`min-w` tied to typography (measure, sections)     | `max-w-unit-*` (xl–6xl = 40–80rem) — FIRST  | `max-w-unit-3xl` (56rem), `w-unit-2xl` (48rem)           |
-| Rem width genuinely outside the scale (one-off, justified)             | `[nrem]` arbitrary                          | `max-w-[124rem]` page shell                              |
-| Tool-UI / admin / fixed asset / hard cap that must NOT scale with type | `[npx]` arbitrary                           | `max-w-[720px]` (`status.tsx`), `max-w-[1600px]` (admin) |
-| Viewport-proportional column or dialog (24-col grid)                   | `mod-unit-*` (1–24) + `basis-`/`grid-cols-` | `max-w-mod-unit-10` (dialog md)                          |
-| Pure reading measure (characters per line)                             | `ch`                                        | `max-w-[65ch]` (FAQ)                                     |
-| Clamped to the viewport itself                                         | `vw`                                        | `max-w-[85vw]` (drawer)                                  |
-| Page container / site padding                                          | `cont` + `px-site`                          | `<main className="cont px-site">`                        |
+| Width is… | Use (in order) | Examples in code |
+| --- | --- | --- |
+| Content `max-w`/`w`/`min-w` tied to typography (measure, sections) | `max-w-unit-*` (xl–6xl = 40–80rem) — FIRST | `max-w-unit-3xl` (56rem), `w-unit-2xl` (48rem) |
+| Rem width genuinely outside the scale (one-off, justified) | `[nrem]` arbitrary | `max-w-[124rem]` page shell |
+| Tool-UI / admin / fixed asset / hard cap that must NOT scale with type | `[npx]` arbitrary | `max-w-[720px]` (`status.tsx`), `max-w-[1600px]` (admin) |
+| Viewport-proportional column or dialog (24-col grid) | `mod-unit-*` (1–24) + `basis-`/`grid-cols-` | `max-w-mod-unit-10` (dialog md) |
+| Pure reading measure (characters per line) | `ch` | `max-w-[65ch]` (FAQ) |
+| Clamped to the viewport itself | `vw` | `max-w-[85vw]` (drawer) |
+| Page container / site padding | `cont` + `px-site` | `<main className="cont px-site">` |
 
 ### Rules
 
@@ -432,7 +434,7 @@ Right — always wrap in `@media (hover: hover)`:
 - `rgba()` with OKLCH — `color-mix(in oklch, …)` or `var(--color-*)/alpha`.
 - `color-mix` % not divisible by 5; `in srgb` (always omit).
 - Unlayered CSS in co-located `*.css`; `!important` outside `@layer overrides`.
-- Long inline in component `className` — components ALWAYS BEM `.css`.
+- Long inline in UI/custom component `className` — they ALWAYS BEM `.css`. Pages components: inline is the default.
 - `className` on a component without need — omit; only route overrides.
 - `@apply` in routes auto by class count — RARE, only ordered/CSS-only needs.
 - Inline + route BEM on the same element (`<section className="plans bg-black">`).
