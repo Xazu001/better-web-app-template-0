@@ -1,0 +1,159 @@
+@layer components {
+  .alert {
+    @apply relative
+      flex
+      items-start
+      gap-1
+      w-full
+      rounded-lg
+      font-body
+      text-md
+      duration-medium-2
+      ease-md3
+      transition-all
+      state-layer;
+  }
+
+  /* Variants */
+
+  .alert--surface {
+    @apply bg-elevation-1
+      border
+      border-outline-variant
+      text-on-elevation-1;
+  }
+
+  .alert--error {
+    @apply bg-error-container
+      border
+      border-error
+      text-on-error-container;
+  }
+
+  .alert--success {
+    @apply bg-success-container
+      border
+      border-success
+      text-on-success-container;
+  }
+
+  .alert--warning {
+    @apply bg-warning-container
+      border
+      border-warning
+      text-on-warning-container;
+  }
+
+  .alert--info {
+    @apply bg-info-container
+      border
+      border-info
+      text-on-info-container;
+  }
+
+  .alert--glass-elevation-1 {
+    background: color-mix(in oklch, var(--color-glass-elevation-1));
+
+    @apply backdrop-blur-xl
+      border
+      border-glass-outline-variant
+      text-on-glass-elevation-1;
+  }
+
+  .alert--glass-elevation-2 {
+    background: color-mix(in oklch, var(--color-glass-elevation-2));
+
+    @apply backdrop-blur-xl
+      border
+      border-glass-outline
+      text-on-glass-elevation-2;
+  }
+
+  .alert--glass-error {
+    background: color-mix(in oklch, var(--color-error) 25%, transparent);
+
+    @apply backdrop-blur-xl
+      border
+      border-error
+      text-on-glass-error;
+  }
+
+  .alert--glass-success {
+    background: color-mix(in oklch, var(--color-success) 25%, transparent);
+
+    @apply backdrop-blur-xl
+      border
+      border-success
+      text-on-glass-success;
+  }
+
+  .alert--glass-info {
+    background: color-mix(in oklch, var(--color-info) 25%, transparent);
+
+    @apply backdrop-blur-xl
+      border
+      border-info
+      text-on-glass-info;
+  }
+
+  /* Sizes */
+
+  .alert--sm {
+    @apply gap-1 p-2 rounded-md text-sm;
+  }
+
+  .alert--md {
+    @apply gap-1.5 p-3 rounded-lg text-md;
+  }
+
+  .alert--lg {
+    @apply gap-2 p-4 rounded-xl text-lg;
+  }
+
+  /* Sub-elements */
+
+  .alert__icon {
+    @apply flex
+      shrink-0
+      items-center
+      justify-center
+      mt-[0.125rem];
+  }
+
+  .alert__content {
+    @apply flex flex-1 flex-col gap-1 min-w-0;
+  }
+
+  .alert__title {
+    @apply font-body
+      font-medium
+      leading-snug
+      text-current
+      text-md;
+  }
+
+  .alert__description {
+    @apply opacity-90
+      font-body
+      leading-regular
+      text-current
+      text-sm;
+  }
+
+  .alert__close {
+    @apply flex
+      shrink-0
+      items-center
+      justify-center
+      p-1
+      focus-visible:outline-none
+      focus-visible:ring-2
+      focus-visible:ring-current
+      rounded-full
+      text-current
+      duration-short-3
+      ease-md3
+      transition-colors
+      state-layer;
+  }
+}

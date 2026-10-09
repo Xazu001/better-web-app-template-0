@@ -1,0 +1,24 @@
+@layer custom {
+  .floating-label {
+    position: fixed;
+    z-index: var(--z-index-indicator);
+    padding: 0.3rem 0.8rem;
+    background: var(--color-surface);
+    color: var(--color-on-surface);
+    border-radius: var(--radius-sm);
+    opacity: 0;
+    font-size: var(--text-sm);
+    font-weight: var(--font-weight-medium);
+    white-space: nowrap;
+    pointer-events: none;
+    transform: translateX(-50%) translateY(0);
+    transition:
+      opacity var(--transition-duration-medium-3) var(--ease-md3),
+      transform var(--transition-duration-medium-3) var(--ease-md3);
+  }
+
+  .floating-label--visible {
+    opacity: 1;
+    transform: translateX(-50%) translateY(-1.5rem);
+  }
+}

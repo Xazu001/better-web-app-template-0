@@ -1,0 +1,71 @@
+/* ── MD3 scrollbar — global, theme-aware ─────────────────────────────
+   Thumb: outline-variant (subtle), hover → outline, active → on-surface-variant.
+   Track: transparent (lets surface show through, MD3 "no chrome" feel).
+   Firefox: `scrollbar-color` + `scrollbar-width: thin` (auto / none on demand).
+   WebKit: `::-webkit-scrollbar*` pseudo-elements (Chromium / Safari / WebKit).
+   `@layer base` so it sits with `body` defaults and can be overridden per component.
+   ─────────────────────────────────────────────────────────────────── */
+
+@utility no-scrollbar {
+  scrollbar-width: none;
+
+  &::-webkit-scrollbar {
+    display: none;
+    width: 0;
+    height: 0;
+  }
+}
+
+@layer base {
+  /* Firefox — first, applies to whole document */
+
+  html {
+    scrollbar-color: var(--color-outline-variant) transparent;
+    scrollbar-width: thin;
+  }
+
+  /* WebKit / Chromium / Safari — global page scrollbar */
+
+  *::-webkit-scrollbar {
+    width: 0.5rem;
+    height: 0.5rem;
+  }
+
+  *::-webkit-scrollbar-track {
+    background-color: transparent;
+  }
+
+  *::-webkit-scrollbar-thumb {
+    background-color: var(--color-outline-variant);
+    background-clip: padding-box;
+    border: 0.125rem solid transparent;
+    border-radius: var(--radius-full);
+    transition-property: background-color;
+    transition-duration: var(--transition-duration-short-3);
+    transition-timing-function: var(--ease-md3);
+  }
+
+  *::-webkit-scrollbar-thumb:hover {
+    background-color: var(--color-outline);
+  }
+
+  *::-webkit-scrollbar-thumb:active {
+    background-color: var(--color-on-surface-variant);
+  }
+
+  *::-webkit-scrollbar-corner {
+    background-color: transparent;
+  }
+
+  /* Hide scrollbar entirely — opt-in via `.no-scrollbar` (MD3: hidden but scrollable) */
+
+  .no-scrollbar {
+    @apply no-scrollbar;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *::-webkit-scrollbar-thumb {
+    transition: none;
+  }
+}

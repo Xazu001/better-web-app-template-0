@@ -1,0 +1,27 @@
+@layer components {
+  .icon {
+    @apply shrink-0;
+  }
+
+  /* Sizes */
+
+  .icon--sm {
+    width: 2.25rem;
+    height: 2.25rem;
+  }
+
+  .icon--md {
+    width: 3rem;
+    height: 3rem;
+  }
+
+  .icon--lg {
+    width: 4rem;
+    height: 4rem;
+  }
+
+  .icon--xl {
+    width: 5rem;
+    height: 5rem;
+  }
+}

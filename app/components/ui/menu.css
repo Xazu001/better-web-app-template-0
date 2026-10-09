@@ -1,0 +1,202 @@
+@layer components {
+  /* ────────────────────────────────────────────────────────────
+   * Menu — root + trigger
+   * ──────────────────────────────────────────────────────────── */
+
+  .md3-menu {
+    @apply inline-flex relative;
+  }
+
+  .md3-menu__trigger {
+    @apply inline-flex;
+  }
+
+  /* ────────────────────────────────────────────────────────────
+   * Content — base
+   * ──────────────────────────────────────────────────────────── */
+
+  .md3-menu__content {
+    --md3-icon-size: 1.75rem;
+
+    @apply absolute
+      z-floating-control
+      flex
+      flex-col
+      bg-popover
+      rounded-md
+      shadow-md
+      opacity-0
+      text-on-surface
+      pointer-events-none
+      origin-top
+      scale-95
+      duration-short-3
+      ease-md3
+      transition-all;
+  }
+
+  .md3-menu--open .md3-menu__content {
+    @apply opacity-100 pointer-events-auto scale-100;
+  }
+
+  /* Content — size modifiers (min-w, p, gap, rounded, icon size) */
+
+  .md3-menu__content--sm {
+    --md3-icon-size: 1.5rem;
+
+    @apply gap-0.5 min-w-[16rem] p-1 rounded-sm;
+  }
+
+  .md3-menu__content--md {
+    @apply gap-1 min-w-[24rem] p-1.5 rounded-md;
+  }
+
+  .md3-menu__content--lg {
+    --md3-icon-size: 2rem;
+
+    @apply gap-1.5 min-w-[32rem] p-2 rounded-lg;
+  }
+
+  /* Content — side */
+
+  .md3-menu--side-bottom .md3-menu__content {
+    @apply top-full mt-1;
+  }
+
+  .md3-menu--side-top .md3-menu__content {
+    @apply bottom-full mb-1 origin-bottom;
+  }
+
+  /* Content — align */
+
+  .md3-menu--align-start .md3-menu__content {
+    @apply left-0;
+  }
+
+  .md3-menu--align-center .md3-menu__content {
+    @apply left-1/2 -translate-x-1/2;
+  }
+
+  .md3-menu--align-end .md3-menu__content {
+    @apply left-auto right-0;
+  }
+
+  /* ────────────────────────────────────────────────────────────
+   * Item — base
+   * ──────────────────────────────────────────────────────────── */
+
+  .md3-menu__item {
+    @apply relative
+      flex
+      items-center
+      w-full
+      font-body
+      text-left
+      text-on-surface
+      cursor-pointer
+      select-none
+      duration-short-3
+      ease-md3
+      transition-colors
+      isolate;
+  }
+
+  /* Item — size modifiers (px, py, rounded, gap, text) */
+
+  .md3-menu__content--sm .md3-menu__item {
+    @apply gap-1 px-2 py-1 rounded-md text-sm;
+  }
+
+  .md3-menu__content--md .md3-menu__item {
+    @apply gap-1.5 px-3 py-1.5 rounded-lg text-md;
+  }
+
+  .md3-menu__content--lg .md3-menu__item {
+    @apply gap-2 px-4 py-2 rounded-xl text-lg;
+  }
+
+  /* Item — icon size via --md3-icon-size (inherited from content) */
+
+  .md3-menu__item-icon svg,
+  .md3-menu__item-trailing svg {
+    width: var(--md3-icon-size);
+    height: var(--md3-icon-size);
+  }
+
+  /* Item — state layer + ripple (md3 overlay primitives) */
+
+  .md3-menu__item-ripple {
+    @apply md3-ripple-surface;
+  }
+
+  .md3-menu__item-state-layer {
+    @apply md3-state-layer;
+  }
+
+  .md3-menu__item:focus-visible .md3-menu__item-state-layer,
+  .md3-menu__item:active .md3-menu__item-state-layer {
+    @apply opacity-[0.1];
+  }
+
+  /* Item — variants */
+
+  .md3-menu__item--default {
+    @apply text-on-surface;
+  }
+
+  .md3-menu__item--destructive {
+    @apply text-error;
+  }
+
+  .md3-menu__item--destructive .md3-menu__item-icon {
+    @apply text-error;
+  }
+
+  /* Item — selected / disabled */
+
+  .md3-menu__item--selected {
+    @apply bg-popover;
+  }
+
+  .md3-menu__item--disabled {
+    @apply opacity-40 cursor-not-allowed pointer-events-none;
+  }
+
+  /* ────────────────────────────────────────────────────────────
+   * Item — parts
+   * ──────────────────────────────────────────────────────────── */
+
+  .md3-menu__item-icon {
+    @apply inline-flex items-center
+      text-on-surface-variant;
+  }
+
+  .md3-menu__item-label {
+    @apply flex flex-1 gap-1 truncate;
+  }
+
+  .md3-menu__item-trailing {
+    @apply inline-flex items-center
+      text-on-surface-variant;
+  }
+
+  /* ────────────────────────────────────────────────────────────
+   * Separator
+   * ──────────────────────────────────────────────────────────── */
+
+  .md3-menu__separator {
+    @apply h-px my-1
+      bg-outline-variant
+      border-0;
+  }
+
+  /* ────────────────────────────────────────────────────────────
+   * Hover
+   * ──────────────────────────────────────────────────────────── */
+
+  @media (hover: hover) {
+    .md3-menu__item:hover .md3-menu__item-state-layer {
+      @apply opacity-[0.1];
+    }
+  }
+}

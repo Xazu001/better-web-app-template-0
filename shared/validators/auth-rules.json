@@ -1,0 +1,24 @@
+{
+  "username": {
+    "min": 3,
+    "max": 32,
+    "pattern": "^[a-zA-Z0-9_-]+$",
+    "min_error": "MIN_LENGTH_CHARS|min=3",
+    "max_error": "MAX_LENGTH_CHARS|max=32",
+    "pattern_error": "USERNAME_INVALID_CHARACTERS"
+  },
+  "email": {
+    "min": 1,
+    "max": 256,
+    "is_email": true,
+    "min_error": "MIN_LENGTH_CHARS|min=1",
+    "max_error": "MAX_LENGTH_CHARS|max=256",
+    "email_error": "INVALID_EMAIL"
+  },
+  "password": {
+    "min": 6,
+    "max": 256,
+    "min_error": "MIN_LENGTH_CHARS|min=6",
+    "max_error": "MAX_LENGTH_CHARS|max=256"
+  }
+}

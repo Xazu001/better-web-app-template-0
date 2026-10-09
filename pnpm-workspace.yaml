@@ -1,0 +1,9 @@
+packages: []
+allowBuilds:
+  "@parcel/watcher": false
+  esbuild: true
+  workerd: true
+verifyDepsBeforeRun: false
+# Optional supply-chain guard — uncomment to require packages be at least
+# N ms old before pnpm will install them (add exceptions to minimumReleaseAgeExclude):
+# minimumReleaseAge: 604800000

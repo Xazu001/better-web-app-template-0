@@ -1,0 +1,125 @@
+@layer components {
+  .md3-chip {
+    @apply inline-flex
+      relative
+      items-center
+      justify-center
+      gap-1
+      h-chip-md
+      px-2
+      rounded-full
+      font-body
+      font-medium
+      text-sm
+      select-none
+      duration-medium-2
+      ease-md3
+      transition-all
+      isolate;
+  }
+
+  /* Sizes */
+
+  .md3-chip--sm {
+    @apply h-chip-sm px-1 text-sm;
+  }
+
+  .md3-chip--md {
+    @apply h-chip-md px-2 text-md;
+  }
+
+  .md3-chip--lg {
+    @apply h-chip-lg px-3 text-lg;
+  }
+
+  .md3-chip__ripple {
+    @apply absolute
+      inset-0
+      z-below
+      overflow-hidden
+      rounded-[inherit]
+      pointer-events-none;
+  }
+
+  .md3-chip__state-layer {
+    @apply absolute
+      inset-0
+      bg-current
+      rounded-[inherit]
+      opacity-0
+      pointer-events-none
+      transition-opacity;
+  }
+
+  .md3-chip--interactive:focus-visible .md3-chip__state-layer {
+    @apply opacity-[0.1];
+  }
+
+  .md3-chip--interactive:active .md3-chip__state-layer {
+    @apply opacity-[0.1];
+  }
+
+  /* Variants */
+
+  .md3-chip--assist {
+    --ripple-color: var(--color-on-surface-variant);
+
+    @apply bg-elevation-1 text-on-surface-variant;
+  }
+
+  .md3-chip--primary {
+    --ripple-color: var(--color-primary);
+
+    @apply bg-primary text-on-primary;
+  }
+
+  .md3-chip--success {
+    --ripple-color: var(--color-success);
+
+    @apply bg-success text-on-success;
+  }
+
+  .md3-chip--error {
+    --ripple-color: var(--color-error);
+
+    @apply bg-error text-on-error;
+  }
+
+  .md3-chip--outline {
+    --ripple-color: var(--color-on-surface);
+
+    @apply bg-transparent border border-outline text-on-surface;
+  }
+
+  .md3-chip--tonal {
+    --ripple-color: var(--color-on-primary-container);
+
+    @apply bg-primary-container text-on-primary-container;
+  }
+
+  /* Selected */
+
+  .md3-chip--selected {
+    @apply bg-secondary-container text-on-secondary-container;
+  }
+
+  /* States */
+
+  .md3-chip[data-state="disabled"] {
+    @apply opacity-50 cursor-not-allowed;
+  }
+
+  .md3-chip__icon {
+    @apply inline-flex items-center;
+  }
+
+  .md3-chip__label {
+    @apply inline-flex items-center;
+  }
+
+  @media (hover: hover) {
+    .md3-chip--interactive:hover .md3-chip__state-layer {
+      @apply opacity-[0.1];
+    }
+  }
+}

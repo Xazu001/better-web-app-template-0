@@ -1,0 +1,29 @@
+@utility link-muted {
+  @media (hover: hover) {
+    &:hover {
+      @apply text-on-surface;
+    }
+  }
+
+  @apply text-on-surface-variant duration-medium-2 ease-md3 transition-colors;
+}
+
+@utility link-muted-primary-underline {
+  @apply underline text-primary duration-medium-2 ease-md3 transition-colors;
+}
+
+@utility link-primary {
+  @apply text-primary duration-medium-2 ease-md3 transition-colors;
+}
+
+@utility nav-link {
+  @media (hover: hover) {
+    &:hover {
+      background: color-mix(var(--color-surface) 75%, transparent);
+
+      @apply text-on-surface;
+    }
+  }
+
+  @apply px-2 py-1 rounded-sm text-on-surface-variant duration-medium-2 ease-md3 transition-all;
+}

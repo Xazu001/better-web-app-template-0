@@ -1,0 +1,26 @@
+@layer components {
+  /* ────────────────────────────────────────────────────────────
+   * md3-dialog — UI color variant (theme tokens)
+   * Structure lives in app/styles/components/dialog.css.
+   * This file only sets the content variant backgrounds.
+   * ──────────────────────────────────────────────────────────── */
+
+  /* Variants — theme tokens */
+
+  .md3-dialog__content--popover {
+    @apply bg-popover text-on-popover;
+  }
+
+  .md3-dialog__content--elevation {
+    @apply bg-elevation-2 text-on-surface;
+  }
+
+  /* Variant — kit-play runtime elevation-1 (runtime `--color-kit-play-*` vars
+     from useKitPlayer → document.body, defined in app/routes/main/kit/play.$id.css) */
+
+  .md3-dialog__content--kit-play-elevation-1 {
+    background: var(--color-kit-play-elevation-1);
+    color: var(--color-kit-play-on-elevation-1);
+    border: 1px solid var(--color-kit-play-elevation-1-border);
+  }
+}

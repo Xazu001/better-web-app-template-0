@@ -1,0 +1,266 @@
+@layer components {
+  .md3-text-field {
+    @apply relative flex flex-col w-full rounded-lg input-icon-md;
+  }
+
+  /* Header */
+
+  .md3-text-field__header {
+    @apply flex items-center justify-between gap-1;
+  }
+
+  .md3-text-field__label {
+    @apply input-label;
+  }
+
+  .md3-text-field__error {
+    @apply inline-flex items-center gap-1 text-error text-sm;
+  }
+
+  .md3-text-field__error-icon {
+    @apply text-error;
+  }
+
+  /* Sizes — icon vars (--md3-icon-size, --md3-input-pr)
+     come from `input-icon-{sm,md,lg}` utilities in app/styles/utilities/form.css. */
+
+  .md3-text-field--sm {
+    @apply input-icon-sm;
+  }
+
+  .md3-text-field--sm.md3-text-field--has-label {
+    @apply input-label-gap-sm input-label-margin-sm;
+  }
+
+  .md3-text-field--sm .md3-text-field__input {
+    @apply text-sm input-h-sm input-x-sm;
+  }
+
+  .md3-text-field--md.md3-text-field--has-label {
+    @apply input-label-gap-md input-label-margin-md;
+  }
+
+  .md3-text-field--md .md3-text-field__input {
+    @apply text-md input-h-md input-x-md;
+  }
+
+  .md3-text-field--lg {
+    @apply input-icon-lg;
+  }
+
+  .md3-text-field--lg.md3-text-field--has-label {
+    @apply input-label-gap-lg input-label-margin-lg;
+  }
+
+  .md3-text-field--lg .md3-text-field__input {
+    @apply text-lg input-h-lg input-x-lg;
+  }
+
+  .md3-text-field__container {
+    @apply relative
+      overflow-hidden
+      flex
+      items-center
+      bg-surface
+      border
+      border-outline-variant
+      rounded-[inherit]
+      duration-short-3
+      ease-md3
+      transition-[border-color];
+  }
+
+  .md3-text-field:focus-within .md3-text-field__container {
+    @apply border-primary;
+  }
+
+  /* Error */
+
+  .md3-text-field--error .md3-text-field__container {
+    @apply border-error;
+  }
+
+  /* Glass */
+
+  .md3-text-field--glass-elevation-1 .md3-text-field__container {
+    background: color-mix(in oklch, var(--color-glass-elevation-1) 70%, transparent);
+
+    @apply backdrop-blur-xl border-glass-outline-variant;
+  }
+
+  .md3-text-field--glass-elevation-1 .md3-text-field__input {
+    @apply placeholder:text-on-glass-elevation-1/60 text-on-glass-elevation-1;
+  }
+
+  .md3-text-field--glass-elevation-1 .md3-text-field__label {
+    @apply text-on-glass-elevation-1;
+  }
+
+  .md3-text-field--glass-elevation-2 .md3-text-field__container {
+    background: color-mix(in oklch, var(--color-glass-elevation-2) 70%, transparent);
+
+    @apply backdrop-blur-xl border-glass-outline;
+  }
+
+  .md3-text-field--glass-elevation-2 .md3-text-field__input {
+    @apply placeholder:text-on-glass-elevation-2/60 text-on-glass-elevation-2;
+  }
+
+  .md3-text-field--glass-elevation-2 .md3-text-field__label {
+    @apply text-on-glass-elevation-2;
+  }
+
+  .md3-text-field--glass-elevation-1:focus-within .md3-text-field__container,
+  .md3-text-field--glass-elevation-2:focus-within .md3-text-field__container {
+    @apply border-primary;
+  }
+
+  .md3-text-field__input {
+    @apply w-full
+      bg-transparent
+      border-none
+      outline-none
+      rounded-[inherit]
+      font-body
+      font-medium
+      placeholder:text-on-surface-variant
+      text-on-surface;
+  }
+
+  /* Toggle */
+
+  .md3-text-field__toggle {
+    padding-inline-end: var(--md3-icon-offset);
+
+    @apply absolute
+      bottom-0
+      right-0
+      top-0
+      flex
+      items-center
+      justify-center
+      bg-transparent
+      border-none
+      text-on-surface-variant
+      cursor-pointer
+      duration-short-3
+      ease-md3
+      transition-[color];
+  }
+
+  .md3-text-field:focus-within .md3-text-field__toggle {
+    @apply text-primary;
+  }
+
+  .md3-text-field--error .md3-text-field__toggle {
+    @apply text-error;
+  }
+
+  .md3-text-field__toggle-icon {
+    @apply shrink-0 pointer-events-none;
+  }
+
+  /* Icon sizes — via --md3-icon-size (inherited from size modifier) */
+
+  .md3-text-field__toggle-icon svg,
+  .md3-text-field__error-icon svg {
+    width: var(--md3-icon-size);
+    height: var(--md3-icon-size);
+  }
+
+  .md3-text-field--has-toggle .md3-text-field__input {
+    padding-right: var(--md3-input-pr);
+  }
+
+  .md3-text-field--glass-elevation-1 .md3-text-field__toggle {
+    @apply text-on-glass-elevation-1/70;
+  }
+
+  .md3-text-field--glass-elevation-2 .md3-text-field__toggle {
+    @apply text-on-glass-elevation-2/70;
+  }
+
+  /* Disabled */
+
+  .md3-text-field[data-state="disabled"] {
+    @apply opacity-50 cursor-not-allowed;
+  }
+
+  .md3-text-field[data-state="disabled"] .md3-text-field__input {
+    @apply cursor-not-allowed;
+  }
+
+  .md3-text-field--glass-elevation-2 .md3-text-field__input:-webkit-autofill,
+  .md3-text-field--glass-elevation-2 .md3-text-field__input:-webkit-autofill:focus,
+  .md3-text-field--glass-elevation-2 .md3-text-field__input:-webkit-autofill:active {
+    -webkit-text-fill-color: var(--color-on-glass-elevation-2) !important;
+    box-shadow: inset 0 0 0 1000px
+      color-mix(in oklch, var(--color-glass-elevation-2) 70%, transparent) !important;
+  }
+
+  .md3-text-field--glass-elevation-1 .md3-text-field__input:-webkit-autofill,
+  .md3-text-field--glass-elevation-1 .md3-text-field__input:-webkit-autofill:focus,
+  .md3-text-field--glass-elevation-1 .md3-text-field__input:-webkit-autofill:active {
+    -webkit-text-fill-color: var(--color-on-glass-elevation-1) !important;
+    box-shadow: inset 0 0 0 1000px
+      color-mix(in oklch, var(--color-glass-elevation-1) 70%, transparent) !important;
+  }
+
+  /* Autofill */
+
+  .md3-text-field__input:-webkit-autofill,
+  .md3-text-field__input:-webkit-autofill:focus,
+  .md3-text-field__input:-webkit-autofill:active {
+    -webkit-text-fill-color: var(--color-on-surface) !important;
+    box-shadow: inset 0 0 0 1000px var(--color-surface) !important;
+    transition: background-color 5000s ease-in-out 0s;
+  }
+
+  @media (hover: hover) {
+    .md3-text-field--glass-elevation-2 .md3-text-field__input:-webkit-autofill:hover {
+      -webkit-text-fill-color: var(--color-on-glass-elevation-2) !important;
+      box-shadow: inset 0 0 0 1000px
+        color-mix(in oklch, var(--color-glass-elevation-2) 70%, transparent) !important;
+    }
+  }
+
+  @media (hover: hover) {
+    .md3-text-field--glass-elevation-1 .md3-text-field__input:-webkit-autofill:hover {
+      -webkit-text-fill-color: var(--color-on-glass-elevation-1) !important;
+      box-shadow: inset 0 0 0 1000px
+        color-mix(in oklch, var(--color-glass-elevation-1) 70%, transparent) !important;
+    }
+  }
+
+  @media (hover: hover) {
+    .md3-text-field__input:-webkit-autofill:hover {
+      -webkit-text-fill-color: var(--color-on-surface) !important;
+      box-shadow: inset 0 0 0 1000px var(--color-surface) !important;
+      transition: background-color 5000s ease-in-out 0s;
+    }
+  }
+
+  @media (hover: hover) {
+    .md3-text-field--glass-elevation-2 .md3-text-field__toggle:hover {
+      @apply text-on-glass-elevation-2;
+    }
+  }
+
+  @media (hover: hover) {
+    .md3-text-field--glass-elevation-1 .md3-text-field__toggle:hover {
+      @apply text-on-glass-elevation-1;
+    }
+  }
+
+  @media (hover: hover) {
+    .md3-text-field__toggle:hover {
+      @apply text-on-surface;
+    }
+  }
+
+  @media (hover: hover) {
+    .md3-text-field:hover .md3-text-field__container {
+      @apply border-outline;
+    }
+  }
+}

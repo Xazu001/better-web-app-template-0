@@ -1,0 +1,240 @@
+@layer components {
+  .md3-segmented-button {
+    @apply inline-flex
+      overflow-hidden
+      border
+      border-outline
+      rounded-full
+      duration-medium-2
+      ease-md3
+      transition-all;
+  }
+
+  /* Sizes */
+
+  .md3-segmented-button--sm .md3-segmented-button__item {
+    @apply h-seg-btn-sm px-1 text-sm;
+  }
+
+  .md3-segmented-button--md .md3-segmented-button__item {
+    @apply h-seg-btn-md px-1 text-md;
+  }
+
+  .md3-segmented-button--lg .md3-segmented-button__item {
+    @apply h-seg-btn-lg px-2 text-lg;
+  }
+
+  /* Direction */
+
+  .md3-segmented-button--horizontal {
+    @apply flex-row;
+  }
+
+  .md3-segmented-button--vertical {
+    @apply flex-col;
+  }
+
+  /* Select mode */
+
+  .md3-segmented-button--single .md3-segmented-button__item:not(:first-child) {
+    @apply border-l border-outline;
+  }
+
+  .md3-segmented-button--multiple .md3-segmented-button__item:not(:first-child) {
+    @apply border-l border-outline;
+  }
+
+  .md3-segmented-button--vertical .md3-segmented-button__item:not(:first-child) {
+    @apply border-l-0 border-outline border-t;
+  }
+
+  /* Disabled */
+
+  .md3-segmented-button--disabled {
+    @apply opacity-50 cursor-not-allowed;
+  }
+
+  /* Item */
+
+  .md3-segmented-button__item {
+    @apply inline-flex
+      relative
+      items-center
+      justify-center
+      gap-2
+      h-seg-btn-md
+      px-1
+      bg-surface
+      font-body
+      font-medium
+      text-md
+      text-on-surface
+      select-none
+      duration-medium-2
+      ease-md3
+      transition-all
+      isolate;
+  }
+
+  .md3-segmented-button__item-ripple {
+    @apply absolute inset-0 z-below
+      overflow-hidden rounded-[inherit] pointer-events-none;
+  }
+
+  .md3-segmented-button__item-state-layer {
+    @apply absolute
+      inset-0
+      bg-current
+      rounded-[inherit]
+      opacity-0
+      pointer-events-none
+      transition-opacity;
+  }
+
+  .md3-segmented-button__item:focus-visible .md3-segmented-button__item-state-layer {
+    @apply opacity-[0.1];
+  }
+
+  .md3-segmented-button__item:active .md3-segmented-button__item-state-layer {
+    @apply opacity-[0.1];
+  }
+
+  /* Active */
+
+  .md3-segmented-button__item--active {
+    @apply bg-elevation-1 text-on-surface;
+  }
+
+  /* Disabled */
+
+  .md3-segmented-button__item--disabled {
+    @apply opacity-40 cursor-not-allowed;
+  }
+
+  /* Square */
+
+  .md3-segmented-button__item--square {
+    @apply gap-0 aspect-square p-0;
+  }
+
+  /* IconButton */
+
+  .md3-segmented-button__item--icon-button {
+    @apply gap-0 aspect-square p-0;
+  }
+
+  .md3-segmented-button--sm .md3-segmented-button__item--icon-button {
+    @apply h-seg-btn-sm;
+  }
+
+  .md3-segmented-button--md .md3-segmented-button__item--icon-button {
+    @apply h-seg-btn-md;
+  }
+
+  .md3-segmented-button--lg .md3-segmented-button__item--icon-button {
+    @apply h-seg-btn-lg;
+  }
+
+  .md3-segmented-button--sm .md3-segmented-button__item--square {
+    @apply h-seg-btn-sm;
+  }
+
+  .md3-segmented-button--md .md3-segmented-button__item--square {
+    @apply h-seg-btn-md;
+  }
+
+  .md3-segmented-button--lg .md3-segmented-button__item--square {
+    @apply h-seg-btn-lg;
+  }
+
+  /* Sub-elements */
+
+  .md3-segmented-button__item-icon {
+    @apply inline-flex items-center;
+  }
+
+  .md3-segmented-button__item-label {
+    @apply inline-flex items-center;
+  }
+
+  /* Nav */
+
+  .md3-segmented-button--nav {
+    @apply overflow-visible
+      flex-col
+      gap-1
+      w-full
+      bg-transparent
+      border-0
+      rounded-none;
+  }
+
+  .md3-segmented-button--nav.md3-segmented-button--single .md3-segmented-button__item,
+  .md3-segmented-button--nav.md3-segmented-button--multiple .md3-segmented-button__item {
+    @apply border-0;
+  }
+
+  .md3-segmented-button--nav .md3-segmented-button__item {
+    @apply relative
+      flex
+      justify-start
+      gap-2
+      h-auto
+      min-h-seg-btn-md
+      w-full
+      px-2
+      py-2
+      bg-transparent
+      rounded-full
+      text-on-surface;
+  }
+
+  .md3-segmented-button--nav .md3-segmented-button__item--active {
+    @apply bg-elevation-1;
+  }
+
+  .md3-segmented-button--nav .md3-segmented-button__item-icon {
+    @apply inline-flex
+      items-center
+      justify-center
+      aspect-square
+      p-1
+      bg-elevation-1
+      rounded-full
+      text-on-surface;
+  }
+
+  .md3-segmented-button--nav .md3-segmented-button__item-icon--primary {
+    @apply bg-primary text-on-primary-container;
+  }
+
+  .md3-segmented-button--nav .md3-segmented-button__item-icon--secondary {
+    @apply bg-secondary-container text-on-secondary-container;
+  }
+
+  .md3-segmented-button--nav .md3-segmented-button__item-icon--tertiary {
+    @apply bg-tertiary-container text-on-tertiary-container;
+  }
+
+  .md3-segmented-button--nav .md3-segmented-button__item-icon--error {
+    @apply bg-error-container text-on-error-container;
+  }
+
+  .md3-segmented-button--nav .md3-segmented-button__item-icon--success {
+    @apply bg-success-container text-on-success-container;
+  }
+
+  .md3-segmented-button--nav .md3-segmented-button__item-icon--warning {
+    @apply bg-warning-container text-on-warning-container;
+  }
+
+  .md3-segmented-button--nav .md3-segmented-button__item-icon--info {
+    @apply bg-info-container text-on-info-container;
+  }
+
+  @media (hover: hover) {
+    .md3-segmented-button__item:hover .md3-segmented-button__item-state-layer {
+      @apply opacity-[0.1];
+    }
+  }
+}

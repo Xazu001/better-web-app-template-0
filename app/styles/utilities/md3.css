@@ -1,0 +1,40 @@
+@utility state-layer {
+  position: relative;
+  isolation: isolate;
+}
+
+@utility ripple {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  pointer-events: none;
+}
+
+/* ── MD3 overlay primitives — reuse via @apply in component __ripple / __state-layer ── */
+
+@utility md3-ripple-surface {
+  position: absolute;
+  inset: 0;
+  z-index: var(--z-index-below);
+  overflow: hidden;
+  border-radius: inherit;
+  pointer-events: none;
+}
+
+@utility md3-state-layer {
+  position: absolute;
+  inset: 0;
+  background-color: currentcolor;
+  border-radius: inherit;
+  opacity: 0;
+  pointer-events: none;
+  transition-property: opacity;
+  transition-duration: var(--transition-duration-short-3);
+  transition-timing-function: var(--ease-md3);
+}
+
+/* ── MD3 elevation — bordered surface (elevation-1 + outline + radius) ── */
+
+@utility elevation-1-bordered {
+  @apply bg-elevation-1 border border-outline-variant rounded-xl;
+}

@@ -1,0 +1,1 @@
+ALTER TABLE `logins` ADD `login_verification_code_expires_on` integer;

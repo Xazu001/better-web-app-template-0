@@ -1,0 +1,41 @@
+@layer custom {
+  .skeleton {
+    @apply relative overflow-hidden bg-elevation-2;
+  }
+
+  .skeleton--default {
+    @apply rounded-lg;
+  }
+
+  .skeleton--circle {
+    @apply rounded-full;
+  }
+
+  .skeleton--text {
+    @apply rounded-full;
+  }
+
+  .skeleton--shimmer::after {
+    background: linear-gradient(
+      90deg,
+      transparent 0%,
+      color-mix(in oklch, var(--color-on-surface) 10%, transparent) 50%,
+      transparent 100%
+    );
+    content: "";
+    animation: skeleton-shimmer 1.5s ease-in-out infinite;
+    will-change: transform;
+
+    @apply absolute inset-0;
+  }
+}
+
+@keyframes skeleton-shimmer {
+  0% {
+    transform: translateX(-100%);
+  }
+
+  100% {
+    transform: translateX(100%);
+  }
+}

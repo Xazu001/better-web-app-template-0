@@ -1,0 +1,59 @@
+@layer components {
+  .form-field {
+    @apply relative flex flex-col gap-1 w-full;
+  }
+
+  .form-field__header {
+    @apply flex items-center justify-between gap-1;
+  }
+
+  .form-field__label {
+    @apply font-medium leading-snug text-on-surface text-sm;
+  }
+
+  .form-field__error {
+    @apply inline-flex
+      items-center
+      gap-1
+      text-right
+      text-error
+      text-sm;
+  }
+
+  .form-field__error-icon {
+    @apply shrink-0 text-error;
+  }
+
+  .form-field--lg .form-field__label,
+  .form-field--lg .form-field__error {
+    @apply text-md;
+  }
+
+  .form-field--sm.form-field--has-label {
+    @apply input-label-margin-sm;
+  }
+
+  .form-field--md.form-field--has-label {
+    @apply input-label-margin-md;
+  }
+
+  .form-field--lg.form-field--has-label {
+    @apply input-label-margin-lg;
+  }
+
+  .form-field--error .form-field__label {
+    @apply text-on-surface;
+  }
+
+  .form-field[data-state="disabled"] {
+    @apply opacity-50 cursor-not-allowed;
+  }
+
+  .form-field--glass-elevation-1 .form-field__label {
+    @apply text-on-glass-elevation-1;
+  }
+
+  .form-field--glass-elevation-2 .form-field__label {
+    @apply text-on-glass-elevation-2;
+  }
+}

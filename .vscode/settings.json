@@ -1,0 +1,47 @@
+{
+  "editor.fontSize": 12,
+  "css.validate": false,
+  "less.validate": false,
+  "files.associations": {
+    "*.css": "tailwindcss",
+    "wrangler.json": "jsonc"
+  },
+  "oxc.configPath": ".oxlintrc.json",
+  "oxc.fmt.configPath": ".oxfmtrc.json",
+  "oxc.path.oxlint": "node_modules/oxlint/bin/oxlint",
+  "oxc.path.oxfmt": "node_modules/oxfmt/bin/oxfmt",
+  "oxc.lint.run": "onSave",
+  "oxc.typeAware": false,
+  "oxc.disableNestedConfig": true,
+  "oxc.fmt.disableNestedConfig": true,
+  "editor.defaultFormatter": "oxc.oxc-vscode",
+  "editor.formatOnSaveMode": "file",
+  "editor.formatOnSave": true,
+  "editor.codeActionsOnSave": {},
+
+  "[css]": {
+    "editor.formatOnSave": false,
+    "editor.codeActionsOnSave": {}
+  },
+  "[tailwindcss]": {
+    "editor.formatOnSave": false,
+    "editor.codeActionsOnSave": {}
+  },
+
+  "[json]": {
+    "editor.defaultFormatter": "oxc.oxc-vscode"
+  },
+  "[jsonc]": {
+    "editor.defaultFormatter": "oxc.oxc-vscode"
+  },
+  "files.exclude": {
+    ".idea": true
+  },
+  "explorer.fileNesting.patterns": {
+    "tsconfig.json": "tsconfig.*.json, tsconfig.*.tsbuildinfo",
+    "*.tsx": "${capture}.css, ${capture}.*.tsx, ${capture}.*.css",
+    "wrangler.jsonc": "wrangler.*.jsonc",
+    "README.md": "README.*.md",
+    "drizzle.config.ts": "drizzle.config.*.ts"
+  }
+}

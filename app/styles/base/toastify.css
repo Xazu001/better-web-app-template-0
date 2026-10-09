@@ -1,0 +1,84 @@
+@layer overrides {
+  .Toastify__toast-container {
+    font-family: var(--font-body) !important;
+  }
+
+  .Toastify__toast {
+    display: flex !important;
+    position: relative !important;
+    overflow: hidden !important;
+    align-items: center !important;
+    gap: 0.75rem !important;
+    min-height: 6rem !important;
+    padding: 3rem 2rem !important;
+    background: var(--color-popover) !important;
+    color: var(--color-on-popover) !important;
+    border: 1px solid var(--color-outline-variant) !important;
+    border-radius: 1.25rem !important;
+    box-shadow: var(--shadow-lg) !important;
+    font-family: var(--font-body) !important;
+    font-size: var(--fluid-text-sm) !important;
+    line-height: 1.5 !important;
+  }
+
+  .Toastify__toast--default,
+  .Toastify__toast--dark {
+    background: var(--color-popover) !important;
+    color: var(--color-on-popover) !important;
+  }
+
+  .Toastify__toast--success {
+    color: var(--color-on-success-container) !important;
+  }
+
+  .Toastify__toast--success .Toastify__progress-bar {
+    background: var(--color-success) !important;
+  }
+
+  .Toastify__toast--error {
+    color: var(--color-on-error) !important;
+  }
+
+  .Toastify__toast--error .Toastify__progress-bar {
+    background: var(--color-error) !important;
+  }
+
+  .Toastify__toast--info {
+    background: var(--color-info-container) !important;
+    color: var(--color-on-info-container) !important;
+  }
+
+  .Toastify__toast--info .Toastify__progress-bar {
+    background: var(--color-info) !important;
+  }
+
+  .Toastify__toast--warning {
+    background: var(--color-warning-container) !important;
+    color: var(--color-on-warning-container) !important;
+  }
+
+  .Toastify__toast--warning .Toastify__progress-bar {
+    background: var(--color-warning) !important;
+  }
+
+  .Toastify__progress-bar {
+    height: 4px !important;
+    background: var(--color-primary) !important;
+    border-radius: var(--radius-full) !important;
+  }
+
+  .Toastify__close-button {
+    color: inherit !important;
+    opacity: 0.7 !important;
+  }
+
+  .Toastify__toast-icon svg {
+    fill: currentcolor !important;
+  }
+
+  @media (hover: hover) {
+    .Toastify__close-button:hover {
+      opacity: 1 !important;
+    }
+  }
+}

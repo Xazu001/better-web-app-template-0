@@ -1,0 +1,38 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: ./.github/actions/setup
+
+      - run: pnpm typecheck
+
+      - run: pnpm lint
+
+      - run: pnpm test
+
+      - run: pnpm check:docs
+
+  e2e:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: ./.github/actions/setup
+
+      # Local-only wrangler config (placeholder IDs) + JWT keys for the dev server
+      - run: cp wrangler.example.jsonc wrangler.jsonc
+
+      - run: pnpm gen:keys
+
+      - run: pnpm db:generate
+
+      - run: pnpm db:migrate:local
+
+      - run: pnpm exec playwright install --with-deps chromium
+
+      - run: pnpm test:e2e

@@ -1,0 +1,213 @@
+/**
+ * For more details on how to configure Wrangler, refer to:
+ * https://developers.cloudflare.com/workers/wrangler/configuration/
+ *
+ * Copy this file to `wrangler.jsonc` and replace the placeholder
+ * resource names/IDs with your own
+ * (see `wrangler d1 create`, `wrangler r2 bucket create`, `wrangler kv namespace create`,
+ * `wrangler queues create`, `wrangler r2 bucket create` etc.).
+ */
+{
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "compatibility_date": "2026-10-08",
+  "compatibility_flags": ["nodejs_compat"],
+  "name": "template",
+  "main": "./worker.ts",
+  // Required when your login has access to multiple Cloudflare accounts:
+  // "account_id": "00000000000000000000000000000000",
+  // Deploy fails until these secrets are set (`wrangler secret put …`).
+  "secrets": {
+    "required": ["JWT_PRIVATE_KEY", "JWT_PUBLIC_KEY", "PRIV_API_KEY"]
+  },
+  "observability": {
+    "enabled": true,
+    "traces": {
+      "enabled": true
+    }
+  },
+  // Atomic rate limiting — one RateLimiterDO instance per identifier+path key.
+  "durable_objects": {
+    "bindings": [
+      {
+        "name": "RATE_LIMITER",
+        "class_name": "RateLimiterDO"
+      }
+    ]
+  },
+  "migrations": [
+    {
+      "tag": "v1",
+      "new_sqlite_classes": ["RateLimiterDO"]
+    }
+  ],
+  "dev": {
+    "port": 5173
+  },
+  "d1_databases": [
+    {
+      "binding": "db",
+      "database_name": "template-db-dev",
+      "database_id": "00000000-0000-0000-0000-000000000000",
+      "migrations_dir": "drizzle",
+      "remote": false
+    }
+  ],
+  "r2_buckets": [
+    {
+      "binding": "r2",
+      "bucket_name": "template-r2-dev",
+      "remote": false
+    }
+  ],
+  "kv_namespaces": [
+    {
+      "id": "00000000000000000000000000000000",
+      "binding": "kv",
+      "remote": false
+    }
+  ],
+  "triggers": {
+    "crons": ["0 0 * * *"]
+  },
+  "queues": {
+    "producers": [
+      {
+        "binding": "QUEUE",
+        "queue": "template-queue-dev"
+      }
+    ],
+    "consumers": [
+      {
+        "queue": "template-queue-dev",
+        "max_batch_size": 10,
+        "dead_letter_queue": "template-queue-dev-dlq"
+      }
+    ]
+  },
+  "send_email": [
+    {
+      "name": "EMAIL",
+      "remote": false
+    }
+  ],
+  "assets": {
+    "binding": "ASSETS",
+    "directory": "public"
+  },
+  "env": {
+    "dev": {
+      "secrets": {
+        "required": ["JWT_PRIVATE_KEY", "JWT_PUBLIC_KEY", "PRIV_API_KEY"]
+      },
+      "durable_objects": {
+        "bindings": [
+          {
+            "name": "RATE_LIMITER",
+            "class_name": "RateLimiterDO"
+          }
+        ]
+      },
+      "d1_databases": [
+        {
+          "binding": "db",
+          "database_name": "template-db-dev",
+          "database_id": "00000000-0000-0000-0000-000000000000",
+          "migrations_dir": "drizzle",
+          "remote": true
+        }
+      ],
+      "r2_buckets": [
+        {
+          "binding": "r2",
+          "bucket_name": "template-r2-dev",
+          "remote": true
+        }
+      ],
+      "kv_namespaces": [
+        {
+          "id": "00000000000000000000000000000000",
+          "binding": "kv",
+          "remote": true
+        }
+      ],
+      "queues": {
+        "producers": [
+          {
+            "binding": "QUEUE",
+            "queue": "template-queue-dev"
+          }
+        ],
+        "consumers": [
+          {
+            "queue": "template-queue-dev",
+            "max_batch_size": 10,
+            "dead_letter_queue": "template-queue-dev-dlq"
+          }
+        ]
+      },
+      "send_email": [
+        {
+          "name": "EMAIL",
+          "remote": true
+        }
+      ]
+    },
+    "prod": {
+      "secrets": {
+        "required": ["JWT_PRIVATE_KEY", "JWT_PUBLIC_KEY", "PRIV_API_KEY"]
+      },
+      "durable_objects": {
+        "bindings": [
+          {
+            "name": "RATE_LIMITER",
+            "class_name": "RateLimiterDO"
+          }
+        ]
+      },
+      "d1_databases": [
+        {
+          "binding": "db",
+          "database_name": "template-db",
+          "database_id": "00000000-0000-0000-0000-000000000000",
+          "migrations_dir": "drizzle",
+          "remote": true
+        }
+      ],
+      "r2_buckets": [
+        {
+          "binding": "r2",
+          "bucket_name": "template-r2",
+          "remote": true
+        }
+      ],
+      "kv_namespaces": [
+        {
+          "id": "00000000000000000000000000000000",
+          "binding": "kv",
+          "remote": true
+        }
+      ],
+      "queues": {
+        "producers": [
+          {
+            "binding": "QUEUE",
+            "queue": "template-queue"
+          }
+        ],
+        "consumers": [
+          {
+            "queue": "template-queue",
+            "max_batch_size": 10,
+            "dead_letter_queue": "template-queue-dlq"
+          }
+        ]
+      },
+      "send_email": [
+        {
+          "name": "EMAIL",
+          "remote": true
+        }
+      ]
+    }
+  }
+}

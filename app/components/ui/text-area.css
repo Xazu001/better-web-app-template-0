@@ -1,0 +1,122 @@
+@layer components {
+  .md3-text-area {
+    @apply flex
+      flex-col
+      rounded-lg
+      font-body
+      text-md
+      text-on-surface
+      duration-short-3
+      ease-md3
+      transition-colors;
+  }
+
+  /* Sizes — no fixed height (textarea honors `rows`); only padding/text/x */
+
+  .md3-text-area--sm.md3-text-area--has-label {
+    @apply input-label-gap-sm input-label-margin-sm;
+  }
+
+  .md3-text-area--sm .md3-text-area__input {
+    @apply py-2 text-sm input-x-sm;
+  }
+
+  .md3-text-area--md.md3-text-area--has-label {
+    @apply input-label-gap-md input-label-margin-md;
+  }
+
+  .md3-text-area--md .md3-text-area__input {
+    @apply py-3 text-md input-x-md;
+  }
+
+  .md3-text-area--lg.md3-text-area--has-label {
+    @apply input-label-gap-lg input-label-margin-lg;
+  }
+
+  .md3-text-area--lg .md3-text-area__input {
+    @apply py-4 text-lg input-x-lg;
+  }
+
+  .md3-text-area__container {
+    @apply relative
+      overflow-hidden
+      flex
+      bg-surface
+      border
+      border-outline-variant
+      rounded-[inherit]
+      duration-short-3
+      ease-md3
+      transition-colors;
+  }
+
+  /* Focus */
+
+  .md3-text-area[data-state="focused"] .md3-text-area__container {
+    @apply border border-primary;
+  }
+
+  /* Disabled */
+
+  .md3-text-area[data-state="disabled"] .md3-text-area__container {
+    @apply border-outline-variant opacity-50 cursor-not-allowed;
+  }
+
+  .md3-text-area__input {
+    @apply flex-1
+      w-full
+      bg-transparent
+      outline-none
+      font-body
+      placeholder:text-on-surface-variant
+      text-on-surface
+      resize-y;
+  }
+
+  /* Label */
+
+  .md3-text-area__label {
+    @apply input-label;
+  }
+
+  .md3-text-area[data-state="focused"] .md3-text-area__label {
+    @apply text-primary;
+  }
+
+  .md3-text-area[data-state="error"] .md3-text-area__label {
+    @apply text-error;
+  }
+
+  /* Helper text */
+
+  .md3-text-area__helper {
+    @apply px-1
+      font-body
+      text-on-surface-variant
+      text-sm;
+  }
+
+  .md3-text-area__helper--error {
+    @apply text-error;
+  }
+
+  /* Error */
+
+  .md3-text-area[data-state="error"] .md3-text-area__container {
+    @apply border-error;
+  }
+
+  @media (hover: hover) {
+    .md3-text-area[data-state="error"] .md3-text-area__container:hover {
+      @apply border-error;
+    }
+  }
+
+  /* Hover */
+
+  @media (hover: hover) {
+    .md3-text-area__container:hover {
+      @apply border-outline;
+    }
+  }
+}

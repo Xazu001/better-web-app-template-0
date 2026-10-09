@@ -1,0 +1,12 @@
+User-agent: *
+Content-Signal: ai-train=yes, search=yes, ai-input=yes
+
+Disallow: /admin
+Disallow: /api
+Disallow: /kit/create
+Disallow: /kit/edit
+Disallow: /profile
+
+Allow: /
+
+Sitemap: https://play.crosspad.app/sitemap.xml

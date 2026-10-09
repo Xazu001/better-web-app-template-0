@@ -1,0 +1,87 @@
+@layer components {
+  /* ────────────────────────────────────────────────────────────
+   * md3-btn — UI size + color variant (theme tokens)
+   * Structure lives in app/styles/components/button.css.
+   * This file sets the `--btn-h-*` / `--btn-px-*` size custom props
+   * and the color variant backgrounds (`bg-* text-*` + `--ripple-color`).
+   * ──────────────────────────────────────────────────────────── */
+
+  .md3-btn {
+    --btn-h-sm: var(--height-btn-sm);
+    --btn-h-md: var(--height-btn-md);
+    --btn-h-lg: var(--height-btn-lg);
+    --btn-px-sm: calc(var(--spacing) * 2);
+    --btn-px-md: calc(var(--spacing) * 3);
+    --btn-px-lg: calc(var(--spacing) * 4);
+  }
+
+  /* ─── Variants — theme tokens ──────────────────────────────── */
+
+  .md3-btn--primary {
+    --ripple-color: var(--color-on-primary);
+
+    @apply bg-primary text-on-primary;
+  }
+
+  .md3-btn--transparent {
+    --ripple-color: var(--color-elevation-1);
+
+    @apply bg-transparent text-on-elevation-1;
+  }
+
+  .md3-btn--elevation-1 {
+    --ripple-color: var(--color-elevation-1);
+
+    @apply bg-elevation-1 text-on-elevation-1;
+  }
+
+  .md3-btn--elevation-2 {
+    --ripple-color: var(--color-elevation-2);
+
+    @apply bg-elevation-2 text-on-elevation-2;
+  }
+
+  .md3-btn--outline {
+    --ripple-color: var(--color-elevation-1);
+
+    @apply bg-transparent border border-outline text-on-surface;
+  }
+
+  .md3-btn--ghost {
+    --ripple-color: var(--color-on-ghost);
+
+    @apply bg-ghost text-on-ghost;
+  }
+
+  .md3-btn--error {
+    --ripple-color: var(--color-error);
+
+    @apply bg-error text-on-error;
+  }
+
+  .md3-btn--success {
+    --ripple-color: var(--color-success);
+
+    @apply bg-success text-on-success;
+  }
+
+  /* ─── Glass ────────────────────────────────────────────────── */
+
+  .md3-btn--glass-error {
+    --ripple-color: var(--color-on-glass-error);
+
+    background: color-mix(in oklch, var(--color-error) 20%, var(--color-glass));
+
+    @apply backdrop-blur-xl
+      border
+      border-error/40
+      text-on-glass-error;
+  }
+
+  /* ─── Active / Selected ─────────────────────────────────────── */
+
+  .md3-btn--active,
+  .md3-btn--selected {
+    @apply bg-primary text-on-primary;
+  }
+}

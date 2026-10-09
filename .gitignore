@@ -1,0 +1,22 @@
+.env
+.dev.vars
+wrangler.jsonc
+private/
+.DS_Store
+node_modules/
+.wrangler
+db-exports/
+worker-configuration.d.ts
+.secrets
+
+# React Router
+.react-router/
+.build/
+build/
+
+# TypeScript build info
+*.tsbuildinfo
+
+# Playwright
+test/results/
+test/report/

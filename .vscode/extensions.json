@@ -1,0 +1,8 @@
+{
+  "recommendations": [
+    "oxc.oxc-vscode",
+    "stylelint.vscode-stylelint",
+    "pranaygp.vscode-css-peek",
+    "bradlc.vscode-tailwindcss"
+  ]
+}

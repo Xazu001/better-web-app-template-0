@@ -1,0 +1,191 @@
+@layer components {
+  .md3-switch__wrapper {
+    @apply inline-flex items-center gap-2 cursor-pointer select-none;
+  }
+
+  .md3-switch {
+    --switch-w: var(--size-switch-md);
+    --switch-h: calc(var(--switch-w) * 8 / 13);
+    --switch-p: 0.25rem;
+    --switch-travel: calc(var(--switch-w) - var(--switch-h));
+    --ripple-color: var(--color-outline);
+
+    @apply inline-flex
+      relative
+      shrink-0
+      items-center
+      rounded-full
+      text-on-surface
+      cursor-pointer
+      select-none
+      duration-short-3
+      ease-md3
+      transition-colors
+      isolate;
+  }
+
+  /* Sizes — RIGHT after base */
+
+  .md3-switch--sm {
+    --switch-w: var(--size-switch-sm);
+    --switch-h: calc(var(--switch-w) * 8 / 13);
+    --switch-p: 0.2rem;
+  }
+
+  .md3-switch--md {
+    --switch-w: var(--size-switch-md);
+    --switch-h: calc(var(--switch-w) * 8 / 13);
+    --switch-p: 0.25rem;
+  }
+
+  .md3-switch--lg {
+    --switch-w: var(--size-switch-lg);
+    --switch-h: calc(var(--switch-w) * 8 / 13);
+    --switch-p: 0.3rem;
+  }
+
+  /* Sub-elements */
+
+  .md3-switch__track {
+    box-sizing: border-box;
+    width: var(--switch-w);
+    height: var(--switch-h);
+    padding: var(--switch-p);
+
+    @apply inline-flex
+      relative
+      overflow-hidden
+      shrink-0
+      items-center
+      bg-surface
+      border-2
+      border-outline
+      rounded-full
+      duration-short-3
+      ease-md3
+      transition-colors;
+  }
+
+  .md3-switch__ripple {
+    @apply md3-ripple-surface;
+  }
+
+  .md3-switch__state-layer {
+    @apply md3-state-layer;
+  }
+
+  .md3-switch__thumb {
+    box-sizing: border-box;
+    height: 100%;
+    aspect-ratio: 1;
+    transform: translateX(0);
+
+    @apply inline-flex
+      relative
+      z-raised
+      shrink-0
+      items-center
+      justify-center
+      bg-outline
+      rounded-full
+      duration-short-3
+      ease-md3
+      transition-all;
+  }
+
+  .md3-switch__icon {
+    width: 70%;
+    height: 70%;
+
+    @apply inline-flex
+      items-center
+      justify-center
+      text-surface
+      pointer-events-none;
+  }
+
+  .md3-switch__icon svg {
+    width: 100%;
+    height: 100%;
+  }
+
+  .md3-switch__label {
+    @apply font-body text-md text-on-surface;
+  }
+
+  /* State layer interactions */
+
+  .md3-switch:focus-visible .md3-switch__state-layer {
+    @apply opacity-[0.1];
+  }
+
+  .md3-switch:active .md3-switch__state-layer {
+    @apply opacity-[0.1];
+  }
+
+  /* Focus */
+
+  .md3-switch:focus-visible .md3-switch__track {
+    @apply border-primary;
+  }
+
+  /* Checked */
+
+  .md3-switch[data-state="checked"] {
+    --ripple-color: var(--color-on-primary);
+
+    @apply text-on-primary;
+  }
+
+  .md3-switch[data-state="checked"] .md3-switch__track {
+    @apply bg-primary border-primary;
+  }
+
+  .md3-switch[data-state="checked"] .md3-switch__thumb {
+    transform: translateX(var(--switch-travel));
+
+    @apply bg-on-primary;
+  }
+
+  .md3-switch[data-state="checked"] .md3-switch__icon--on {
+    @apply text-primary;
+  }
+
+  /* Disabled */
+
+  .md3-switch[data-state="disabled"],
+  .md3-switch--disabled {
+    @apply opacity-40 cursor-not-allowed pointer-events-none;
+  }
+
+  .md3-switch[data-state="disabled"] ~ .md3-switch__label {
+    @apply opacity-40 cursor-not-allowed;
+  }
+
+  @media (hover: hover) {
+    .md3-switch:hover .md3-switch__state-layer {
+      @apply opacity-[0.1];
+    }
+  }
+
+  /* Hover (interactive) */
+
+  @media (hover: hover) {
+    .md3-switch:not([data-state="checked"], [data-state="disabled"]):hover .md3-switch__track {
+      @apply border-outline;
+    }
+
+    .md3-switch:not([data-state="checked"], [data-state="disabled"]):hover .md3-switch__thumb {
+      @apply bg-on-surface-variant;
+    }
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .md3-switch,
+  .md3-switch__track,
+  .md3-switch__thumb,
+  .md3-switch__state-layer {
+    transition-duration: 0.01ms !important;
+  }
+}

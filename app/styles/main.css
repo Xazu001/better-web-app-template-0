@@ -1,0 +1,38 @@
+@layer reset, base, components, custom, routes, overrides;
+
+@import "tailwindcss";
+@import "./tailwind.css";
+
+@source not "../../scripts";
+@source not "../../test";
+@source not "../../drizzle";
+@source not "../../playwright-report";
+@source not "../../test-results";
+@source not "../../.agents";
+
+@import "./base/reset.css";
+@import "./base/scrollbar.css";
+@import "./base/toastify.css";
+@import "./utilities/layout.css";
+@import "./utilities/links.css";
+@import "./utilities/md3.css";
+@import "./utilities/form.css";
+@import "./utilities/theme.css";
+@import "./components/button.css";
+@import "./components/dialog.css";
+@import "./components/select.css";
+@import "../components/ui/alert.css";
+@import "../components/ui/button.css";
+@import "../components/ui/checkbox.css";
+@import "../components/ui/chip.css";
+@import "../components/ui/dialog.css";
+@import "../components/ui/file-input.css";
+@import "../components/ui/form-field.css";
+@import "../components/ui/icon.css";
+@import "../components/ui/menu.css";
+@import "../components/ui/segmented-button.css";
+@import "../components/ui/select.css";
+@import "../components/ui/skeleton.css";
+@import "../components/ui/switch.css";
+@import "../components/ui/text-area.css";
+@import "../components/ui/text-field.css";
