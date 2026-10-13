@@ -66,7 +66,7 @@ pnpm test        # vitest (unit)
 pnpm fmt && pnpm fmt:style   # formatting + class sorting, then re-check the diff
 ```
 
-- After route/service/DB changes: also run the `auto-test` skill (boots `pnpm dev`, watches for runtime errors).
+- After route/service/DB changes: also run the `auto-test` skill (boots `pnpm dev:local`, watches for runtime errors).
 - After UI changes: also run the `auto-test-browser` skill.
 - CI runs `typecheck + lint + test + check:docs` plus a separate `e2e` job (Playwright, local emulated bindings) — mirror it locally to avoid surprises (`.github/workflows/ci.yml`).
 
@@ -100,15 +100,15 @@ After trimming: `pnpm typecheck && pnpm lint && pnpm test` — delete tests that
 
 ## Setup (new project checklist)
 
-`pnpm bootstrap` automates the local steps below (install, wrangler.jsonc copy, `.dev.vars` + keys, typegen, migrations); `pnpm bootstrap --remote` also creates the Cloudflare resources and patches IDs into `wrangler.jsonc`. `pnpm check:setup` verifies the state anytime (`--strict` before deploying). Details: `README.md` § "Bootstrap & check:setup".
+`pnpm bootstrap` automates the local steps below (install, wrangler.jsonc copy, `.dev.vars` + keys, typegen, migrations); remote resources are provisioned explicitly via `pnpm cf:setup` (dry-run plan by default, `--apply` gated). `pnpm check:setup` verifies the state anytime (`--strict` before deploying). Details: `README.md` § "Bootstrap & check:setup".
 
 1. `pnpm install`
-2. Replace resource names/IDs in `wrangler.jsonc` (`wrangler d1 create`, `wrangler r2 bucket create`, `wrangler kv namespace create`, `wrangler queues create`)
+2. Provision owned CF resources: `pnpm cf:setup --account-id <ACCOUNT_ID>` (offline plan), `--apply` to create + write IDs into `wrangler.jsonc`; prod via `pnpm cf:setup:prod`
 3. Update `db:migrate` script names to match
 4. Set secrets: `wrangler secret put JWT_PRIVATE_KEY`, `JWT_PUBLIC_KEY`, `PRIV_API_KEY` (local keypair: `pnpm gen:keys`; manual openssl cmds in `.env.example`)
 5. Update `shared/constants/site.ts` (URLs, brand, contact email)
 6. `pnpm db:generate && pnpm db:migrate`
-7. `pnpm dev` → http://localhost:5173
+7. `pnpm dev:local` → http://localhost:5173
 8. Create an admin: register a user in the app, then `wrangler d1 execute template-db-dev --command "UPDATE user_rights SET user_admin = 1 WHERE user_id = '…'"`
 
 ## Formatting & Class Sorting

@@ -18,11 +18,13 @@ const getAppEnv = (): "local" | "dev" | "prod" => {
 export const APP_ENV = getAppEnv();
 
 type AppEnv = "local" | "dev" | "prod";
-type CloudflareEnv = "dev" | "prod";
+type CloudflareEnv = "local" | "dev" | "prod";
 
 const getCloudflareEnv = (): CloudflareEnv => {
   if (typeof process !== "undefined" && process.env.CLOUDFLARE_ENV) {
-    return process.env.CLOUDFLARE_ENV.toLowerCase() === "prod" ? "prod" : "dev";
+    const env = process.env.CLOUDFLARE_ENV.toLowerCase();
+    if (env === "local" || env === "dev" || env === "prod") return env;
+    return "dev";
   }
   try {
     return __CLOUDFLARE_ENV__;
@@ -32,6 +34,16 @@ const getCloudflareEnv = (): CloudflareEnv => {
 };
 
 export const CLOUDFLARE_ENV = getCloudflareEnv();
+
+const getLocalBindings = (): boolean => {
+  try {
+    return __LOCAL_BINDINGS__;
+  } catch {
+    return false;
+  }
+};
+
+export const LOCAL_BINDINGS = getLocalBindings();
 
 /**
  * Site URLs per environment — replace with your deployment domains.
@@ -49,6 +61,7 @@ export const SITE_URL = siteUrlMap[APP_ENV];
 // so `dev:prod` (APP_ENV=local + CLOUDFLARE_ENV=prod) serves prod media while
 // keeping localhost auth/cookies intact.
 const r2UrlMap: Record<CloudflareEnv, string> = {
+  local: "http://localhost:5173/api/_dev/r2",
   dev: "https://r2-dev.example.com",
   prod: "https://r2.example.com"
 };

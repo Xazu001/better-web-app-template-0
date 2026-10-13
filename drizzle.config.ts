@@ -12,7 +12,17 @@ type D1Credentials = {
   token: string;
 };
 
-export const createConfig = (dbCredentials: D1Credentials) =>
-  defineConfig({ ...baseConfig, driver: "d1-http", dbCredentials });
+const outDir = { dev: "./drizzle", prod: "./drizzle-prod" } as const;
+
+export const createConfig = (
+  dbCredentials: D1Credentials,
+  env: "dev" | "prod" = "dev"
+) =>
+  defineConfig({
+    ...baseConfig,
+    out: outDir[env],
+    driver: "d1-http",
+    dbCredentials
+  });
 
 export default defineConfig(baseConfig);

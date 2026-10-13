@@ -1,5 +1,4 @@
 /**
- * Patches real resource IDs into `wrangler.jsonc` — used by `pnpm bootstrap --remote`.
  *
  * Edits are computed on the JSONC AST (jsonc-parser) instead of naive string
  * replacement: comments (e.g. the commented-out `account_id` placeholder) are
@@ -40,6 +39,7 @@ export function applyWranglerIds(text: string, ids: WranglerIds): string {
     if (!id) continue;
     for (const arrayPath of [
       ["d1_databases"],
+      ["env", "local", "d1_databases"],
       ["env", "dev", "d1_databases"],
       ["env", "prod", "d1_databases"]
     ]) {
@@ -50,10 +50,9 @@ export function applyWranglerIds(text: string, ids: WranglerIds): string {
     }
   }
 
-  // KV — bindings carry no name, so patch by environment: top-level and
-  // env.dev share the dev namespace, env.prod is separate.
   const kvTargets: Array<[JSONPath, string | null]> = [
     [["kv_namespaces"], ids.kv.dev],
+    [["env", "local", "kv_namespaces"], ids.kv.dev],
     [["env", "dev", "kv_namespaces"], ids.kv.dev],
     [["env", "prod", "kv_namespaces"], ids.kv.prod]
   ];

@@ -13,8 +13,9 @@ export default defineConfig({
   define: {
     __IS_DEV__: "true",
     __APP_ENV__: '"local"',
-    __CLOUDFLARE_ENV__: '"dev"',
-    __DEV_SERVER__: "false"
+    __CLOUDFLARE_ENV__: '"local"',
+    __DEV_SERVER__: "false",
+    __LOCAL_BINDINGS__: "true"
   },
   test: {
     environment: "jsdom",

@@ -2,10 +2,20 @@ import { Hono } from "hono";
 
 import { getAllCronHandlers, getCronHandlers } from "$/cloudflare/crons";
 
+import { APP_ENV, LOCAL_BINDINGS } from "@/constants";
+
 import type { Services } from "$/core";
 import type { Env } from "../setup";
 
 const dev = new Hono<{ Bindings: Env; Variables: { services: Services } }>();
+
+dev.use(async (c, next) => {
+  if (!LOCAL_BINDINGS || APP_ENV !== "local") {
+    return c.json({ error: "not found" }, 404);
+  }
+  await next();
+});
+
 dev.get("/cron", async (c) => {
   const isDev = __IS_DEV__;
 
@@ -72,6 +82,30 @@ dev.get("/cron", async (c) => {
     message: `Executed ${cronHandlers.length} handler(s) - check console for logs`,
     results
   });
+});
+
+dev.get("/r2/*", async (c) => {
+  const path = new URL(c.req.url).pathname;
+  const marker = "/r2/";
+  const start = path.indexOf(marker);
+  const rawKey = start === -1 ? "" : path.slice(start + marker.length);
+  let key: string;
+  try {
+    key = decodeURIComponent(rawKey);
+  } catch {
+    return c.json({ error: "invalid key encoding" }, 400);
+  }
+  if (!key || key.includes("..")) {
+    return c.json({ error: "invalid key" }, 400);
+  }
+  const object = await c.env.r2.get(key);
+  if (!object) {
+    return c.json({ error: "not found" }, 404);
+  }
+  const headers = new Headers();
+  object.writeHttpMetadata(headers);
+  headers.set("ETag", object.httpEtag);
+  return new Response(object.body, { headers });
 });
 
 export default dev;

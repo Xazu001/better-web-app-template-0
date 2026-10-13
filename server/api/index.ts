@@ -3,11 +3,13 @@ import { Hono } from "hono";
 import devApi from "./dev";
 import mailPreviews from "./mail-previews";
 import privApi from "./priv";
+import { APP_ENV } from "@/constants";
 
 import type { Services } from "$/core";
 import type { Env } from "../setup";
 
 declare const __DEV_SERVER__: boolean;
+declare const __LOCAL_BINDINGS__: boolean;
 
 const api = new Hono<{ Bindings: Env; Variables: { services: Services } }>();
 
@@ -21,6 +23,8 @@ api.route("/priv", privApi);
 // stays as defense-in-depth.
 if (__DEV_SERVER__) {
   api.route("/mail-previews", mailPreviews);
+}
+if (__DEV_SERVER__ && __LOCAL_BINDINGS__ && APP_ENV === "local") {
   api.route("/_dev", devApi);
 }
 

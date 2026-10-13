@@ -8,13 +8,16 @@
     "server/**/*",
     "shared/**/*",
     "scripts/lib/**/*",
+    "scripts/provision.ts",
     "test/**/*",
     "worker-configuration.d.ts",
     "worker.ts",
-    "vite-env.d.ts"
+    "vite-env.d.ts",
+    "vite-preflight.ts"
   ],
   "compilerOptions": {
     "composite": true,
+    "allowImportingTsExtensions": true,
     "strict": true,
     "lib": ["DOM", "DOM.Iterable", "ES2022"],
     "target": "ES2022",

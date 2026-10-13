@@ -95,7 +95,67 @@
     "directory": "public"
   },
   "env": {
+    "local": {
+      "name": "template-local",
+      "secrets": {
+        "required": ["JWT_PRIVATE_KEY", "JWT_PUBLIC_KEY", "PRIV_API_KEY"]
+      },
+      "durable_objects": {
+        "bindings": [
+          {
+            "name": "RATE_LIMITER",
+            "class_name": "RateLimiterDO"
+          }
+        ]
+      },
+      "d1_databases": [
+        {
+          "binding": "db",
+          "database_name": "template-db-dev",
+          "database_id": "00000000-0000-0000-0000-000000000000",
+          "migrations_dir": "drizzle",
+          "remote": false
+        }
+      ],
+      "r2_buckets": [
+        {
+          "binding": "r2",
+          "bucket_name": "template-r2-dev",
+          "remote": false
+        }
+      ],
+      "kv_namespaces": [
+        {
+          "id": "00000000000000000000000000000000",
+          "binding": "kv",
+          "remote": false
+        }
+      ],
+      "queues": {
+        "producers": [
+          {
+            "binding": "QUEUE",
+            "queue": "template-queue-dev",
+            "remote": false
+          }
+        ],
+        "consumers": [
+          {
+            "queue": "template-queue-dev",
+            "max_batch_size": 10,
+            "dead_letter_queue": "template-queue-dev-dlq"
+          }
+        ]
+      },
+      "send_email": [
+        {
+          "name": "EMAIL",
+          "remote": false
+        }
+      ]
+    },
     "dev": {
+      "name": "template-dev",
       "secrets": {
         "required": ["JWT_PRIVATE_KEY", "JWT_PUBLIC_KEY", "PRIV_API_KEY"]
       },
@@ -134,7 +194,8 @@
         "producers": [
           {
             "binding": "QUEUE",
-            "queue": "template-queue-dev"
+            "queue": "template-queue-dev",
+            "remote": true
           }
         ],
         "consumers": [
@@ -153,6 +214,7 @@
       ]
     },
     "prod": {
+      "name": "template",
       "secrets": {
         "required": ["JWT_PRIVATE_KEY", "JWT_PUBLIC_KEY", "PRIV_API_KEY"]
       },
@@ -169,7 +231,7 @@
           "binding": "db",
           "database_name": "template-db",
           "database_id": "00000000-0000-0000-0000-000000000000",
-          "migrations_dir": "drizzle",
+          "migrations_dir": "drizzle-prod",
           "remote": true
         }
       ],
@@ -191,7 +253,8 @@
         "producers": [
           {
             "binding": "QUEUE",
-            "queue": "template-queue"
+            "queue": "template-queue",
+            "remote": true
           }
         ],
         "consumers": [

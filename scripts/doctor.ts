@@ -1,13 +1,13 @@
 /**
- * `pnpm check:setup` — read-only health check of the template setup state.
  *
- * FAIL = local dev is broken (fix before `pnpm dev`).
- * WARN = only needed for remote dev/prod (deploy, dev:wrangler).
  * `--strict` — treat warnings as failures (useful before deploying).
  *
  * Exit code: 0 = all good, 1 = failures (or warnings with --strict).
  */
 import { existsSync, readdirSync, readFileSync } from "node:fs";
+import { parseEnv } from "node:util";
+
+import { parse as parseJsonc, type ParseError } from "jsonc-parser";
 
 type CheckStatus = "ok" | "warn" | "FAIL";
 
@@ -30,94 +30,175 @@ function check(name: string, status: CheckStatus, hint: string | null = null): v
 const failIf = (bad: boolean, name: string, hint: string): void =>
   check(name, bad ? "FAIL" : "ok", bad ? hint : null);
 
-// 1. Dependencies
+const envArgIndex = process.argv.indexOf("--env");
+if (envArgIndex !== -1 && !process.argv[envArgIndex + 1]) {
+  console.error("doctor: --env requires a value (local, dev or prod)");
+  process.exit(1);
+}
+const selectedEnv = envArgIndex !== -1 ? process.argv[envArgIndex + 1] : "local";
+if (!["local", "dev", "prod"].includes(selectedEnv)) {
+  console.error(`doctor: invalid --env "${selectedEnv}" — expected local, dev or prod`);
+  process.exit(1);
+}
+const remoteEnv = selectedEnv === "dev" || selectedEnv === "prod" ? selectedEnv : null;
+
+const PLACEHOLDER_ID = /^0{8}-0{4}-0{4}-0{4}-0{12}$|^0{32}$/;
+const ID_RE = /^[0-9a-f-]{32,36}$/i;
+const wranglerConfig = (() => {
+  if (!existsSync("wrangler.jsonc")) return undefined;
+  const errors: ParseError[] = [];
+  const cfg = parseJsonc(readFileSync("wrangler.jsonc", "utf8"), errors) as
+    | Record<string, unknown>
+    | undefined;
+  return errors.length > 0 ? null : cfg;
+})();
+
 failIf(
   !existsSync("node_modules"),
   "Dependencies installed",
   `run \`${pm} install\` (or \`${pm} run bootstrap\`)`
 );
-
-// 2. Wrangler config
 failIf(
-  !existsSync("wrangler.jsonc"),
+  wranglerConfig === undefined,
   "wrangler.jsonc exists",
   `run \`cp wrangler.example.jsonc wrangler.jsonc\` (or \`${pm} run bootstrap\`)`
 );
-
-// 3. Local secrets + JWT keys
-const devVars = existsSync(".dev.vars") ? readFileSync(".dev.vars", "utf8") : "";
 failIf(
-  !existsSync(".dev.vars"),
-  ".dev.vars exists",
-  `run \`cp .dev.vars.example .dev.vars\` (or \`${pm} run bootstrap\`)`
-);
-failIf(
-  !/^JWT_PRIVATE_KEY=\S/m.test(devVars) || !/^JWT_PUBLIC_KEY=\S/m.test(devVars),
-  "JWT keypair in .dev.vars",
-  `run \`${pm} run gen:keys\``
+  wranglerConfig === null,
+  "wrangler.jsonc parses",
+  "wrangler.jsonc has JSONC parse errors — fix before anything else"
 );
 
-// 4. Migrations generated from Drizzle schema
-const hasMigrations =
-  existsSync("drizzle") && readdirSync("drizzle").some((f) => f.endsWith(".sql"));
-failIf(!hasMigrations, "D1 migrations generated", `run \`${pm} run db:generate\``);
-
-// 5. Local D1 state (migrations applied to the emulated database)
-failIf(
-  !existsSync(".wrangler/state/v3/d1"),
-  "Local D1 migrated",
-  `run \`${pm} run db:migrate:local\``
-);
-
-// 6. Generated types (postinstall normally creates these)
-failIf(
-  !existsSync("worker-configuration.d.ts"),
-  "Worker types generated",
-  `run \`${pm} run typegen\``
-);
-
-// --- warnings: only relevant for remote dev/prod ---------------------------
-const config = existsSync("wrangler.jsonc") ? readFileSync("wrangler.jsonc", "utf8") : "";
-if (
-  config.includes("00000000-0000-0000-0000-000000000000") ||
-  config.includes("00000000000000000000000000000000")
-) {
-  check(
-    "Real resource IDs in wrangler.jsonc",
-    "warn",
-    `placeholder IDs remain — needed for \`dev:wrangler\`/deploy (\`${pm} run bootstrap --remote\` or manual)`
+if (selectedEnv === "local") {
+  const devVarsText = existsSync(".dev.vars") ? readFileSync(".dev.vars", "utf8") : "";
+  const devVars = existsSync(".dev.vars") ? parseEnv(devVarsText) : {};
+  failIf(
+    !existsSync(".dev.vars"),
+    ".dev.vars exists",
+    `run \`cp .dev.vars.example .dev.vars\` (or \`${pm} run bootstrap\`)`
   );
-}
-if (
-  existsSync("shared/constants/site.ts") &&
-  readFileSync("shared/constants/site.ts", "utf8").includes("example.com")
-) {
-  check(
-    "site.ts domains updated",
-    "warn",
-    "example.com placeholders remain in shared/constants/site.ts — update before deploying"
+  failIf(
+    !devVars.JWT_PRIVATE_KEY || !devVars.JWT_PUBLIC_KEY,
+    "JWT keypair in .dev.vars",
+    `run \`${pm} run gen:keys\``
   );
-}
-if (
-  existsSync("wrangler.jsonc") &&
-  !readFileSync("wrangler.jsonc", "utf8").includes('"RATE_LIMITER"')
-) {
-  check(
-    "RATE_LIMITER Durable Object binding in wrangler.jsonc",
-    "warn",
-    "binding missing — rate limiting is a no-op; copy it from wrangler.example.jsonc (bindings + migrations)"
+  failIf(
+    !existsSync("drizzle") ||
+      !readdirSync("drizzle").some((f) => f.endsWith(".sql")),
+    "D1 migrations generated",
+    `run \`${pm} run db:generate\``
   );
-}
-const env = existsSync(".env") ? readFileSync(".env", "utf8") : "";
-if (!/^CLOUDFLARE_ACCOUNT_ID=\S/m.test(env)) {
-  check(
-    "CLOUDFLARE_ACCOUNT_ID in .env",
-    "warn",
-    "needed for remote drizzle-kit/wrangler ops (deploy, db:migrate)"
+  failIf(
+    !existsSync(".wrangler/state/v3/d1"),
+    "Local D1 state exists",
+    `local migrations not yet applied — run \`${pm} run db:migrate:local\``
   );
+  failIf(
+    !existsSync("worker-configuration.d.ts"),
+    "Worker types generated",
+    `run \`${pm} run typegen\``
+  );
+  if (
+    existsSync("shared/constants/site.ts") &&
+    readFileSync("shared/constants/site.ts", "utf8").includes("example.com")
+  ) {
+    check(
+      "site.ts domains updated",
+      "warn",
+      "example.com placeholders remain in shared/constants/site.ts — update before deploying"
+    );
+  }
+  if (
+    typeof wranglerConfig === "object" &&
+    wranglerConfig !== null &&
+    !JSON.stringify(wranglerConfig).includes('"RATE_LIMITER"')
+  ) {
+    check(
+      "RATE_LIMITER Durable Object binding in wrangler.jsonc",
+      "warn",
+      "binding missing — rate limiting is a no-op; copy it from wrangler.example.jsonc (bindings + migrations)"
+    );
+  }
 }
 
-// --- report -----------------------------------------------------------------
+if (remoteEnv && wranglerConfig && typeof wranglerConfig === "object") {
+  const envCfg = (wranglerConfig.env as Record<string, unknown> | undefined)?.[
+    remoteEnv
+  ] as Record<string, unknown> | undefined;
+  const secretsFile = remoteEnv === "prod" ? ".dev.vars.prod" : ".dev.vars";
+  if (!envCfg) {
+    check(
+      `wrangler.jsonc env.${remoteEnv} defined`,
+      "FAIL",
+      `no env.${remoteEnv} block found`
+    );
+  } else {
+    const ownedD1 = (
+      (envCfg.d1_databases as { binding?: string; database_id?: string }[]) ?? []
+    ).filter((d) => d.binding === "db");
+    const kv = (envCfg.kv_namespaces as { binding?: string; id?: string }[]) ?? [];
+    const problems: string[] = [];
+    for (const d of ownedD1) {
+      if (!d.database_id || PLACEHOLDER_ID.test(d.database_id)) {
+        problems.push(`d1:${d.binding} placeholder/missing id`);
+      } else if (!ID_RE.test(d.database_id)) {
+        problems.push(`d1:${d.binding} malformed id`);
+      }
+    }
+    for (const k of kv) {
+      if (!k.id || PLACEHOLDER_ID.test(k.id)) {
+        problems.push(`kv:${k.binding} placeholder/missing id`);
+      } else if (!ID_RE.test(k.id)) {
+        problems.push(`kv:${k.binding} malformed id`);
+      }
+    }
+    check(
+      `Real resource IDs in wrangler.jsonc env.${remoteEnv}`,
+      problems.length === 0 ? "ok" : "warn",
+      problems.length === 0
+        ? null
+        : `${problems.join(", ")} — provision with \`${pm} run cf:setup\` or set real resource IDs manually`
+    );
+  }
+  const requiredSecrets =
+    ((envCfg?.secrets as { required?: string[] } | undefined)?.required ??
+      (wranglerConfig.secrets as { required?: string[] } | undefined)?.required) ??
+    ["JWT_PRIVATE_KEY", "JWT_PUBLIC_KEY", "PRIV_API_KEY"];
+  const secrets = existsSync(secretsFile) ? parseEnv(readFileSync(secretsFile, "utf8")) : {};
+  const missing = requiredSecrets.filter((k) => !secrets[k]);
+  check(
+    `Required secrets present in ${secretsFile}`,
+    missing.length === 0 ? "ok" : "warn",
+    missing.length === 0
+      ? null
+      : `missing: ${missing.join(", ")} — ${secretsFile} backs \`pnpm dev${remoteEnv === "prod" ? ":prod" : ""}\` local serves only; deployed secrets are set via \`wrangler secret put\` and are not verified here`
+  );
+  const ownedDbEntry = (
+    (envCfg?.d1_databases as { binding?: string; migrations_dir?: string }[]) ?? []
+  ).find((d) => d.binding === "db");
+  const migDir =
+    ownedDbEntry?.migrations_dir ??
+    ((wranglerConfig.d1_databases as { binding?: string; migrations_dir?: string }[]) ?? []).find(
+      (d) => d.binding === "db"
+    )?.migrations_dir;
+  check(
+    `env.${remoteEnv} migrations_dir exists`,
+    migDir && existsSync(migDir) ? "ok" : "warn",
+    `expected ${migDir ?? "(unset)"} — prod uses the separate drizzle-prod history; generate via \`${pm} run db:generate${remoteEnv === "prod" ? ":prod" : ""}\``
+  );
+  const dotEnv = existsSync(".env") ? parseEnv(readFileSync(".env", "utf8")) : {};
+  const accountId =
+    process.env.CLOUDFLARE_ACCOUNT_ID ??
+    dotEnv.CLOUDFLARE_ACCOUNT_ID ??
+    (envCfg?.account_id as string | undefined) ??
+    (wranglerConfig.account_id as string | undefined);
+  check(
+    "Cloudflare account ID configured",
+    accountId && /^[0-9a-f]{32}$/i.test(accountId) ? "ok" : "warn",
+    `needed for remote ops (deploy, db:migrate, cf:setup) — set account_id in wrangler.jsonc env.${remoteEnv}, CLOUDFLARE_ACCOUNT_ID in .env, or pass --account-id`
+  );
+}
+
 const icon: Record<CheckStatus, string> = { ok: "✓", warn: "!", FAIL: "✗" };
 for (const { name, status, hint } of results) {
   const line = `  [${icon[status]}] ${name}`;
@@ -133,5 +214,5 @@ if (failed.length > 0 || (strict && warned.length > 0)) {
   process.exit(1);
 }
 console.log(
-  `\ndoctor: ${results.length - warned.length - failed.length} ok, ${warned.length} warning(s) — ${strict ? "strict mode" : "local dev ready"}`
+  `\ndoctor: ${results.length - warned.length - failed.length} ok, ${warned.length} warning(s) — ${strict ? "strict mode" : remoteEnv ? `env.${remoteEnv} checked (static)` : "local dev ready"}`
 );

@@ -6,14 +6,11 @@ import babel from "@rolldown/plugin-babel";
 import tailwindcss from "@tailwindcss/vite";
 import { defineConfig } from "vite";
 
+import { resolveCloudflareEnv } from "./vite-preflight.ts";
+
 type AppEnv = "local" | "dev" | "prod";
-type CloudflareEnv = "dev" | "prod";
 
 const APP_ENV_VALUES: AppEnv[] = ["local", "dev", "prod"];
-
-function resolveCloudflareEnv(): CloudflareEnv {
-  return (process.env.CLOUDFLARE_ENV ?? "dev").toLowerCase() === "prod" ? "prod" : "dev";
-}
 
 function resolveAppEnv(command: "serve" | "build"): AppEnv {
   const rawAppEnv = (process.env.APP_ENV ?? "").toLowerCase();
@@ -23,7 +20,7 @@ function resolveAppEnv(command: "serve" | "build"): AppEnv {
   }
 
   // Fall back to CLOUDFLARE_ENV when APP_ENV is not set explicitly
-  if (resolveCloudflareEnv() === "prod") return "prod";
+  if (resolveCloudflareEnv(command) === "prod") return "prod";
   if (command === "serve") return "local";
   return "dev";
 }
@@ -37,8 +34,10 @@ interface WSErrorData {
 
 export default defineConfig(({ command }) => {
   const appEnv = resolveAppEnv(command);
-  const cloudflareEnv = resolveCloudflareEnv();
+  const cloudflareEnv = resolveCloudflareEnv(command);
   const isDevEnv = appEnv !== "prod";
+
+  const localBindings = command === "serve" && cloudflareEnv === "local";
 
   return {
     define: {
@@ -46,12 +45,14 @@ export default defineConfig(({ command }) => {
       __IS_DEV__: JSON.stringify(isDevEnv),
       __APP_ENV__: JSON.stringify(appEnv),
       __CLOUDFLARE_ENV__: JSON.stringify(cloudflareEnv),
-      __DEV_SERVER__: JSON.stringify(command === "serve")
+      __DEV_SERVER__: JSON.stringify(command === "serve"),
+      __LOCAL_BINDINGS__: JSON.stringify(localBindings)
     },
     plugins: [
       tailwindcss(),
       cloudflare({
-        viteEnvironment: { name: "ssr" }
+        viteEnvironment: { name: "ssr" },
+        remoteBindings: cloudflareEnv !== "local"
       }),
       reactRouter(),
       ...(command === "build" && appEnv === "prod"
@@ -69,6 +70,7 @@ export default defineConfig(({ command }) => {
     server: {
       host: "0.0.0.0",
       port: 5173,
+      strictPort: true,
       hmr: {
         overlay: true
       },
