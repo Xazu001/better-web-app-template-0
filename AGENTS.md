@@ -100,14 +100,14 @@ After trimming: `pnpm typecheck && pnpm lint && pnpm test` — delete tests that
 
 ## Setup (new project checklist)
 
-`pnpm bootstrap` automates the local steps below (install, wrangler.jsonc copy, `.dev.vars` + keys, typegen, migrations); remote resources are provisioned explicitly via `pnpm cf:setup` (dry-run plan by default, `--apply` gated). `pnpm check:setup` verifies the state anytime (`--strict` before deploying). Details: `README.md` § "Bootstrap & check:setup".
+`pnpm bootstrap` automates the local steps below (install, wrangler.jsonc copy, `pnpm env:init`, typegen, migrations); remote resources are provisioned explicitly via `pnpm cf:setup` (dry-run plan by default, `--apply` gated). `pnpm check:setup` verifies the state anytime (`--strict` before deploying). Details: `README.md` § "Bootstrap & check:setup".
 
-Tooling credentials are optional with `wrangler login`; `pnpm bootstrap` copies `.env.example` to `.env` when available.
+`.dev.vars.example` and `.env.example` are generated from `scripts/lib/env-manifest.ts`; edit the manifest and run `pnpm env:examples` rather than editing examples by hand. Tooling credentials are optional with `wrangler login`.
 
 1. `pnpm install`
 2. Provision owned CF resources: `pnpm cf:setup --account-id <ACCOUNT_ID>` (offline plan), `--apply` to create + write IDs into `wrangler.jsonc`; prod via `pnpm cf:setup:prod`
 3. Update `db:migrate` script names to match
-4. Set secrets: `wrangler secret put JWT_PRIVATE_KEY`, `JWT_PUBLIC_KEY`, `PRIV_API_KEY` (local pair: `pnpm gen:keys`; copy `.dev.vars` to `.dev.vars.prod` and generate a distinct prod pair with `pnpm gen:keys .dev.vars.prod`)
+4. Create local env files with `pnpm env:init`; set deployed secrets with `wrangler secret put JWT_PRIVATE_KEY`, `JWT_PUBLIC_KEY`, and `PRIV_API_KEY`. Rotate keys with `pnpm gen:keys [file]`; use a distinct JWT pair per environment and never reuse local keys on prod.
 5. Update `shared/constants/site.ts` (URLs, brand, contact email)
 6. `pnpm db:generate && pnpm db:migrate`
 7. `pnpm dev:local` → http://localhost:5173

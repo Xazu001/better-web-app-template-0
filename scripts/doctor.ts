@@ -75,7 +75,7 @@ if (selectedEnv === "local") {
   failIf(
     !existsSync(".dev.vars"),
     ".dev.vars exists",
-    `run \`cp .dev.vars.example .dev.vars\` (or \`${pm} run bootstrap\`)`
+    `run \`${pm} run env:init\` (or \`${pm} run bootstrap\`)`
   );
   failIf(
     !devVars.JWT_PRIVATE_KEY || !devVars.JWT_PUBLIC_KEY,
@@ -83,8 +83,7 @@ if (selectedEnv === "local") {
     `run \`${pm} run gen:keys\``
   );
   failIf(
-    !existsSync("drizzle") ||
-      !readdirSync("drizzle").some((f) => f.endsWith(".sql")),
+    !existsSync("drizzle") || !readdirSync("drizzle").some((f) => f.endsWith(".sql")),
     "D1 migrations generated",
     `run \`${pm} run db:generate\``
   );
@@ -122,16 +121,12 @@ if (selectedEnv === "local") {
 }
 
 if (remoteEnv && wranglerConfig && typeof wranglerConfig === "object") {
-  const envCfg = (wranglerConfig.env as Record<string, unknown> | undefined)?.[
-    remoteEnv
-  ] as Record<string, unknown> | undefined;
+  const envCfg = (wranglerConfig.env as Record<string, unknown> | undefined)?.[remoteEnv] as
+    | Record<string, unknown>
+    | undefined;
   const secretsFile = remoteEnv === "prod" ? ".dev.vars.prod" : ".dev.vars";
   if (!envCfg) {
-    check(
-      `wrangler.jsonc env.${remoteEnv} defined`,
-      "FAIL",
-      `no env.${remoteEnv} block found`
-    );
+    check(`wrangler.jsonc env.${remoteEnv} defined`, "FAIL", `no env.${remoteEnv} block found`);
   } else {
     const ownedD1 = (
       (envCfg.d1_databases as { binding?: string; database_id?: string }[]) ?? []
@@ -160,10 +155,12 @@ if (remoteEnv && wranglerConfig && typeof wranglerConfig === "object") {
         : `${problems.join(", ")} — provision with \`${pm} run cf:setup\` or set real resource IDs manually`
     );
   }
-  const requiredSecrets =
-    ((envCfg?.secrets as { required?: string[] } | undefined)?.required ??
-      (wranglerConfig.secrets as { required?: string[] } | undefined)?.required) ??
-    ["JWT_PRIVATE_KEY", "JWT_PUBLIC_KEY", "PRIV_API_KEY"];
+  const requiredSecrets = (envCfg?.secrets as { required?: string[] } | undefined)?.required ??
+    (wranglerConfig.secrets as { required?: string[] } | undefined)?.required ?? [
+      "JWT_PRIVATE_KEY",
+      "JWT_PUBLIC_KEY",
+      "PRIV_API_KEY"
+    ];
   const secrets = existsSync(secretsFile) ? parseEnv(readFileSync(secretsFile, "utf8")) : {};
   const missing = requiredSecrets.filter((k) => !secrets[k]);
   check(

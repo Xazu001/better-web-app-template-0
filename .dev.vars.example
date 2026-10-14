@@ -1,15 +1,13 @@
-# ──────────────────────────────────────────────────────────────
-# Local Worker secrets — copy to `.dev.vars` and fill in.
-# `.dev.vars` is loaded by Wrangler for local dev and is gitignored.
-# For deployed envs use `wrangler secret put <NAME>` instead.
-# ──────────────────────────────────────────────────────────────
+# Generated from scripts/lib/env-manifest.ts — edit the manifest, then run `pnpm env:examples`.
+# `pnpm env:init` creates `.dev.vars` and `.dev.vars.prod` with distinct JWT key pairs.
+# Deployed environments use `wrangler secret put <NAME>`.
+# Local Worker secrets for Wrangler; `.dev.vars` is gitignored.
 
 # RS256 key pair for JWT sessions (base64-encoded PKCS8 / SPKI).
-# Generate the local pair with `pnpm gen:keys`; for dev:prod, copy `.dev.vars` to
-# `.dev.vars.prod` and generate a distinct pair with `pnpm gen:keys .dev.vars.prod`.
+# Rotate with `pnpm gen:keys [file]`; `pnpm env:init` creates distinct pairs.
 JWT_PRIVATE_KEY=
 JWT_PUBLIC_KEY=
 
-# X-API-Key for private /api/priv endpoints
-# (required — `secrets.required` in wrangler.jsonc fails the deploy without it)
+# X-API-Key for private /api/priv endpoints.
+# Generated as a 32-byte hex secret for local development.
 PRIV_API_KEY=

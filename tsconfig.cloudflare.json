@@ -8,6 +8,8 @@
     "server/**/*",
     "shared/**/*",
     "scripts/lib/**/*",
+    "scripts/env-init.ts",
+    "scripts/gen-keys.ts",
     "scripts/provision.ts",
     "test/**/*",
     "worker-configuration.d.ts",

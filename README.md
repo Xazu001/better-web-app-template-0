@@ -25,7 +25,7 @@ them via `pnpm bootstrap` — never copy secrets between machines through the re
 
 ```bash
 npm install                      # or: pnpm install (first — bootstrap itself runs via tsx, a devDependency)
-npm run bootstrap                # or: pnpm bootstrap — wrangler.jsonc + .dev.vars + JWT keys + local D1, idempotent
+npm run bootstrap                # or: pnpm bootstrap — wrangler.jsonc + local env files + D1, idempotent
 npm run dev:local                # or: pnpm dev:local → http://localhost:5173 — all bindings emulated locally
 ```
 
@@ -37,8 +37,8 @@ invoked them. The rest of this README uses the `pnpm` shorthand.
 
 1. `pnpm install` — skipped when `node_modules` exists.
 2. Copies `wrangler.example.jsonc` → `wrangler.jsonc` — skipped when it exists.
-3. Copies `.dev.vars.example` → `.dev.vars` and generates a JWT keypair into it
-   (skipped when keys are already set — never regenerates over existing keys).
+3. Runs `pnpm env:init` to create or update `.dev.vars`, `.dev.vars.prod`, and `.env`;
+   separate JWT keypairs are generated for local and prod.
 4. `pnpm typegen` → `pnpm db:generate` → `pnpm db:migrate:local`.
 
 Bootstrap is local-only — any flag (including `--remote`) is rejected. Remote resource
@@ -50,29 +50,30 @@ mismatched remote resource. Auth: `wrangler login` or `CLOUDFLARE_API_TOKEN` in 
 
 Manual equivalent of `pnpm bootstrap`:
 
-`pnpm bootstrap` also copies `.env.example` to `.env` for optional tooling credentials;
-you can use `wrangler login` instead.
-
 ```bash
-cp .dev.vars.example .dev.vars && pnpm gen:keys   # generates a local JWT keypair into .dev.vars
-cp .dev.vars .dev.vars.prod && pnpm gen:keys .dev.vars.prod
+pnpm env:init                     # creates local secrets/tooling files and distinct JWT pairs
 pnpm typegen                     # wrangler types + react-router typegen
 pnpm db:generate                 # drizzle-kit → drizzle/*.sql from server/database/schema.ts
 pnpm db:migrate:local            # apply migrations to the local (emulated) D1
 ```
 
+`.dev.vars.example` and `.env.example` are generated from `scripts/lib/env-manifest.ts`.
+Edit the manifest, then run `pnpm env:examples`; do not edit generated examples by hand.
+
 **`.dev.vars` vs `.env`** — different runtimes, never mix them:
 
 - `.dev.vars` — Worker runtime secrets (`JWT_*`, `PRIV_API_KEY`). Wrangler injects them
   into `env` during local dev; the deployed equivalent is `wrangler secret put`.
-- `.dev.vars.prod` — a **complete** independent override for `pnpm dev:prod`; generate a
-  distinct JWT pair for it and never reuse the local JWT keys on prod.
+- `.dev.vars.prod` — a **complete** independent override for `pnpm dev:prod`; `pnpm env:init`
+  creates it with a distinct JWT pair per environment. Never reuse local JWT keys on prod.
 - `.env` — tooling only (`drizzle-kit` d1-http, `tsx` scripts): `.env.example` is the
-  template, and `pnpm bootstrap` copies it to `.env` if missing. It holds
+  generated template, and `pnpm env:init` creates `.env` if missing. It holds
   `CLOUDFLARE_ACCOUNT_ID`, `CLOUDFLARE_API_TOKEN`, and D1 database IDs; use `wrangler login`
-  instead if you don't need a tooling token. Convention is `.dev.vars`; wrangler does fall
-  back to `.env` if no `.dev.vars` exists, so keep them consistent or keep `.env` tooling-only.
+  instead if you don't need a tooling token. Convention is `.dev.vars`; Wrangler may fall
+  back to `.env` if no `.dev.vars` exists, so keep `.env` tooling-only.
 - If both exist, `.dev.vars` wins for the local Worker (`.env` values are excluded).
+
+Rotate keys with `pnpm gen:keys [file]` (for example, `pnpm gen:keys .dev.vars.prod`).
 
 `pnpm dev:prod` connects to live prod D1/R2/KV resources and uses `.dev.vars.prod` secrets
 on your machine. Use it sparingly.
@@ -104,9 +105,9 @@ Before the first deploy:
 
 1. Replace placeholder resource names/IDs in `wrangler.jsonc` (D1, R2, KV, Queue, cron) —
    `pnpm cf:setup` does this for you (dry-run plan by default; `--apply` requires confirmation).
-2. Generate separate JWT pairs for local and prod with `pnpm gen:keys` and
-   `pnpm gen:keys .dev.vars.prod`. For deployed dev/prod, paste the corresponding
-   base64 values into Wrangler secrets (`.dev.vars` for dev, `.dev.vars.prod` for prod):
+2. Run `pnpm env:init` to create distinct local and prod JWT pairs in `.dev.vars` and
+   `.dev.vars.prod`. For deployed dev/prod, paste the corresponding base64 values into
+   Wrangler secrets:
 
    ```bash
    wrangler secret put JWT_PRIVATE_KEY --env dev
@@ -229,6 +230,8 @@ pnpm fmt && pnpm fmt:style   # formatting + class sorting, then re-check the dif
 | `pnpm test:e2e`                        | Playwright (boots `pnpm dev:local`) — smoke tests in `test/e2e/` |
 | `pnpm check:docs`                      | Validate agent docs — `.md` refs exist, `pnpm` scripts exist     |
 | `pnpm gen:keys`                        | Generate local JWT keypair into `.dev.vars`                      |
+| `pnpm env:init`                        | Create/update `.dev.vars`, `.dev.vars.prod`, and `.env`          |
+| `pnpm env:examples`                    | Regenerate tracked environment examples from the manifest        |
 | `pnpm bootstrap`                       | Local-only bootstrap (any flag rejected)                         |
 | `pnpm cf:setup` / `cf:setup:prod`      | Provision CF resources (offline plan; `--apply` gated)           |
 | `pnpm check:setup`                     | Read-only setup health check (`--strict` = fail on warnings)     |

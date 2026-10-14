@@ -9,7 +9,10 @@ import { generateKeyPairSync } from "node:crypto";
 import { existsSync, readFileSync, writeFileSync } from "node:fs";
 import { pathToFileURL } from "node:url";
 
-export function writeJwtKeys(file: string = ".dev.vars"): void {
+export function generateJwtPair(): {
+  JWT_PRIVATE_KEY: string;
+  JWT_PUBLIC_KEY: string;
+} {
   // With privateKeyEncoding/publicKeyEncoding set, the keys come back as PEM strings.
   const { privateKey, publicKey } = generateKeyPairSync("rsa", {
     modulusLength: 2048,
@@ -17,8 +20,16 @@ export function writeJwtKeys(file: string = ".dev.vars"): void {
     publicKeyEncoding: { type: "spki", format: "pem" }
   });
   const b64 = (pem: string): string => Buffer.from(pem).toString("base64");
-  const privateLine = `JWT_PRIVATE_KEY=${b64(privateKey)}`;
-  const publicLine = `JWT_PUBLIC_KEY=${b64(publicKey)}`;
+  return {
+    JWT_PRIVATE_KEY: b64(privateKey),
+    JWT_PUBLIC_KEY: b64(publicKey)
+  };
+}
+
+export function writeJwtKeys(file: string = ".dev.vars"): void {
+  const pair = generateJwtPair();
+  const privateLine = `JWT_PRIVATE_KEY=${pair.JWT_PRIVATE_KEY}`;
+  const publicLine = `JWT_PUBLIC_KEY=${pair.JWT_PUBLIC_KEY}`;
 
   let content: string;
   if (existsSync(file)) {
