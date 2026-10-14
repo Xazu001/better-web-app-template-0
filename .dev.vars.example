@@ -4,12 +4,9 @@
 # For deployed envs use `wrangler secret put <NAME>` instead.
 # ──────────────────────────────────────────────────────────────
 
-# RS256 key pair for JWT sessions (base64-encoded PEM).
-# Generate with `pnpm gen:keys` (writes straight into `.dev.vars`), or manually:
-#   openssl genpkey -algorithm RSA -pkeyopt rsa_keygen_bits:2048 -out jwt-private.pem
-#   openssl pkey -in jwt-private.pem -pubout -out jwt-public.pem
-#   base64 -i jwt-private.pem | tr -d '\n'   → JWT_PRIVATE_KEY
-#   base64 -i jwt-public.pem | tr -d '\n'    → JWT_PUBLIC_KEY
+# RS256 key pair for JWT sessions (base64-encoded PKCS8 / SPKI).
+# Generate the local pair with `pnpm gen:keys`; for dev:prod, copy `.dev.vars` to
+# `.dev.vars.prod` and generate a distinct pair with `pnpm gen:keys .dev.vars.prod`.
 JWT_PRIVATE_KEY=
 JWT_PUBLIC_KEY=
 

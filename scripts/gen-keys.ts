@@ -37,5 +37,5 @@ export function writeJwtKeys(file: string = ".dev.vars"): void {
 }
 
 if (process.argv[1] && import.meta.url === pathToFileURL(process.argv[1]).href) {
-  writeJwtKeys();
+  writeJwtKeys(process.argv[2] ?? ".dev.vars");
 }

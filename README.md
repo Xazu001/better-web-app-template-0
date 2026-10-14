@@ -12,7 +12,7 @@ agent ruleset (`.agents/`) that keeps generated code consistent.
 | Node.js             | **≥ 22** (22 LTS or 24 recommended — CI runs 24)                                   | Vite 8 needs ≥ 20.19, wrangler 4 needs ≥ 22 — so 22 is the practical floor                                                                                                                  |
 | npm **or** pnpm     | pnpm **12.5.1** pinned via `packageManager` (npm ships with Node)                  | every script is package-manager agnostic — `npm run <script>` ≡ `pnpm <script>`; docs use the `pnpm` shorthand. With corepack enabled the pin forces pnpm — don't enable it if you want npm |
 | Git                 | any recent version                                                                 | branching model in [Branching & Git workflow](#branching--git-workflow)                                                                                                                     |
-| Cloudflare account  | free plan is enough — **except the email system, which needs a paid plan**         | **not needed for local dev** — every binding (D1, R2, KV, Queues, DO, email) is emulated locally. Needed only for `pnpm cf:setup` and deploys                                     |
+| Cloudflare account  | free plan is enough — **except the email system, which needs a paid plan**         | **not needed for local dev** — every binding (D1, R2, KV, Queues, DO, email) is emulated locally. Needed only for `pnpm cf:setup` and deploys                                               |
 | Cloudflare auth     | `wrangler login` **or** `CLOUDFLARE_ACCOUNT_ID` + `CLOUDFLARE_API_TOKEN` in `.env` | required for remote resources, migrations against remote D1, `wrangler secret put` — [token scopes](#cloudflare_api_token-scopes)                                                           |
 | Email Routing       | **paid plan required** + verified domain on your Cloudflare account                | the only part that needs a paid plan — everything else works on the free plan; locally, preview templates at `/api/mail-previews`                                                           |
 | Playwright Chromium | `pnpm exec playwright install --with-deps chromium`                                | only for `pnpm test:e2e`                                                                                                                                                                    |
@@ -52,6 +52,7 @@ Manual equivalent of `pnpm bootstrap`:
 
 ```bash
 cp .dev.vars.example .dev.vars && pnpm gen:keys   # generates a local JWT keypair into .dev.vars
+cp .dev.vars .dev.vars.prod && pnpm gen:keys .dev.vars.prod
 pnpm typegen                     # wrangler types + react-router typegen
 pnpm db:generate                 # drizzle-kit → drizzle/*.sql from server/database/schema.ts
 pnpm db:migrate:local            # apply migrations to the local (emulated) D1
@@ -61,27 +62,33 @@ pnpm db:migrate:local            # apply migrations to the local (emulated) D1
 
 - `.dev.vars` — Worker runtime secrets (`JWT_*`, `PRIV_API_KEY`). Wrangler injects them
   into `env` during local dev; the deployed equivalent is `wrangler secret put`.
-- `.dev.vars.prod` — a **complete** independent override for `pnpm dev:prod` (initialized
-  as a copy of `.dev.vars`, never merged).
+- `.dev.vars.prod` — a **complete** independent override for `pnpm dev:prod`; generate a
+  distinct JWT pair for it and never reuse the local JWT keys on prod.
 - `.env` — tooling only (`drizzle-kit` d1-http, `tsx` scripts): `CLOUDFLARE_ACCOUNT_ID`,
   `CLOUDFLARE_API_TOKEN`, D1 database IDs. Convention is `.dev.vars`; wrangler does fall
   back to `.env` if no `.dev.vars` exists, so keep them consistent or keep `.env` tooling-only.
 - If both exist, `.dev.vars` wins for the local Worker (`.env` values are excluded).
 
+`pnpm dev:prod` connects to live prod D1/R2/KV resources and uses `.dev.vars.prod` secrets
+on your machine. Use it sparingly.
+
 ### CLOUDFLARE_API_TOKEN scopes
+
+Prefer separate least-privilege Cloudflare API tokens for local tooling and deployment
+rather than one all-account token.
 
 Create a **Custom Token** in the Cloudflare dashboard (My Profile → API Tokens).
 The only scope strictly required for migrations is **D1: Edit** — the rest is only needed
 when you use the token (instead of `wrangler login`) for `pnpm cf:setup` and deploys:
 
-| Scope | Level | Needed for |
-| --- | --- | --- |
-| D1 | Edit | **migrations** — the D1 HTTP API: `drizzle-kit` d1-http (`drizzle.config.*.ts`) and `wrangler d1 migrations apply` |
-| Workers Scripts | Edit | `wrangler deploy`, `wrangler secret put` |
-| Workers KV Storage | Edit | `wrangler kv namespace create` (`pnpm cf:setup`) |
-| Workers R2 Storage | Edit | `wrangler r2 bucket create` (`pnpm cf:setup`) |
-| Queues | Edit | `wrangler queues create` (`pnpm cf:setup`) |
-| User Details | Read | `wrangler whoami` (optional sanity check) |
+| Scope              | Level | Needed for                                                                                                         |
+| ------------------ | ----- | ------------------------------------------------------------------------------------------------------------------ |
+| D1                 | Edit  | **migrations** — the D1 HTTP API: `drizzle-kit` d1-http (`drizzle.config.*.ts`) and `wrangler d1 migrations apply` |
+| Workers Scripts    | Edit  | `wrangler deploy`, `wrangler secret put`                                                                           |
+| Workers KV Storage | Edit  | `wrangler kv namespace create` (`pnpm cf:setup`)                                                                   |
+| Workers R2 Storage | Edit  | `wrangler r2 bucket create` (`pnpm cf:setup`)                                                                      |
+| Queues             | Edit  | `wrangler queues create` (`pnpm cf:setup`)                                                                         |
+| User Details       | Read  | `wrangler whoami` (optional sanity check)                                                                          |
 
 **`pnpm check:setup`** — read-only health check anytime. `✗ FAIL` = local dev broken (with
 the exact fix command), `! warn` = only blocks remote/deploy (placeholder IDs in
@@ -92,9 +99,20 @@ Before the first deploy:
 
 1. Replace placeholder resource names/IDs in `wrangler.jsonc` (D1, R2, KV, Queue, cron) —
    `pnpm cf:setup` does this for you (dry-run plan by default; `--apply` requires confirmation).
-2. Put secrets: `wrangler secret put JWT_PRIVATE_KEY` / `JWT_PUBLIC_KEY` / `PRIV_API_KEY`
-   (key generation commands in `.env.example`). `secrets.required` in `wrangler.jsonc`
-   makes the deploy fail with a clear error until all three are set.
+2. Generate separate JWT pairs for local and prod with `pnpm gen:keys` and
+   `pnpm gen:keys .dev.vars.prod`. For deployed dev/prod, paste the corresponding
+   base64 values into Wrangler secrets (`.dev.vars` for dev, `.dev.vars.prod` for prod):
+
+   ```bash
+   wrangler secret put JWT_PRIVATE_KEY --env dev
+   wrangler secret put JWT_PUBLIC_KEY --env dev
+   wrangler secret put JWT_PRIVATE_KEY --env prod
+   wrangler secret put JWT_PUBLIC_KEY --env prod
+   ```
+
+   Never reuse local keys on prod. Also set `PRIV_API_KEY`. `secrets.required` in
+   `wrangler.jsonc` makes the deploy fail with a clear error until all three are set.
+
 3. Update `shared/constants/site.ts` with your domains.
 4. Create an admin user: register an account in the app, then flip
    `user_rights.user_admin = 1` for that user in D1
@@ -123,12 +141,12 @@ Before the first deploy:
 
 ### Dev servers
 
-| Command          | Bindings                          | Use for                                                        |
-| ---------------- | --------------------------------- | -------------------------------------------------------------- |
-| `pnpm dev`       | remote `env.dev` resources        | testing against real dev D1/KV/R2/Queues                        |
-| `pnpm dev:local` | local, emulated (`remote: false`) | everyday work — no Cloudflare credentials needed                |
-| `pnpm dev:prod`  | remote `env.prod` resources       | **careful**: live prod DB behind a local dev server             |
-| `pnpm dev:clean` | local                             | wipes Vite caches when `pnpm dev:local` misbehaves              |
+| Command          | Bindings                          | Use for                                             |
+| ---------------- | --------------------------------- | --------------------------------------------------- |
+| `pnpm dev`       | remote `env.dev` resources        | testing against real dev D1/KV/R2/Queues            |
+| `pnpm dev:local` | local, emulated (`remote: false`) | everyday work — no Cloudflare credentials needed    |
+| `pnpm dev:prod`  | remote `env.prod` resources       | **careful**: live prod DB behind a local dev server |
+| `pnpm dev:clean` | local                             | wipes Vite caches when `pnpm dev:local` misbehaves  |
 
 All three dev commands set `APP_ENV=local` so localhost URLs, OAuth callbacks and
 cookies stay local; only `CLOUDFLARE_ENV` selects which bindings the Worker sees.
@@ -188,29 +206,29 @@ pnpm fmt && pnpm fmt:style   # formatting + class sorting, then re-check the dif
 
 ### All commands
 
-| Command                                | Purpose                                                         |
-| -------------------------------------- | --------------------------------------------------------------- |
-| `pnpm dev`                             | Dev server, remote `env.dev` bindings                          |
-| `pnpm dev:local`                       | Dev server, fully local emulated bindings                      |
-| `pnpm dev:prod`                        | Dev server, remote `env.prod` bindings (live data)             |
-| `pnpm typecheck`                       | `wrangler types` + `react-router typegen` + `tsc -b`            |
-| `pnpm db:generate`                     | Generate D1 migrations (dev/local history)                     |
-| `pnpm db:generate:prod`                | Generate D1 migrations (prod history `drizzle-prod/`)          |
-| `pnpm db` / `db:local` / `db:prod`     | Apply migrations: remote dev / local / remote prod             |
-| `pnpm db:full` / `db:full:local`       | Generate + apply dev history (remote dev / local)              |
-| `pnpm db:full:prod`                    | Generate prod history + apply to remote prod                   |
-| `pnpm db:migrate` / `db:migrate:local` | Compatibility aliases for `db` / `db:local`                    |
-| `pnpm fmt` / `lint`                    | oxfmt (import sort) / oxlint                                    |
-| `pnpm fmt:style`                       | stylelint --fix + Tailwind class sorting                        |
-| `pnpm test`                            | vitest (unit)                                                   |
-| `pnpm test:e2e`                        | Playwright (boots `pnpm dev:local`) — smoke tests in `test/e2e/`      |
-| `pnpm check:docs`                      | Validate agent docs — `.md` refs exist, `pnpm` scripts exist    |
-| `pnpm gen:keys`                        | Generate local JWT keypair into `.dev.vars`                     |
-| `pnpm bootstrap`                       | Local-only bootstrap (any flag rejected)                      |
-| `pnpm cf:setup` / `cf:setup:prod`      | Provision CF resources (offline plan; `--apply` gated)         |
-| `pnpm check:setup`                     | Read-only setup health check (`--strict` = fail on warnings)    |
-| `pnpm deploy`                          | build + `wrangler deploy`                                       |
-| `pnpm deploy:prod`                     | prod build + deploy to the prod worker                          |
+| Command                                | Purpose                                                          |
+| -------------------------------------- | ---------------------------------------------------------------- |
+| `pnpm dev`                             | Dev server, remote `env.dev` bindings                            |
+| `pnpm dev:local`                       | Dev server, fully local emulated bindings                        |
+| `pnpm dev:prod`                        | Dev server, remote `env.prod` bindings (live data)               |
+| `pnpm typecheck`                       | `wrangler types` + `react-router typegen` + `tsc -b`             |
+| `pnpm db:generate`                     | Generate D1 migrations (dev/local history)                       |
+| `pnpm db:generate:prod`                | Generate D1 migrations (prod history `drizzle-prod/`)            |
+| `pnpm db` / `db:local` / `db:prod`     | Apply migrations: remote dev / local / remote prod               |
+| `pnpm db:full` / `db:full:local`       | Generate + apply dev history (remote dev / local)                |
+| `pnpm db:full:prod`                    | Generate prod history + apply to remote prod                     |
+| `pnpm db:migrate` / `db:migrate:local` | Compatibility aliases for `db` / `db:local`                      |
+| `pnpm fmt` / `lint`                    | oxfmt (import sort) / oxlint                                     |
+| `pnpm fmt:style`                       | stylelint --fix + Tailwind class sorting                         |
+| `pnpm test`                            | vitest (unit)                                                    |
+| `pnpm test:e2e`                        | Playwright (boots `pnpm dev:local`) — smoke tests in `test/e2e/` |
+| `pnpm check:docs`                      | Validate agent docs — `.md` refs exist, `pnpm` scripts exist     |
+| `pnpm gen:keys`                        | Generate local JWT keypair into `.dev.vars`                      |
+| `pnpm bootstrap`                       | Local-only bootstrap (any flag rejected)                         |
+| `pnpm cf:setup` / `cf:setup:prod`      | Provision CF resources (offline plan; `--apply` gated)           |
+| `pnpm check:setup`                     | Read-only setup health check (`--strict` = fail on warnings)     |
+| `pnpm deploy`                          | build + `wrangler deploy`                                        |
+| `pnpm deploy:prod`                     | prod build + deploy to the prod worker                           |
 
 ## Branching & Git workflow
 
