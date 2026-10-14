@@ -6,7 +6,7 @@
  *
  *   1. `pnpm install` (skipped when node_modules exists)
  *   2. `wrangler.example.jsonc` → `wrangler.jsonc` (skipped when it exists)
- *   3. `.dev.vars.example` → `.dev.vars` + generated JWT keypair (skipped when keys exist)
+ *   3. `pnpm env:init` creates `.dev.vars`, `.dev.vars.prod`, and `.env`
  *   4. `pnpm typegen` (wrangler types + react-router typegen)
  *   5. `pnpm db:generate` (Drizzle → drizzle/*.sql)
  *   6. `pnpm db:migrate:local` (local emulated D1)
@@ -15,15 +15,9 @@
  * Idempotent — safe to re-run. State check anytime: `pnpm check:setup`.
  */
 import { execSync } from "node:child_process";
-import { copyFileSync, existsSync, readFileSync, writeFileSync } from "node:fs";
-import { parseEnv } from "node:util";
+import { copyFileSync, existsSync } from "node:fs";
 
-import { parse as parseJsonc } from "jsonc-parser";
-
-import { writeJwtKeys } from "./gen-keys";
-import { jwtPairState, withLocalPrivApiKey } from "./lib/dev-vars";
-
-const PLACEHOLDER_ID = /^0{8}-0{4}-0{4}-0{4}-0{12}$|^0{32}$/;
+import { initEnvFiles } from "./env-init";
 
 const run = (cmd: string): void => {
   execSync(cmd, { stdio: "inherit" });
@@ -57,41 +51,8 @@ else {
   ok("copied wrangler.example.jsonc → wrangler.jsonc");
 }
 
-// 3. Local secrets + JWT keypair
-if (!existsSync(".dev.vars")) {
-  copyFileSync(".dev.vars.example", ".dev.vars");
-  ok("copied .dev.vars.example → .dev.vars");
-}
-const devVars = parseEnv(readFileSync(".dev.vars", "utf8"));
-const pairState = jwtPairState(devVars);
-if (pairState === "missing-private" || pairState === "missing-public") {
-  console.error(
-    ".dev.vars has only half of the JWT keypair — remove the orphan line, " +
-      `then run \`${pm} run gen:keys\` to regenerate the pair.`
-  );
-  process.exit(1);
-}
-if (pairState === "ok") {
-  ok("JWT keys already present in .dev.vars");
-} else {
-  step("generating JWT keypair into .dev.vars");
-  writeJwtKeys();
-}
-const privContent = readFileSync(".dev.vars", "utf8");
-const privNext = withLocalPrivApiKey(privContent, parseEnv(privContent));
-if (privNext !== null) {
-  writeFileSync(".dev.vars", privNext);
-  ok("generated a local PRIV_API_KEY in .dev.vars");
-}
-if (!existsSync(".dev.vars.prod")) {
-  copyFileSync(".dev.vars", ".dev.vars.prod");
-  ok("initialized .dev.vars.prod as a copy of .dev.vars");
-}
-if (!existsSync(".env") && existsSync(".env.example")) {
-  copyFileSync(".env.example", ".env");
-  populateEnvIds();
-  ok("copied .env.example → .env (optional tooling credentials)");
-}
+// 3. Local env files
+initEnvFiles({ log: ok });
 
 // 4–6. Types + database
 step("generating types (wrangler types + react-router typegen)");
@@ -103,34 +64,13 @@ run(`${pm} run db:migrate:local`);
 
 printNextSteps();
 
-function populateEnvIds(): void {
-  const config = parseJsonc(readFileSync("wrangler.jsonc", "utf8")) as {
-    account_id?: string;
-    env?: Record<
-      string,
-      { d1_databases?: { binding: string; database_id: string }[] }
-    >;
-  };
-  const ownedDb = (envName: "dev" | "prod") =>
-    config.env?.[envName]?.d1_databases?.find((d) => d.binding === "db");
-  const env = parseEnv(readFileSync(".env", "utf8"));
-  let out = readFileSync(".env", "utf8");
-  const fill = (key: string, value: string | undefined) => {
-    if (!value || PLACEHOLDER_ID.test(value) || env[key]) return;
-    out = out.replace(new RegExp(`^${key}=.*$`, "m"), `${key}=${value}`);
-  };
-  fill("CLOUDFLARE_ACCOUNT_ID", config.account_id);
-  fill("CLOUDFLARE_DB_ID", ownedDb("dev")?.database_id);
-  fill("CLOUDFLARE_DB_PROD_ID", ownedDb("prod")?.database_id);
-  writeFileSync(".env", out);
-}
-
 function printNextSteps(): void {
   console.log(`
 ──────────────────────────────────────────────────────────────
 Setup complete. Remaining manual steps:
 
 1. Update shared/constants/site.ts — domains, brand, contact email.
+   Local env files were created or updated by \`${pm} env:init\`.
 2. Set deploy secrets (values may differ from local .dev.vars):
      wrangler secret put JWT_PRIVATE_KEY
      wrangler secret put JWT_PUBLIC_KEY
@@ -143,4 +83,3 @@ Setup complete. Remaining manual steps:
 Verify anytime: ${pm} run check:setup
 ──────────────────────────────────────────────────────────────`);
 }
-

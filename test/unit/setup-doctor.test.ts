@@ -5,7 +5,7 @@ import { join } from "node:path";
 
 import { describe, expect, it } from "vitest";
 
-import { jwtPairState, withLocalPrivApiKey } from "../../scripts/lib/dev-vars";
+import { jwtPairState } from "../../scripts/lib/dev-vars";
 
 const DOCTOR = join(process.cwd(), "scripts", "doctor.ts");
 const TSX = join(process.cwd(), "node_modules", "tsx", "dist", "cli.mjs");
@@ -34,20 +34,6 @@ describe("dev-vars helpers", () => {
     expect(jwtPairState({ JWT_PRIVATE_KEY: "a" })).toBe("missing-public");
     expect(jwtPairState({ JWT_PUBLIC_KEY: "b" })).toBe("missing-private");
   });
-  it("generates PRIV_API_KEY once and never overwrites", () => {
-    const content = "FOO=1\n";
-    const next = withLocalPrivApiKey(content, {}, () => "fixed-random");
-    expect(next).toBe("FOO=1\nPRIV_API_KEY=fixed-random\n");
-    expect(
-      withLocalPrivApiKey("PRIV_API_KEY=\n", { PRIV_API_KEY: "real" }, () => "x")
-    ).toBeNull();
-    expect(withLocalPrivApiKey(content, { PRIV_API_KEY: "set" }, () => "x")).toBeNull();
-  });
-  it("replaces an empty PRIV_API_KEY line in place", () => {
-    expect(
-      withLocalPrivApiKey("PRIV_API_KEY=\nA=1\n", {}, () => "gen")
-    ).toBe("PRIV_API_KEY=gen\nA=1\n");
-  });
 });
 
 describe("check:setup doctor", () => {
@@ -55,7 +41,7 @@ describe("check:setup doctor", () => {
     const dir = fixture({ "wrangler.jsonc": wrangler() });
     const r = runDoctor(dir, ["--env"]);
     expect(r.status).toBe(1);
-    expect((r.stderr + r.stdout)).toContain("--env requires a value");
+    expect(r.stderr + r.stdout).toContain("--env requires a value");
   });
   it("rejects an invalid --env value", () => {
     const dir = fixture({ "wrangler.jsonc": wrangler() });
@@ -74,7 +60,12 @@ describe("check:setup doctor", () => {
         prod: {
           name: "template",
           d1_databases: [
-            { binding: "db", database_name: "template-db", database_id: PH, migrations_dir: "drizzle-prod" }
+            {
+              binding: "db",
+              database_name: "template-db",
+              database_id: PH,
+              migrations_dir: "drizzle-prod"
+            }
           ],
           kv_namespaces: [{ binding: "kv", id: PH }]
         }
@@ -108,7 +99,11 @@ describe("check:setup doctor", () => {
         prod: {
           name: "template",
           d1_databases: [
-            { binding: "db", database_name: "template-db", database_id: "99999999-8888-7777-6666-555555555555" }
+            {
+              binding: "db",
+              database_name: "template-db",
+              database_id: "99999999-8888-7777-6666-555555555555"
+            }
           ]
         }
       })

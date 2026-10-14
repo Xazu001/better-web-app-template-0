@@ -29,6 +29,8 @@
     "cron:test": "curl http://localhost:5173/api/_dev/cron?all=true",
     "check:docs": "tsx scripts/check-docs.ts",
     "gen:keys": "tsx scripts/gen-keys.ts",
+    "env:init": "tsx scripts/env-init.ts",
+    "env:examples": "tsx scripts/env-init.ts --examples",
     "bootstrap": "tsx scripts/setup.ts",
     "check:setup": "tsx scripts/doctor.ts",
     "fmt": "oxfmt . \"!**/*.css\"",

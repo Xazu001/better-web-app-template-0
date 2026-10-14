@@ -10,34 +10,34 @@ This is the **always-on index**. For rules, architecture, conventions, and decis
 
 Rules live in `.agents/rules/`. Read the index first, then only the files relevant to the task.
 
-| File | Topic |
-| --- | --- |
-| `README.md` | Index — start here |
-| `md3-design.md` | MD3 concepts: color roles, elevation, state layer, ripple, shape, motion |
-| `components.md` | React component implementation: BEM, CVA, `useRipple`, `data-state`, TSX/CSS |
-| `styling.md` | CSS mechanics: `@layer`, `color-mix`, hover gating, property order, no-dupes |
-| `tokens.md` | Design tokens: colors, typography, sizes, motion, breakpoints, z-index |
-| `routes.md` | Routes: file types, section splitters, loader/action/service wiring |
-| `server.md` | Server + services: BaseService, RouteService, DB, auth, cookies, rate limiting, KV cache |
-| `submit.md` | Action/Form submission: `useSubmitAction`, typed submit, client/server validation |
-| `localization.md` | L10n: `getMessageByKey`, serialized keys |
-| `seo.md` | SEO: `createMeta`, noindex, JSON-LD |
-| `aliases.md` | Import aliases: boundaries, examples, forbidden patterns, diagnostics |
-| `naming.md` | File/directory naming: `kebab-case` everywhere, patterns, enforcement |
+| File              | Topic                                                                                    |
+| ----------------- | ---------------------------------------------------------------------------------------- |
+| `README.md`       | Index — start here                                                                       |
+| `md3-design.md`   | MD3 concepts: color roles, elevation, state layer, ripple, shape, motion                 |
+| `components.md`   | React component implementation: BEM, CVA, `useRipple`, `data-state`, TSX/CSS             |
+| `styling.md`      | CSS mechanics: `@layer`, `color-mix`, hover gating, property order, no-dupes             |
+| `tokens.md`       | Design tokens: colors, typography, sizes, motion, breakpoints, z-index                   |
+| `routes.md`       | Routes: file types, section splitters, loader/action/service wiring                      |
+| `server.md`       | Server + services: BaseService, RouteService, DB, auth, cookies, rate limiting, KV cache |
+| `submit.md`       | Action/Form submission: `useSubmitAction`, typed submit, client/server validation        |
+| `localization.md` | L10n: `getMessageByKey`, serialized keys                                                 |
+| `seo.md`          | SEO: `createMeta`, noindex, JSON-LD                                                      |
+| `aliases.md`      | Import aliases: boundaries, examples, forbidden patterns, diagnostics                    |
+| `naming.md`       | File/directory naming: `kebab-case` everywhere, patterns, enforcement                    |
 
 ## Import Aliases
 
-| Alias | Maps to | Scope |
-| --- | --- | --- |
-| `#/` | `./app/*` | App |
-| `$/` | `./server/*` | Server |
-| `@/` | `./shared/*` | Shared |
+| Alias | Maps to      | Scope  |
+| ----- | ------------ | ------ |
+| `#/`  | `./app/*`    | App    |
+| `$/`  | `./server/*` | Server |
+| `@/`  | `./shared/*` | Shared |
 
-| From | Can import | Cannot import |
-| --- | --- | --- |
-| `server` | `$/`, `@/` | `#/` |
-| `app` | `#/`, `@/`, `$/` | — |
-| `shared` | `@/` | `#/`, `$/` |
+| From     | Can import       | Cannot import |
+| -------- | ---------------- | ------------- |
+| `server` | `$/`, `@/`       | `#/`          |
+| `app`    | `#/`, `@/`, `$/` | —             |
+| `shared` | `@/`             | `#/`, `$/`    |
 
 Always use aliases, never `../../` across directories. Within same directory, `./utils` is fine.
 
@@ -45,15 +45,15 @@ Always use aliases, never `../../` across directories. Within same directory, `.
 
 Skills live in `.agents/skills/<name>/SKILL.md`. Use `/skill-name` or invoke via the skill tool.
 
-| Skill | Purpose |
-| --- | --- |
-| `gen-module` | Generate route, component, service, hook, etc. |
-| `refr-module` | Refactor file(s) to comply with rules |
-| `auto-test` | Run app, check terminal for build/runtime/server errors, fix |
-| `auto-test-browser` | Test via browser (Puppeteer), check console/visuals, fix |
-| `gen-tokens` | Generate design tokens docs from Tailwind v4 CSS + UI components |
-| `opt-tokens` | Read rules once, work from memory |
-| `min-opt-tokens` | Zero filler, act don't narrate |
+| Skill               | Purpose                                                          |
+| ------------------- | ---------------------------------------------------------------- |
+| `gen-module`        | Generate route, component, service, hook, etc.                   |
+| `refr-module`       | Refactor file(s) to comply with rules                            |
+| `auto-test`         | Run app, check terminal for build/runtime/server errors, fix     |
+| `auto-test-browser` | Test via browser (Puppeteer), check console/visuals, fix         |
+| `gen-tokens`        | Generate design tokens docs from Tailwind v4 CSS + UI components |
+| `opt-tokens`        | Read rules once, work from memory                                |
+| `min-opt-tokens`    | Zero filler, act don't narrate                                   |
 
 ## Verification (definition of done)
 
@@ -100,12 +100,14 @@ After trimming: `pnpm typecheck && pnpm lint && pnpm test` — delete tests that
 
 ## Setup (new project checklist)
 
-`pnpm bootstrap` automates the local steps below (install, wrangler.jsonc copy, `.dev.vars` + keys, typegen, migrations); remote resources are provisioned explicitly via `pnpm cf:setup` (dry-run plan by default, `--apply` gated). `pnpm check:setup` verifies the state anytime (`--strict` before deploying). Details: `README.md` § "Bootstrap & check:setup".
+`pnpm bootstrap` automates the local steps below (install, wrangler.jsonc copy, `pnpm env:init`, typegen, migrations); remote resources are provisioned explicitly via `pnpm cf:setup` (dry-run plan by default, `--apply` gated). `pnpm check:setup` verifies the state anytime (`--strict` before deploying). Details: `README.md` § "Bootstrap & check:setup".
+
+`.dev.vars.example` and `.env.example` are generated from `scripts/lib/env-manifest.ts`; edit the manifest and run `pnpm env:examples` rather than editing examples by hand. Tooling credentials are optional with `wrangler login`.
 
 1. `pnpm install`
 2. Provision owned CF resources: `pnpm cf:setup --account-id <ACCOUNT_ID>` (offline plan), `--apply` to create + write IDs into `wrangler.jsonc`; prod via `pnpm cf:setup:prod`
 3. Update `db:migrate` script names to match
-4. Set secrets: `wrangler secret put JWT_PRIVATE_KEY`, `JWT_PUBLIC_KEY`, `PRIV_API_KEY` (local keypair: `pnpm gen:keys`; manual openssl cmds in `.env.example`)
+4. Create local env files with `pnpm env:init`; set deployed secrets with `wrangler secret put JWT_PRIVATE_KEY`, `JWT_PUBLIC_KEY`, and `PRIV_API_KEY`. Rotate keys with `pnpm gen:keys [file]`; use a distinct JWT pair per environment and never reuse local keys on prod.
 5. Update `shared/constants/site.ts` (URLs, brand, contact email)
 6. `pnpm db:generate && pnpm db:migrate`
 7. `pnpm dev:local` → http://localhost:5173
