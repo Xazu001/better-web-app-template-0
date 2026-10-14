@@ -50,6 +50,9 @@ mismatched remote resource. Auth: `wrangler login` or `CLOUDFLARE_API_TOKEN` in 
 
 Manual equivalent of `pnpm bootstrap`:
 
+`pnpm bootstrap` also copies `.env.example` to `.env` for optional tooling credentials;
+you can use `wrangler login` instead.
+
 ```bash
 cp .dev.vars.example .dev.vars && pnpm gen:keys   # generates a local JWT keypair into .dev.vars
 cp .dev.vars .dev.vars.prod && pnpm gen:keys .dev.vars.prod
@@ -64,8 +67,10 @@ pnpm db:migrate:local            # apply migrations to the local (emulated) D1
   into `env` during local dev; the deployed equivalent is `wrangler secret put`.
 - `.dev.vars.prod` — a **complete** independent override for `pnpm dev:prod`; generate a
   distinct JWT pair for it and never reuse the local JWT keys on prod.
-- `.env` — tooling only (`drizzle-kit` d1-http, `tsx` scripts): `CLOUDFLARE_ACCOUNT_ID`,
-  `CLOUDFLARE_API_TOKEN`, D1 database IDs. Convention is `.dev.vars`; wrangler does fall
+- `.env` — tooling only (`drizzle-kit` d1-http, `tsx` scripts): `.env.example` is the
+  template, and `pnpm bootstrap` copies it to `.env` if missing. It holds
+  `CLOUDFLARE_ACCOUNT_ID`, `CLOUDFLARE_API_TOKEN`, and D1 database IDs; use `wrangler login`
+  instead if you don't need a tooling token. Convention is `.dev.vars`; wrangler does fall
   back to `.env` if no `.dev.vars` exists, so keep them consistent or keep `.env` tooling-only.
 - If both exist, `.dev.vars` wins for the local Worker (`.env` values are excluded).
 

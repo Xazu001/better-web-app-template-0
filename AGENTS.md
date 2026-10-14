@@ -102,6 +102,8 @@ After trimming: `pnpm typecheck && pnpm lint && pnpm test` — delete tests that
 
 `pnpm bootstrap` automates the local steps below (install, wrangler.jsonc copy, `.dev.vars` + keys, typegen, migrations); remote resources are provisioned explicitly via `pnpm cf:setup` (dry-run plan by default, `--apply` gated). `pnpm check:setup` verifies the state anytime (`--strict` before deploying). Details: `README.md` § "Bootstrap & check:setup".
 
+Tooling credentials are optional with `wrangler login`; `pnpm bootstrap` copies `.env.example` to `.env` when available.
+
 1. `pnpm install`
 2. Provision owned CF resources: `pnpm cf:setup --account-id <ACCOUNT_ID>` (offline plan), `--apply` to create + write IDs into `wrangler.jsonc`; prod via `pnpm cf:setup:prod`
 3. Update `db:migrate` script names to match
