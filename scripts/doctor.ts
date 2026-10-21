@@ -126,7 +126,6 @@ if (remoteEnv && wranglerConfig && typeof wranglerConfig === "object") {
   const envCfg = (wranglerConfig.env as Record<string, unknown> | undefined)?.[remoteEnv] as
     | Record<string, unknown>
     | undefined;
-  const secretsFile = devVarsFile(remoteEnv);
   if (!envCfg) {
     check(`wrangler.jsonc env.${remoteEnv} defined`, "FAIL", `no env.${remoteEnv} block found`);
   } else {
@@ -157,13 +156,8 @@ if (remoteEnv && wranglerConfig && typeof wranglerConfig === "object") {
         : `${problems.join(", ")} — provision with \`${pm} run cf:setup\` or set real resource IDs manually`
     );
   }
-  if (remoteEnv === "prod" && !existsSync(secretsFile)) {
-    check(
-      `Optional staging file ${secretsFile}`,
-      "ok",
-      `absent — optional operator staging only, not loaded by any dev command; deployed env.prod secrets are set via \`wrangler secret put --env prod\` and are not verified here`
-    );
-  } else {
+  if (remoteEnv === "dev") {
+    const secretsFile = devVarsFile(remoteEnv);
     const secrets = existsSync(secretsFile) ? parseEnv(readFileSync(secretsFile, "utf8")) : {};
     const missing = LOCAL_CORE_KEYS.filter((k) => !secrets[k]);
     check(
@@ -171,11 +165,13 @@ if (remoteEnv && wranglerConfig && typeof wranglerConfig === "object") {
       missing.length === 0 ? "ok" : "warn",
       missing.length === 0
         ? null
-        : `missing: ${missing.join(", ")} — ${secretsFile} ${
-            remoteEnv === "dev"
-              ? "backs `pnpm dev:remote` local serves only"
-              : "is optional operator staging, not loaded by any dev command"
-          }; fill it with \`${pm} run env:init --env ${remoteEnv}\`. Deployed env.${remoteEnv} secrets are set via \`wrangler secret put --env ${remoteEnv}\` and are not verified here`
+        : `missing: ${missing.join(", ")} — ${secretsFile} backs \`pnpm dev:remote\` local serves only; fill it with \`${pm} run env:init --env dev\`. Deployed env.dev secrets are set via \`wrangler secret put --env dev\` and are not verified here`
+    );
+  } else {
+    check(
+      "Deployed env.prod secrets",
+      "ok",
+      "set via `pnpm exec wrangler secret put <NAME> --env prod` — no local secrets file is read or required; deployed secrets are not verified here"
     );
   }
   const ownedDbEntry = (

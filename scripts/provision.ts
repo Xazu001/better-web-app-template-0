@@ -130,7 +130,7 @@ export function buildPlan(config: EnvConfig, env: Env, rootConfig: WranglerConfi
     return {
       binding: ns.binding,
       configuredId: ns.id,
-      title: `${rootConfig.name}-${env}-${ns.binding}`,
+      title: `${rootConfig.name?.replace(/-local$/, "")}-${env}-${ns.binding}`,
       index
     };
   });

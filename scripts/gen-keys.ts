@@ -7,6 +7,7 @@
  */
 import { generateKeyPairSync } from "node:crypto";
 import { existsSync, readFileSync, writeFileSync } from "node:fs";
+import { basename } from "node:path";
 import { pathToFileURL } from "node:url";
 
 export function generateJwtPair(): {
@@ -26,7 +27,15 @@ export function generateJwtPair(): {
   };
 }
 
+const WRITABLE_BASENAMES = new Set([".dev.vars", ".dev.vars.dev"]);
+
 export function writeJwtKeys(file: string = ".dev.vars"): void {
+  if (!WRITABLE_BASENAMES.has(basename(file))) {
+    throw new Error(
+      `Refusing to write JWT keys to ${file} — gen:keys only manages .dev.vars and .dev.vars.dev. ` +
+        "Deployed secrets are set with `pnpm exec wrangler secret put <NAME> --env dev|prod`."
+    );
+  }
   const pair = generateJwtPair();
   const privateLine = `JWT_PRIVATE_KEY=${pair.JWT_PRIVATE_KEY}`;
   const publicLine = `JWT_PUBLIC_KEY=${pair.JWT_PUBLIC_KEY}`;

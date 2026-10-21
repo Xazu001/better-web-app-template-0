@@ -152,7 +152,21 @@ describe("environment manifest", () => {
     }
   });
 
-  it.each(["dev", "prod"] as const)(
+  it("env:init --env prod rejects before writing anything", () => {
+    const cwd = mkdtempSync(join(tmpdir(), "env-init-prod-"));
+    writeFileSync(join(cwd, ".dev.vars"), "CUSTOM=keep-me\n");
+    try {
+      expect(() => initEnvFiles({ cwd, env: "prod", log: () => undefined })).toThrow(
+        /wrangler secret put/
+      );
+      expect(existsSync(join(cwd, ".dev.vars.prod"))).toBe(false);
+      expect(readFileSync(join(cwd, ".dev.vars"), "utf8")).toBe("CUSTOM=keep-me\n");
+    } finally {
+      rmSync(cwd, { recursive: true, force: true });
+    }
+  });
+
+  it.each(["dev"] as const)(
     "--env %s initializes a complete independent file pair without touching local keys",
     (env) => {
       const cwd = mkdtempSync(join(tmpdir(), `env-init-${env}-`));
@@ -218,7 +232,7 @@ describe("dev-vars helpers", () => {
   it("maps each env to its own secrets file", () => {
     expect(devVarsFile("local")).toBe(".dev.vars");
     expect(devVarsFile("dev")).toBe(".dev.vars.dev");
-    expect(devVarsFile("prod")).toBe(".dev.vars.prod");
+    expect(() => devVarsFile("prod")).toThrow(/wrangler secret put/);
   });
 
   const CORE = "JWT_PRIVATE_KEY=a\nJWT_PUBLIC_KEY=b\nPRIV_API_KEY=c\n";

@@ -86,6 +86,12 @@ export function initEnvFiles(
   const cwd = opts.cwd ?? process.cwd();
   const log = opts.log ?? console.log;
   const env = opts.env ?? "local";
+  if (env === "prod") {
+    throw new Error(
+      "env:init does not manage production secrets — set deployed prod secrets " +
+        "with `pnpm exec wrangler secret put <NAME> --env prod`."
+    );
+  }
   const targets: { file: string; kind: EnvFileKind }[] = [
     { file: devVarsFile(env), kind: "dev-vars" },
     { file: ".env", kind: "env" }
@@ -150,8 +156,16 @@ function runCli(args: string[]): void {
   const rest = args.filter((_, i) => envIndex === -1 || (i !== envIndex && i !== envIndex + 1));
   if (envIndex !== -1) {
     const value = args[envIndex + 1];
-    if (value !== "local" && value !== "dev" && value !== "prod") {
-      console.error(`env:init: invalid --env "${value ?? ""}" — expected local, dev or prod`);
+    if (value === "prod") {
+      console.error(
+        "env:init: --env prod is not supported — deployed prod secrets are set " +
+          "with `pnpm exec wrangler secret put <NAME> --env prod`; no local prod file is written."
+      );
+      process.exitCode = 1;
+      return;
+    }
+    if (value !== "local" && value !== "dev") {
+      console.error(`env:init: invalid --env "${value ?? ""}" — expected local or dev`);
       process.exitCode = 1;
       return;
     }
@@ -164,7 +178,7 @@ function runCli(args: string[]): void {
   } else if (rest.length === 1 && rest[0] === "--check") {
     if (!checkExamples()) process.exitCode = 1;
   } else {
-    console.error("Usage: pnpm env:init [--env local|dev|prod] [--examples|--check]");
+    console.error("Usage: pnpm env:init [--env local|dev] [--examples|--check]");
     process.exitCode = 1;
   }
 }

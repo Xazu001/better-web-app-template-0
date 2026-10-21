@@ -559,3 +559,38 @@ describe("cf:setup main", () => {
     expect(calls).toHaveLength(0);
   });
 });
+
+describe("cf:setup buildPlan KV titles", () => {
+  const kvConfig = (name: string) => ({
+    name,
+    env: {
+      dev: {
+        name: `${name}-dev`,
+        kv_namespaces: [{ binding: "kv", id: "00000000000000000000000000000000" }]
+      },
+      prod: {
+        name,
+        kv_namespaces: [{ binding: "kv", id: "00000000000000000000000000000000" }]
+      }
+    }
+  });
+
+  it("strips the local root suffix from generated KV titles", () => {
+    const config = kvConfig("app-local");
+    expect(buildPlan(config.env.dev as never, "dev", config as never).kv[0].title).toBe("app-dev-kv");
+    expect(buildPlan(config.env.prod as never, "prod", config as never).kv[0].title).toBe("app-prod-kv");
+  });
+
+  it("keeps the legacy root name titles unchanged", () => {
+    const config = kvConfig("app");
+    expect(buildPlan(config.env.dev as never, "dev", config as never).kv[0].title).toBe("app-dev-kv");
+    expect(buildPlan(config.env.prod as never, "prod", config as never).kv[0].title).toBe("app-prod-kv");
+  });
+
+  it("only removes a trailing -local marker, not internal -local segments", () => {
+    const config = kvConfig("app-local-tools");
+    expect(buildPlan(config.env.dev as never, "dev", config as never).kv[0].title).toBe(
+      "app-local-tools-dev-kv"
+    );
+  });
+});

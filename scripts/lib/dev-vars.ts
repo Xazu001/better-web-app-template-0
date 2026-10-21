@@ -17,6 +17,12 @@ export function jwtPairState(vars: Record<string, string | undefined>): JwtPairS
 export type DevVarsEnv = "local" | "dev" | "prod";
 
 export function devVarsFile(env: DevVarsEnv): string {
+  if (env === "prod") {
+    throw new Error(
+      "No local production secrets file is supported — set deployed prod secrets " +
+        "with `pnpm exec wrangler secret put <NAME> --env prod`."
+    );
+  }
   return env === "local" ? ".dev.vars" : `.dev.vars.${env}`;
 }
 

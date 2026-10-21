@@ -7,6 +7,7 @@ import tailwindcss from "@tailwindcss/vite";
 import { defineConfig } from "vite";
 
 import { resolveSecretsRequired } from "./scripts/lib/dev-vars.ts";
+import { excludeDevVars } from "./scripts/lib/exclude-dev-vars.ts";
 import { resolveCloudflareEnv } from "./vite-preflight.ts";
 
 type AppEnv = "local" | "dev" | "prod";
@@ -50,6 +51,7 @@ export default defineConfig(({ command }) => {
               }
             : undefined
       }),
+      excludeDevVars(),
       reactRouter(),
       ...(command === "build" && appEnv === "prod"
         ? [

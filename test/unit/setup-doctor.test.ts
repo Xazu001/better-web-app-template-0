@@ -75,7 +75,8 @@ describe("check:setup doctor", () => {
     });
     const r = runDoctor(dir, ["--env", "prod"]);
     expect(r.status).toBe(0);
-    expect(r.stdout).toContain(".dev.vars.prod");
+    expect(r.stdout).toContain("Deployed env.prod secrets");
+    expect(r.stdout).toContain("wrangler secret put");
     expect(r.stdout).not.toContain("JWT keypair in .dev.vars");
   });
   it("--env prod --strict fails on placeholder IDs", () => {
@@ -161,7 +162,7 @@ describe("check:setup doctor", () => {
     expect(r.stdout).not.toMatch(/missing:.*GITHUB/);
     expect(r.status).toBe(0);
   });
-  it("--env prod --strict does not fail on an absent optional staging file", () => {
+  it("--env prod --strict succeeds and ignores a malformed legacy .dev.vars.prod", () => {
     const dir = fixture({
       "wrangler.jsonc": wrangler({
         prod: {
@@ -176,10 +177,12 @@ describe("check:setup doctor", () => {
           ]
         }
       }),
-      "drizzle-prod/0000_init.sql": "CREATE TABLE t (id INTEGER);"
+      "drizzle-prod/0000_init.sql": "CREATE TABLE t (id INTEGER);",
+      ".dev.vars.prod": "JWT_PRIVATE_KEY=%%%malformed-legacy%%%\n"
     });
     const r = runDoctor(dir, ["--env", "prod", "--strict"]);
-    expect(r.stdout).toContain("Optional staging file .dev.vars.prod");
+    expect(r.stdout).toContain("Deployed env.prod secrets");
+    expect(r.stdout).not.toContain("Optional staging file");
     expect(r.status).toBe(0);
   });
 });

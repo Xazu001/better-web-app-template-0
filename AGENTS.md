@@ -107,7 +107,7 @@ After trimming: `pnpm typecheck && pnpm lint && pnpm test` — delete tests that
 1. `pnpm install`
 2. Provision owned CF resources: `pnpm cf:setup --account-id <ACCOUNT_ID>` (offline plan), `--apply` to create + write IDs into `wrangler.jsonc`; prod via `pnpm cf:setup:prod`
 3. Update `db:migrate` script names to match
-4. Create local env files with `pnpm env:init`; set deployed secrets with `wrangler secret put JWT_PRIVATE_KEY`, `JWT_PUBLIC_KEY`, and `PRIV_API_KEY`. Rotate keys with `pnpm gen:keys [file]`; use a distinct JWT pair per environment and never reuse local keys on prod.
+4. Create local env files with `pnpm env:init`; set deployed secrets per environment with `pnpm exec wrangler secret put JWT_PRIVATE_KEY|JWT_PUBLIC_KEY|PRIV_API_KEY --env dev|prod --config wrangler.jsonc` (always pass `--env`; without it the command targets the local-name Worker). Rotate local keys with `pnpm gen:keys [file]`; deployed environments use their own independently generated pairs — never reuse local keys.
 5. Update `shared/constants/site.ts` (URLs, brand, contact email)
 6. `pnpm db:generate && pnpm db:migrate`
 7. `pnpm dev` → http://localhost:5173

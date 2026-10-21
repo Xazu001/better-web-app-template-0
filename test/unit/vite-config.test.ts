@@ -99,6 +99,18 @@ const freshWorkerConfig = (): FakeWorkerConfig => ({
   vars: { EXISTING: "kept" }
 });
 
+describe("excludeDevVars build plugin", () => {
+  it("is registered after the cloudflare plugin for builds", () => {
+    const config = buildConfig();
+    const names = (config.plugins ?? []).map((p) => (p as { name?: string })?.name);
+    const cf = names.indexOf("mock:cloudflare");
+    const strip = names.indexOf("exclude-dev-vars");
+    expect(strip).toBeGreaterThan(-1);
+    expect(cf).toBeGreaterThan(-1);
+    expect(strip).toBeGreaterThan(cf);
+  });
+});
+
 describe("serve worker config callback (no defu array duplication)", () => {
   it("mutates the worker config in place and returns nothing", () => {
     withEnv(undefined, () => {
@@ -107,7 +119,9 @@ describe("serve worker config callback (no defu array duplication)", () => {
       const migrations = workerConfig.migrations;
       expect(callback(workerConfig)).toBeUndefined();
       expect(workerConfig.migrations).toBe(migrations);
-      expect(workerConfig.migrations).toEqual([{ tag: "v1", new_sqlite_classes: ["RateLimiterDO"] }]);
+      expect(workerConfig.migrations).toEqual([
+        { tag: "v1", new_sqlite_classes: ["RateLimiterDO"] }
+      ]);
       expect(workerConfig.secrets.required).toEqual(CORE_KEYS);
       expect(workerConfig.vars.EXISTING).toBe("kept");
     });

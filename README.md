@@ -38,7 +38,7 @@ invoked them. The rest of this README uses the `pnpm` shorthand.
 1. `pnpm install` — skipped when `node_modules` exists.
 2. Copies `wrangler.example.jsonc` → `wrangler.jsonc` — skipped when it exists.
 3. Runs `pnpm env:init` to create or update `.dev.vars` and `.env` (local env files
-   only — `pnpm env:init --env dev|prod` creates the optional remote-env files).
+   only — `pnpm env:init --env dev` creates the optional remote-dev file).
 4. `pnpm typegen` → `pnpm db:generate` → `pnpm db:migrate:local`.
 
 Bootstrap is local-only — any flag (including `--remote`) is rejected. Remote resource
@@ -68,8 +68,8 @@ Edit the manifest, then run `pnpm env:examples`; do not edit generated examples 
 - `.dev.vars.dev` — a **complete** independent secrets file used only by
   `pnpm dev:remote` (local serve against remote env.dev resources). Create it with
   `pnpm env:init --env dev`; it is never a source of deployed secrets.
-- `.dev.vars.prod` — optional operator staging (`pnpm env:init --env prod`). No dev
-  script serves prod locally; deployed prod secrets come from `wrangler secret put`.
+- Deployed dev/prod secrets come from `wrangler secret put <NAME> --env dev|prod`.
+  There is no local production secrets file, and no dev script serves prod locally.
 - `.env` — tooling only (`drizzle-kit` d1-http, `tsx` scripts): `.env.example` is the
   generated template, and `pnpm env:init` creates `.env` if missing. It holds
   `CLOUDFLARE_ACCOUNT_ID`, `CLOUDFLARE_API_TOKEN`, and D1 database IDs; use `wrangler login`
@@ -112,18 +112,20 @@ Before the first deploy:
 1. Replace placeholder resource names/IDs in `wrangler.jsonc` (D1, R2, KV, Queue, cron) —
    `pnpm cf:setup` does this for you (dry-run plan by default; `--apply` requires confirmation).
 2. Run `pnpm env:init` to create the local JWT pair in `.dev.vars` (optionally
-   `pnpm env:init --env dev|prod` for per-env staging files). For deployed dev/prod,
-   paste the corresponding base64 values into Wrangler secrets:
+   `pnpm env:init --env dev` for the remote-dev file). Deployed dev/prod need
+   their own independent JWT pairs, generated securely outside the project —
+   never copy either local file's pair — then set per environment:
 
    ```bash
-   wrangler secret put JWT_PRIVATE_KEY --env dev
-   wrangler secret put JWT_PUBLIC_KEY --env dev
-   wrangler secret put JWT_PRIVATE_KEY --env prod
-   wrangler secret put JWT_PUBLIC_KEY --env prod
+   pnpm exec wrangler secret put JWT_PRIVATE_KEY --env dev --config wrangler.jsonc
+   pnpm exec wrangler secret put JWT_PUBLIC_KEY --env dev --config wrangler.jsonc
+   pnpm exec wrangler secret put JWT_PRIVATE_KEY --env prod --config wrangler.jsonc
+   pnpm exec wrangler secret put JWT_PUBLIC_KEY --env prod --config wrangler.jsonc
    ```
 
-   Never reuse local keys on prod. Also set `PRIV_API_KEY`. `secrets.required` in
-   `wrangler.jsonc` makes the deploy fail with a clear error until all three are set.
+   Never reuse local keys on deployed environments. Also set `PRIV_API_KEY`.
+   `secrets.required` in `wrangler.jsonc` makes the deploy fail with a clear
+   error until all three are set.
 
 3. Update `shared/constants/site.ts` with your domains.
 4. Create an admin user: register an account in the app, then flip
@@ -252,7 +254,7 @@ pnpm fmt && pnpm fmt:style   # formatting + class sorting, then re-check the dif
 | `pnpm test:e2e`                        | Playwright (boots `pnpm dev`) — smoke tests in `test/e2e/`    |
 | `pnpm check:docs`                      | Validate agent docs — `.md` refs exist, `pnpm` scripts exist  |
 | `pnpm gen:keys`                        | Generate local JWT keypair into `.dev.vars`                   |
-| `pnpm env:init`                        | Create/update `.dev.vars` + `.env`; `--env dev` or `--env prod` creates the matching per-env file |
+| `pnpm env:init`                        | Create/update `.dev.vars` + `.env`; `--env dev` creates `.dev.vars.dev` for `pnpm dev:remote` |
 | `pnpm env:examples`                    | Regenerate tracked environment examples from the manifest     |
 | `pnpm bootstrap`                       | Local-only bootstrap (any flag rejected)                      |
 | `pnpm cf:setup` / `cf:setup:prod`      | Provision CF resources (offline plan; `--apply` gated)        |

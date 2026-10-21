@@ -51,8 +51,8 @@ else {
   ok("copied wrangler.example.jsonc → wrangler.jsonc");
 }
 
-// 3. Local env files (.dev.vars + .env — remote env files are opt-in via
-//    `pnpm env:init --env dev|prod`, never part of bootstrap)
+// 3. Local env files (.dev.vars + .env — `.dev.vars.dev` for `pnpm dev:remote` is opt-in via
+//    `pnpm env:init --env dev`, never part of bootstrap)
 initEnvFiles({ log: ok });
 
 // 4–6. Types + database
