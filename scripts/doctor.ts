@@ -9,6 +9,8 @@ import { parseEnv } from "node:util";
 
 import { parse as parseJsonc, type ParseError } from "jsonc-parser";
 
+import { devVarsFile, LOCAL_CORE_KEYS } from "./lib/dev-vars";
+
 type CheckStatus = "ok" | "warn" | "FAIL";
 
 interface CheckResult {
@@ -124,7 +126,7 @@ if (remoteEnv && wranglerConfig && typeof wranglerConfig === "object") {
   const envCfg = (wranglerConfig.env as Record<string, unknown> | undefined)?.[remoteEnv] as
     | Record<string, unknown>
     | undefined;
-  const secretsFile = remoteEnv === "prod" ? ".dev.vars.prod" : ".dev.vars";
+  const secretsFile = devVarsFile(remoteEnv);
   if (!envCfg) {
     check(`wrangler.jsonc env.${remoteEnv} defined`, "FAIL", `no env.${remoteEnv} block found`);
   } else {
@@ -155,21 +157,27 @@ if (remoteEnv && wranglerConfig && typeof wranglerConfig === "object") {
         : `${problems.join(", ")} — provision with \`${pm} run cf:setup\` or set real resource IDs manually`
     );
   }
-  const requiredSecrets = (envCfg?.secrets as { required?: string[] } | undefined)?.required ??
-    (wranglerConfig.secrets as { required?: string[] } | undefined)?.required ?? [
-      "JWT_PRIVATE_KEY",
-      "JWT_PUBLIC_KEY",
-      "PRIV_API_KEY"
-    ];
-  const secrets = existsSync(secretsFile) ? parseEnv(readFileSync(secretsFile, "utf8")) : {};
-  const missing = requiredSecrets.filter((k) => !secrets[k]);
-  check(
-    `Required secrets present in ${secretsFile}`,
-    missing.length === 0 ? "ok" : "warn",
-    missing.length === 0
-      ? null
-      : `missing: ${missing.join(", ")} — ${secretsFile} backs \`pnpm dev${remoteEnv === "prod" ? ":prod" : ""}\` local serves only; deployed secrets are set via \`wrangler secret put\` and are not verified here`
-  );
+  if (remoteEnv === "prod" && !existsSync(secretsFile)) {
+    check(
+      `Optional staging file ${secretsFile}`,
+      "ok",
+      `absent — optional operator staging only, not loaded by any dev command; deployed env.prod secrets are set via \`wrangler secret put --env prod\` and are not verified here`
+    );
+  } else {
+    const secrets = existsSync(secretsFile) ? parseEnv(readFileSync(secretsFile, "utf8")) : {};
+    const missing = LOCAL_CORE_KEYS.filter((k) => !secrets[k]);
+    check(
+      `Core secrets present in ${secretsFile}`,
+      missing.length === 0 ? "ok" : "warn",
+      missing.length === 0
+        ? null
+        : `missing: ${missing.join(", ")} — ${secretsFile} ${
+            remoteEnv === "dev"
+              ? "backs `pnpm dev:remote` local serves only"
+              : "is optional operator staging, not loaded by any dev command"
+          }; fill it with \`${pm} run env:init --env ${remoteEnv}\`. Deployed env.${remoteEnv} secrets are set via \`wrangler secret put --env ${remoteEnv}\` and are not verified here`
+    );
+  }
   const ownedDbEntry = (
     (envCfg?.d1_databases as { binding?: string; migrations_dir?: string }[]) ?? []
   ).find((d) => d.binding === "db");

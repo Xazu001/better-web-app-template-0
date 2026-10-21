@@ -1,11 +1,5 @@
 import { spawnSync } from "node:child_process";
-import {
-  existsSync,
-  mkdtempSync,
-  readFileSync,
-  rmSync,
-  writeFileSync
-} from "node:fs";
+import { existsSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from "node:fs";
 import { createRequire } from "node:module";
 import { tmpdir } from "node:os";
 import { dirname, join } from "node:path";
@@ -174,9 +168,7 @@ export function resolveAccountId(opts: {
     [opts.processEnv, "CLOUDFLARE_ACCOUNT_ID (environment)"],
     [opts.dotEnvFile, "CLOUDFLARE_ACCOUNT_ID (.env)"],
     [
-      opts.envAccountId && !PLACEHOLDER_ID.test(opts.envAccountId)
-        ? opts.envAccountId
-        : undefined,
+      opts.envAccountId && !PLACEHOLDER_ID.test(opts.envAccountId) ? opts.envAccountId : undefined,
       `wrangler.jsonc env account_id`
     ],
     [
@@ -490,9 +482,11 @@ export async function main(deps: {
     for (const d of plan.d1) {
       if (resolvedD1.has(d.index)) continue;
       wrap(["d1", "create", d.name, "--update-config=false", "--config", tmpConfig]);
-      const after = JSON.parse(
-        wrap(["d1", "list", "--json", "--config", tmpConfig]).stdout
-      ) as { uuid?: string; id?: string; name: string }[];
+      const after = JSON.parse(wrap(["d1", "list", "--json", "--config", tmpConfig]).stdout) as {
+        uuid?: string;
+        id?: string;
+        name: string;
+      }[];
       const created = after.filter((x) => x.name === d.name);
       const id = created.length === 1 ? (created[0].uuid ?? created[0].id) : undefined;
       if (!id || !D1_ID_RE.test(id)) {
@@ -504,18 +498,11 @@ export async function main(deps: {
     }
     for (const k of plan.kv) {
       if (resolvedKv.has(k.index)) continue;
-      wrap([
-        "kv",
-        "namespace",
-        "create",
-        k.title,
-        "--update-config=false",
-        "--config",
-        tmpConfig
-      ]);
-      const after = JSON.parse(
-        wrap(["kv", "namespace", "list", "--config", tmpConfig]).stdout
-      ) as { id: string; title: string }[];
+      wrap(["kv", "namespace", "create", k.title, "--update-config=false", "--config", tmpConfig]);
+      const after = JSON.parse(wrap(["kv", "namespace", "list", "--config", tmpConfig]).stdout) as {
+        id: string;
+        title: string;
+      }[];
       const created = after.filter((x) => x.title === k.title);
       if (created.length !== 1 || !KV_ID_RE.test(created[0].id)) {
         throw new Error(`could not resolve a unique id for created KV "${k.title}" — stopping`);
@@ -552,7 +539,12 @@ export async function main(deps: {
       .map((d) => ({ index: d.index, id: resolvedD1.get(d.index)!, name: d.name }));
     const kvUpdates = plan.kv
       .filter((k) => resolvedKv.has(k.index))
-      .map((k) => ({ index: k.index, id: resolvedKv.get(k.index)!, binding: k.binding, title: k.title }));
+      .map((k) => ({
+        index: k.index,
+        id: resolvedKv.get(k.index)!,
+        binding: k.binding,
+        title: k.title
+      }));
 
     const edits: { path: (string | number)[]; value: unknown }[] = [];
     if (!rootConfig.account_id || PLACEHOLDER_ID.test(rootConfig.account_id)) {
@@ -587,8 +579,6 @@ export async function main(deps: {
     if (opts.env === "dev") {
       patchD1(rootConfig as EnvConfig, []);
       patchKv(rootConfig as EnvConfig, [], kvUpdates);
-      patchD1(rootConfig.env?.local as EnvConfig | undefined, ["env", "local"]);
-      patchKv(rootConfig.env?.local as EnvConfig | undefined, ["env", "local"], kvUpdates);
     }
     let text = configText;
     for (const e of edits) {
@@ -603,11 +593,13 @@ export async function main(deps: {
 
     out(`\ncf:setup: env.${opts.env} provisioned; wrangler.jsonc updated`);
     out(
-      "next: set worker secrets in .dev.vars / .dev.vars.prod and `wrangler secret put` for deploys; run `pnpm db` / `pnpm db:prod` migrations when ready; deploy via pnpm deploy/deploy:prod"
+      "next: run `pnpm env:init --env dev` for local serve secrets (.dev.vars.dev), set deployed secrets via `wrangler secret put --env <dev|prod>`; run `pnpm db` / `pnpm db:prod` migrations when ready; deploy via pnpm deploy:dev/deploy:prod"
     );
     return 0;
   } catch (e) {
-    out(`cf:setup: FAILED — ${redact(e instanceof Error ? e.message : String(e), secretsToRedact)}`);
+    out(
+      `cf:setup: FAILED — ${redact(e instanceof Error ? e.message : String(e), secretsToRedact)}`
+    );
     if (createdNames.length > 0) {
       out(`created so far: ${createdNames.join(", ")}`);
     }

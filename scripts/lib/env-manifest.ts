@@ -1,3 +1,5 @@
+import { parseEnv } from "node:util";
+
 export type EnvFileKind = "dev-vars" | "env";
 export type EnvGenerator = "jwt-pair" | "hex32";
 
@@ -12,9 +14,11 @@ export interface EnvVarSpec {
 export const ENV_FILE_HEADERS: Record<EnvFileKind, readonly string[]> = {
   "dev-vars": [
     "# Generated from scripts/lib/env-manifest.ts — edit the manifest, then run `pnpm env:examples`.",
-    "# `pnpm env:init` creates `.dev.vars` and `.dev.vars.prod` with distinct JWT key pairs.",
-    "# Deployed environments use `wrangler secret put <NAME>`.",
-    "# Local Worker secrets for Wrangler; `.dev.vars` is gitignored."
+    "# `pnpm env:init` creates `.dev.vars`; `pnpm env:init --env dev|prod` creates `.dev.vars.dev`",
+    "# / `.dev.vars.prod` — each a complete independent file with its own JWT pair (never merged).",
+    "# `.dev.vars.dev` is only for `pnpm dev:remote`; `.dev.vars.prod` is optional local staging.",
+    "# Deployed environments use `wrangler secret put <NAME>` — these files are never deployed.",
+    "# Local Worker secrets for Wrangler; `.dev.vars*` files are gitignored."
   ],
   env: [
     "# Generated from scripts/lib/env-manifest.ts — edit the manifest, then run `pnpm env:examples`.",
@@ -23,7 +27,7 @@ export const ENV_FILE_HEADERS: Record<EnvFileKind, readonly string[]> = {
   ]
 };
 
-const ALL_SECRET_SECTIONS = ["default", "local", "dev", "prod"] as const;
+const ALL_SECRET_SECTIONS = ["default", "dev", "prod"] as const;
 
 export const ENV_VARS: readonly EnvVarSpec[] = [
   {
@@ -99,19 +103,23 @@ export function fillEnvFile(
   let content = existing;
   const added: string[] = [];
   const filled: string[] = [];
+  const parsed = parseEnv(existing) as Record<string, string | undefined>;
 
   for (const spec of specs) {
     const prefix = `${spec.name}=`;
-    const linePattern = new RegExp(`^${spec.name}=.*$`, "m");
-    const match = content.match(linePattern);
+    const linePattern = new RegExp(
+      `^([ \\t]*(?:export[ \\t]+)?${spec.name}[ \\t]*=[ \\t]*).*$`,
+      "m"
+    );
 
-    if (match) {
-      if (match[0].slice(prefix.length) === "" && generated[spec.name]) {
-        content = content.replace(linePattern, `${prefix}${generated[spec.name]}`);
+    if (linePattern.test(content)) {
+      if (!parsed[spec.name] && generated[spec.name]) {
+        content = content.replace(linePattern, `$1${generated[spec.name]}`);
         filled.push(spec.name);
       }
       continue;
     }
+    if (Object.hasOwn(parsed, spec.name)) continue;
 
     const separator =
       content.length === 0

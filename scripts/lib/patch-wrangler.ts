@@ -11,7 +11,6 @@ import type { Edit, JSONPath, Node } from "jsonc-parser";
 export interface WranglerIds {
   /** database_name → database_id (dev + prod names differ, so name-keyed) */
   d1: Record<string, string | null>;
-  /** top-level + env.dev share the dev namespace; env.prod gets its own */
   kv: { dev: string | null; prod: string | null };
 }
 
@@ -39,7 +38,6 @@ export function applyWranglerIds(text: string, ids: WranglerIds): string {
     if (!id) continue;
     for (const arrayPath of [
       ["d1_databases"],
-      ["env", "local", "d1_databases"],
       ["env", "dev", "d1_databases"],
       ["env", "prod", "d1_databases"]
     ]) {
@@ -52,7 +50,6 @@ export function applyWranglerIds(text: string, ids: WranglerIds): string {
 
   const kvTargets: Array<[JSONPath, string | null]> = [
     [["kv_namespaces"], ids.kv.dev],
-    [["env", "local", "kv_namespaces"], ids.kv.dev],
     [["env", "dev", "kv_namespaces"], ids.kv.dev],
     [["env", "prod", "kv_namespaces"], ids.kv.prod]
   ];

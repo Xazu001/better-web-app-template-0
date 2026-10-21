@@ -1,7 +1,7 @@
 import { spawnSync } from "node:child_process";
 import { mkdirSync, mkdtempSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
-import { join } from "node:path";
+import { dirname, join } from "node:path";
 
 import { describe, expect, it } from "vitest";
 
@@ -17,7 +17,9 @@ const fixture = (files: Record<string, string>) => {
   const dir = mkdtempSync(join(tmpdir(), "doctor-test-"));
   mkdirSync(join(dir, "node_modules"), { recursive: true });
   for (const [name, content] of Object.entries(files)) {
-    writeFileSync(join(dir, name), content);
+    const target = join(dir, name);
+    mkdirSync(dirname(target), { recursive: true });
+    writeFileSync(target, content);
   }
   return dir;
 };
@@ -111,5 +113,73 @@ describe("check:setup doctor", () => {
     const r = runDoctor(dir, ["--env", "dev"]);
     expect(r.stdout).toContain("placeholder/missing id");
     expect(r.stdout).toContain("malformed id");
+  });
+  it("--env dev checks .dev.vars.dev, not .dev.vars", () => {
+    const dir = fixture({
+      "wrangler.jsonc": wrangler({
+        dev: {
+          name: "template-dev",
+          d1_databases: [
+            {
+              binding: "db",
+              database_name: "template-db-dev",
+              database_id: "99999999-8888-7777-6666-555555555555",
+              migrations_dir: "drizzle"
+            }
+          ]
+        }
+      }),
+      ".dev.vars": "JWT_PRIVATE_KEY=a\nJWT_PUBLIC_KEY=b\nPRIV_API_KEY=c\n"
+    });
+    const r = runDoctor(dir, ["--env", "dev"]);
+    expect(r.status).toBe(0);
+    expect(r.stdout).toContain(".dev.vars.dev");
+    expect(r.stdout).not.toContain("JWT keypair in .dev.vars");
+    expect(r.stdout).toMatch(/missing: .*JWT_PRIVATE_KEY/);
+  });
+  it("--env dev needs core keys only — absent optional integrations do not warn", () => {
+    const dir = fixture({
+      "wrangler.jsonc": wrangler({
+        dev: {
+          name: "template-dev",
+          secrets: { required: ["JWT_PRIVATE_KEY", "GITHUB_CLIENT_SECRET"] },
+          d1_databases: [
+            {
+              binding: "db",
+              database_name: "template-db-dev",
+              database_id: "99999999-8888-7777-6666-555555555555",
+              migrations_dir: "drizzle"
+            }
+          ]
+        }
+      }),
+      "drizzle/0000_init.sql": "CREATE TABLE t (id INTEGER);",
+      ".dev.vars.dev": "JWT_PRIVATE_KEY=a\nJWT_PUBLIC_KEY=b\nPRIV_API_KEY=c\n"
+    });
+    const r = runDoctor(dir, ["--env", "dev", "--strict"]);
+    expect(r.stdout).toContain("Core secrets present in .dev.vars.dev");
+    expect(r.stdout).not.toMatch(/missing:.*GITHUB/);
+    expect(r.status).toBe(0);
+  });
+  it("--env prod --strict does not fail on an absent optional staging file", () => {
+    const dir = fixture({
+      "wrangler.jsonc": wrangler({
+        prod: {
+          name: "template",
+          d1_databases: [
+            {
+              binding: "db",
+              database_name: "template-db",
+              database_id: "99999999-8888-7777-6666-555555555555",
+              migrations_dir: "drizzle-prod"
+            }
+          ]
+        }
+      }),
+      "drizzle-prod/0000_init.sql": "CREATE TABLE t (id INTEGER);"
+    });
+    const r = runDoctor(dir, ["--env", "prod", "--strict"]);
+    expect(r.stdout).toContain("Optional staging file .dev.vars.prod");
+    expect(r.status).toBe(0);
   });
 });

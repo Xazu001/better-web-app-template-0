@@ -2,7 +2,7 @@ import { defineConfig, devices } from "@playwright/test";
 
 if (process.env.CLOUDFLARE_ENV && process.env.CLOUDFLARE_ENV !== "local") {
   throw new Error(
-    "E2E tests require fully local bindings — only CLOUDFLARE_ENV=local (or unset) is allowed."
+    "E2E tests require fully local bindings — only the local env (top-level wrangler config, CLOUDFLARE_ENV unset/empty or local) is allowed."
   );
 }
 
@@ -29,7 +29,7 @@ export default defineConfig({
     }
   ],
   webServer: {
-    command: "pnpm dev:local",
+    command: "pnpm dev",
     url: "http://localhost:5173",
     reuseExistingServer: false,
     timeout: 120 * 1000

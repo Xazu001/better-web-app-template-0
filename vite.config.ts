@@ -1,29 +1,15 @@
 import path from "path";
 
-import { cloudflare } from "@cloudflare/vite-plugin";
+import { cloudflare, type WorkerConfig } from "@cloudflare/vite-plugin";
 import { reactRouter } from "@react-router/dev/vite";
 import babel from "@rolldown/plugin-babel";
 import tailwindcss from "@tailwindcss/vite";
 import { defineConfig } from "vite";
 
+import { resolveSecretsRequired } from "./scripts/lib/dev-vars.ts";
 import { resolveCloudflareEnv } from "./vite-preflight.ts";
 
 type AppEnv = "local" | "dev" | "prod";
-
-const APP_ENV_VALUES: AppEnv[] = ["local", "dev", "prod"];
-
-function resolveAppEnv(command: "serve" | "build"): AppEnv {
-  const rawAppEnv = (process.env.APP_ENV ?? "").toLowerCase();
-
-  if (APP_ENV_VALUES.includes(rawAppEnv as AppEnv)) {
-    return rawAppEnv as AppEnv;
-  }
-
-  // Fall back to CLOUDFLARE_ENV when APP_ENV is not set explicitly
-  if (resolveCloudflareEnv(command) === "prod") return "prod";
-  if (command === "serve") return "local";
-  return "dev";
-}
 
 // Type for Vite's WebSocket error data
 interface WSErrorData {
@@ -33,11 +19,13 @@ interface WSErrorData {
 }
 
 export default defineConfig(({ command }) => {
-  const appEnv = resolveAppEnv(command);
   const cloudflareEnv = resolveCloudflareEnv(command);
-  const isDevEnv = appEnv !== "prod";
+  const appEnv: AppEnv = command === "serve" ? "local" : cloudflareEnv;
+  const isDevEnv = command === "serve";
 
   const localBindings = command === "serve" && cloudflareEnv === "local";
+
+  process.env.CLOUDFLARE_ENV = cloudflareEnv === "local" ? "" : cloudflareEnv;
 
   return {
     define: {
@@ -52,7 +40,15 @@ export default defineConfig(({ command }) => {
       tailwindcss(),
       cloudflare({
         viteEnvironment: { name: "ssr" },
-        remoteBindings: cloudflareEnv !== "local"
+        remoteBindings: cloudflareEnv !== "local",
+        config:
+          command === "serve"
+            ? (workerConfig: WorkerConfig) => {
+                workerConfig.secrets = {
+                  required: resolveSecretsRequired({ env: cloudflareEnv })
+                };
+              }
+            : undefined
       }),
       reactRouter(),
       ...(command === "build" && appEnv === "prod"

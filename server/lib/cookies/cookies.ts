@@ -1,5 +1,7 @@
 import { type Cookie, type CookieOptions, createCookie } from "react-router";
 
+import { IS_DEV } from "@/constants";
+
 export type ConsentCategory = "necessary" | "personalization" | "marketing" | "analytics";
 
 export interface TypedCookie<T> {
@@ -42,7 +44,7 @@ export const sessionCookie = createTypedCookie<SessionValue>(
   SESSION_COOKIE_NAME,
   {
     httpOnly: true,
-    secure: !__IS_DEV__,
+    secure: !IS_DEV,
     sameSite: "lax",
     path: "/",
     maxAge: 60 * 60 * 24 * 30
@@ -57,7 +59,7 @@ export const preferencesCookie = createTypedCookie<PreferencesValue>(
   PREFERENCES_COOKIE_NAME,
   {
     httpOnly: false,
-    secure: !__IS_DEV__,
+    secure: !IS_DEV,
     sameSite: "lax",
     path: "/",
     maxAge: 60 * 60 * 24 * 365
@@ -72,7 +74,7 @@ export const themeCookie = createTypedCookie<ThemeValue>(
   THEME_COOKIE_NAME,
   {
     httpOnly: false,
-    secure: !__IS_DEV__,
+    secure: !IS_DEV,
     sameSite: "lax",
     path: "/",
     maxAge: 60 * 60 * 24 * 365
@@ -98,7 +100,7 @@ export const cookieConsentCookie = createTypedCookie<CookieConsentValue>(
   COOKIE_CONSENT_COOKIE_NAME,
   {
     httpOnly: true,
-    secure: !__IS_DEV__,
+    secure: !IS_DEV,
     sameSite: "lax",
     path: "/",
     maxAge: 60 * 60 * 24 * 365
@@ -112,7 +114,7 @@ export const analyticsConsentCookie = createTypedCookie<boolean>(
   ANALYTICS_CONSENT_COOKIE_NAME,
   {
     httpOnly: false,
-    secure: !__IS_DEV__,
+    secure: !IS_DEV,
     sameSite: "lax",
     path: "/",
     maxAge: 60 * 60 * 24 * 365
@@ -126,7 +128,7 @@ export const marketingConsentCookie = createTypedCookie<boolean>(
   MARKETING_CONSENT_COOKIE_NAME,
   {
     httpOnly: false,
-    secure: !__IS_DEV__,
+    secure: !IS_DEV,
     sameSite: "lax",
     path: "/",
     maxAge: 60 * 60 * 24 * 365

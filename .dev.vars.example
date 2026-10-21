@@ -1,7 +1,9 @@
 # Generated from scripts/lib/env-manifest.ts — edit the manifest, then run `pnpm env:examples`.
-# `pnpm env:init` creates `.dev.vars` and `.dev.vars.prod` with distinct JWT key pairs.
-# Deployed environments use `wrangler secret put <NAME>`.
-# Local Worker secrets for Wrangler; `.dev.vars` is gitignored.
+# `pnpm env:init` creates `.dev.vars`; `pnpm env:init --env dev|prod` creates `.dev.vars.dev`
+# / `.dev.vars.prod` — each a complete independent file with its own JWT pair (never merged).
+# `.dev.vars.dev` is only for `pnpm dev:remote`; `.dev.vars.prod` is optional local staging.
+# Deployed environments use `wrangler secret put <NAME>` — these files are never deployed.
+# Local Worker secrets for Wrangler; `.dev.vars*` files are gitignored.
 
 # RS256 key pair for JWT sessions (base64-encoded PKCS8 / SPKI).
 # Rotate with `pnpm gen:keys [file]`; `pnpm env:init` creates distinct pairs.

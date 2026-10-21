@@ -9,7 +9,7 @@ Run the app and check terminal output for errors — no browser involved. Focuse
 
 ## Steps
 
-1. **Start the dev server** — run `pnpm dev:local` in the background
+1. **Start the dev server** — run `pnpm dev` in the background
 2. **Watch terminal output** — wait for the server to start and check for:
    - Build/compilation errors (TypeScript, Vite, bundler)
    - Runtime errors (module not found, import failures, SSR crashes)

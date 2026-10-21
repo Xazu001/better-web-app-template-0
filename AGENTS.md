@@ -66,9 +66,9 @@ pnpm test        # vitest (unit)
 pnpm fmt && pnpm fmt:style   # formatting + class sorting, then re-check the diff
 ```
 
-- After route/service/DB changes: also run the `auto-test` skill (boots `pnpm dev:local`, watches for runtime errors).
+- After route/service/DB changes: also run the `auto-test` skill (boots `pnpm dev`, watches for runtime errors).
 - After UI changes: also run the `auto-test-browser` skill.
-- CI runs `typecheck + lint + test + check:docs` plus a separate `e2e` job (Playwright, local emulated bindings) — mirror it locally to avoid surprises (`.github/workflows/ci.yml`).
+- The CI workflow is archived at `.github/workflows/ci.yml.disabled` (GitHub Actions disabled) — run the same checks locally: `typecheck + lint + test + check:docs` plus `test:e2e` (Playwright, local emulated bindings).
 
 ## Working style
 
@@ -110,7 +110,7 @@ After trimming: `pnpm typecheck && pnpm lint && pnpm test` — delete tests that
 4. Create local env files with `pnpm env:init`; set deployed secrets with `wrangler secret put JWT_PRIVATE_KEY`, `JWT_PUBLIC_KEY`, and `PRIV_API_KEY`. Rotate keys with `pnpm gen:keys [file]`; use a distinct JWT pair per environment and never reuse local keys on prod.
 5. Update `shared/constants/site.ts` (URLs, brand, contact email)
 6. `pnpm db:generate && pnpm db:migrate`
-7. `pnpm dev:local` → http://localhost:5173
+7. `pnpm dev` → http://localhost:5173
 8. Create an admin: register a user in the app, then `wrangler d1 execute template-db-dev --command "UPDATE user_rights SET user_admin = 1 WHERE user_id = '…'"`
 
 ## Formatting & Class Sorting

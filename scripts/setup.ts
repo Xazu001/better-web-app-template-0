@@ -6,7 +6,7 @@
  *
  *   1. `pnpm install` (skipped when node_modules exists)
  *   2. `wrangler.example.jsonc` → `wrangler.jsonc` (skipped when it exists)
- *   3. `pnpm env:init` creates `.dev.vars`, `.dev.vars.prod`, and `.env`
+ *   3. `pnpm env:init` creates `.dev.vars` and `.env`
  *   4. `pnpm typegen` (wrangler types + react-router typegen)
  *   5. `pnpm db:generate` (Drizzle → drizzle/*.sql)
  *   6. `pnpm db:migrate:local` (local emulated D1)
@@ -51,7 +51,8 @@ else {
   ok("copied wrangler.example.jsonc → wrangler.jsonc");
 }
 
-// 3. Local env files
+// 3. Local env files (.dev.vars + .env — remote env files are opt-in via
+//    `pnpm env:init --env dev|prod`, never part of bootstrap)
 initEnvFiles({ log: ok });
 
 // 4–6. Types + database

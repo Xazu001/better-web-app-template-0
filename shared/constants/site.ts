@@ -4,10 +4,10 @@
  */
 export const APP_VERSION = "0.1.0";
 
-const getAppEnv = (): "local" | "dev" | "prod" => {
-  if (typeof process !== "undefined" && process.env.APP_ENV) {
-    return process.env.APP_ENV as "local" | "dev" | "prod";
-  }
+type AppEnv = "local" | "dev" | "prod";
+type CloudflareEnv = "local" | "dev" | "prod";
+
+const getAppEnv = (): AppEnv => {
   try {
     return __APP_ENV__;
   } catch {
@@ -17,15 +17,7 @@ const getAppEnv = (): "local" | "dev" | "prod" => {
 
 export const APP_ENV = getAppEnv();
 
-type AppEnv = "local" | "dev" | "prod";
-type CloudflareEnv = "local" | "dev" | "prod";
-
 const getCloudflareEnv = (): CloudflareEnv => {
-  if (typeof process !== "undefined" && process.env.CLOUDFLARE_ENV) {
-    const env = process.env.CLOUDFLARE_ENV.toLowerCase();
-    if (env === "local" || env === "dev" || env === "prod") return env;
-    return "dev";
-  }
   try {
     return __CLOUDFLARE_ENV__;
   } catch {
@@ -34,6 +26,16 @@ const getCloudflareEnv = (): CloudflareEnv => {
 };
 
 export const CLOUDFLARE_ENV = getCloudflareEnv();
+
+const getIsDev = (): boolean => {
+  try {
+    return __IS_DEV__;
+  } catch {
+    return true;
+  }
+};
+
+export const IS_DEV = getIsDev();
 
 const getLocalBindings = (): boolean => {
   try {
@@ -55,18 +57,12 @@ const siteUrlMap: Record<AppEnv, string> = {
 };
 
 export const BRAND_URL = "https://example.com";
-export const SITE_URL = siteUrlMap[APP_ENV];
 
-// R2 CDN URL follows the active Cloudflare binding (CLOUDFLARE_ENV), not APP_ENV,
-// so `dev:prod` (APP_ENV=local + CLOUDFLARE_ENV=prod) serves prod media while
-// keeping localhost auth/cookies intact.
 const r2UrlMap: Record<CloudflareEnv, string> = {
   local: "http://localhost:5173/api/_dev/r2",
   dev: "https://r2-dev.example.com",
   prod: "https://r2.example.com"
 };
-
-export const R2_URL = r2UrlMap[CLOUDFLARE_ENV];
 
 // Mail assets must be reachable by recipients' mail clients — never localhost.
 // Local dev points at the dev deployment, which serves the same public/ assets.
@@ -76,7 +72,25 @@ const mailAssetsUrlMap: Record<AppEnv, string> = {
   prod: "https://example.com"
 };
 
-export const MAIL_ASSETS_URL = mailAssetsUrlMap[APP_ENV];
+export function resolveSiteUrls(
+  appEnv: AppEnv,
+  cloudflareEnv: CloudflareEnv
+): {
+  siteUrl: string;
+  r2Url: string;
+  mailAssetsUrl: string;
+} {
+  return {
+    siteUrl: siteUrlMap[appEnv],
+    r2Url: r2UrlMap[cloudflareEnv],
+    mailAssetsUrl: mailAssetsUrlMap[appEnv]
+  };
+}
+
+const urls = resolveSiteUrls(APP_ENV, CLOUDFLARE_ENV);
+export const SITE_URL = urls.siteUrl;
+export const R2_URL = urls.r2Url;
+export const MAIL_ASSETS_URL = urls.mailAssetsUrl;
 
 export const CONTACT_EMAIL = "contact@example.com";
 

@@ -10,7 +10,8 @@
     "worker.ts",
     "server/**/*",
     "shared/**/*",
-    "scripts/**/*.ts"
+    "scripts/**/*.ts",
+    "test/unit/vite-config.test.ts"
   ],
   "compilerOptions": {
     "composite": true,

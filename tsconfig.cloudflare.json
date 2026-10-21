@@ -17,6 +17,7 @@
     "vite-env.d.ts",
     "vite-preflight.ts"
   ],
+  "exclude": ["test/unit/vite-config.test.ts"],
   "compilerOptions": {
     "composite": true,
     "allowImportingTsExtensions": true,

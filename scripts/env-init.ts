@@ -7,7 +7,7 @@ import { parseEnv } from "node:util";
 import { parse as parseJsonc, type ParseError } from "jsonc-parser";
 
 import { generateJwtPair } from "./gen-keys";
-import { jwtPairState } from "./lib/dev-vars";
+import { devVarsFile, jwtPairState, type DevVarsEnv } from "./lib/dev-vars";
 import {
   ENV_VARS,
   fillEnvFile,
@@ -80,12 +80,14 @@ function generatedValues(
   return generated;
 }
 
-export function initEnvFiles(opts: { cwd?: string; log?: (msg: string) => void } = {}): void {
+export function initEnvFiles(
+  opts: { cwd?: string; env?: DevVarsEnv; log?: (msg: string) => void } = {}
+): void {
   const cwd = opts.cwd ?? process.cwd();
   const log = opts.log ?? console.log;
+  const env = opts.env ?? "local";
   const targets: { file: string; kind: EnvFileKind }[] = [
-    { file: ".dev.vars", kind: "dev-vars" },
-    { file: ".dev.vars.prod", kind: "dev-vars" },
+    { file: devVarsFile(env), kind: "dev-vars" },
     { file: ".env", kind: "env" }
   ];
   const wranglerValues = valuesFromWrangler(cwd);
@@ -144,14 +146,25 @@ function checkExamples(): boolean {
 }
 
 function runCli(args: string[]): void {
-  if (args.length === 0) {
-    initEnvFiles();
-  } else if (args.length === 1 && args[0] === "--examples") {
+  const envIndex = args.indexOf("--env");
+  const rest = args.filter((_, i) => envIndex === -1 || (i !== envIndex && i !== envIndex + 1));
+  if (envIndex !== -1) {
+    const value = args[envIndex + 1];
+    if (value !== "local" && value !== "dev" && value !== "prod") {
+      console.error(`env:init: invalid --env "${value ?? ""}" — expected local, dev or prod`);
+      process.exitCode = 1;
+      return;
+    }
+  }
+  const env = (envIndex !== -1 ? args[envIndex + 1] : "local") as DevVarsEnv;
+  if (rest.length === 0) {
+    initEnvFiles({ env });
+  } else if (rest.length === 1 && rest[0] === "--examples") {
     writeExamples();
-  } else if (args.length === 1 && args[0] === "--check") {
+  } else if (rest.length === 1 && rest[0] === "--check") {
     if (!checkExamples()) process.exitCode = 1;
   } else {
-    console.error("Usage: pnpm env:init [--examples|--check]");
+    console.error("Usage: pnpm env:init [--env local|dev|prod] [--examples|--check]");
     process.exitCode = 1;
   }
 }
