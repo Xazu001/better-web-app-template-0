@@ -231,7 +231,7 @@ export default function AdminLayout({ loaderData }: Route.ComponentProps) {
         {/* Desktop Left Sidebar — sits underneath the top header */}
         <aside
           className={cn(
-            "hidden sticky top-14 z-sticky desktop:flex flex-col shrink-0 h-[calc(100dvh-calc(var(--spacing)*14))] bg-surface border-outline-variant/30 border-r select-none duration-medium-2 ease-md3 transition-all",
+            "hidden sticky top-14 z-sticky desktop:flex flex-col shrink-0 h-[calc(100dvh-calc(var(--spacing)*14))] bg-surface border-outline-variant/30 border-r select-none duration-medium-2 ease-ui transition-all",
             isCollapsed ? "w-18" : "w-64"
           )}
         >

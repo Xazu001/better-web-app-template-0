@@ -125,13 +125,13 @@ Tonal elevation via color roles (lighter = higher), without decorative shadows. 
 State layer is a **`<span>` child** (NOT `::after`), placed as the last (or before icons) in the component, with `aria-hidden="true"`:
 
 ```tsx
-<span className="md3-btn__state-layer" aria-hidden="true" />
+<span className="ui-btn__state-layer" aria-hidden="true" />
 ```
 
 ### CSS pattern (verified with `button.css`, `chip.css`, `menu.css`, `segmented-button.css`, `checkbox.css`)
 
 ```css
-.md3-btn__state-layer {
+.ui-btn__state-layer {
   @apply absolute
     inset-0
     bg-current
@@ -140,20 +140,20 @@ State layer is a **`<span>` child** (NOT `::after`), placed as the last (or befo
     pointer-events-none
     transition-opacity
     duration-short-3
-    ease-md3;
+    ease-ui;
 }
 
 @media (hover: hover) {
-  .md3-btn:hover .md3-btn__state-layer {
+  .ui-btn:hover .ui-btn__state-layer {
     @apply opacity-[0.1];
   }
 }
 
-.md3-btn:focus-visible .md3-btn__state-layer {
+.ui-btn:focus-visible .ui-btn__state-layer {
   @apply opacity-[0.1];
 }
 
-.md3-btn:active .md3-btn__state-layer {
+.ui-btn:active .ui-btn__state-layer {
   @apply opacity-[0.1];
 }
 ```
@@ -164,7 +164,7 @@ State layer components:
 - `rounded-[inherit]` — inherits radius from parent, so changing the component radius doesn't require updating the overlay.
 - `pointer-events-none` — doesn't block clicks on the component.
 - `opacity-0` default + `opacity-[0.1]` on hover/focus/active.
-- `transition-opacity duration-short-3 ease-md3` — smooth transition (see § 6).
+- `transition-opacity duration-short-3 ease-ui` — smooth transition (see § 6).
 - `aria-hidden="true"` — decorative, not in accessibility tree.
 
 ### Hover gating
@@ -173,7 +173,7 @@ Every raw `:hover` in `.css` MUST be in `@media (hover: hover) { ... }` — othe
 
 ### Conditional state layer
 
-Components with conditional state layer + ripple render them ONLY when interactive. Example from `chip.tsx` (line 60–83):
+Components with conditional state layer + uix-ripple render them ONLY when interactive. Example from `chip.tsx` (line 60–83):
 
 ```tsx
 const interactive = Boolean(to || onClick);
@@ -181,20 +181,20 @@ const interactive = Boolean(to || onClick);
 {
   interactive && (
     <>
-      <span ref={surfaceRef} className="md3-chip__ripple" aria-hidden="true">
-        <span className="ripple" />
+      <span ref={surfaceRef} className="ui-chip__ripple" aria-hidden="true">
+        <span className="uix-ripple" />
       </span>
-      <span className="md3-chip__state-layer" aria-hidden="true" />
+      <span className="ui-chip__state-layer" aria-hidden="true" />
     </>
   );
 }
 ```
 
-In CSS the condition is implemented via an extra class (e.g., `md3-chip--interactive`):
+In CSS the condition is implemented via an extra class (e.g., `ui-chip--interactive`):
 
 ```css
 @media (hover: hover) {
-  .md3-chip--interactive:hover .md3-chip__state-layer {
+  .ui-chip--interactive:hover .ui-chip__state-layer {
     @apply opacity-[0.1];
   }
 }
@@ -212,18 +212,18 @@ Exception: non-interactive cards may have `hover:bg-elevation-2` for subtle feed
 
 ## 4. Ripple (second most MD3-distinctive)
 
-Ripple = **animated radial expansion** from the touch point (NOT from the center) — `getBoundingClientRect()` + pointer coords. Lasts ~600 ms (`RIPPLE_DURATION`), `ease-md3`, fade out.
+Ripple = **animated radial expansion** from the touch point (NOT from the center) — `getBoundingClientRect()` + pointer coords. Lasts ~600 ms (`RIPPLE_DURATION`), `ease-ui`, fade out.
 
 ### Structure
 
 ```tsx
-<span ref={surfaceRef} className="md3-btn__ripple" aria-hidden="true">
-  <span className="ripple" />
+<span ref={surfaceRef} className="ui-btn__ripple" aria-hidden="true">
+  <span className="uix-ripple" />
 </span>
 ```
 
 - `{block}__ripple` is the surface (`overflow-hidden`, `position: absolute`, `rounded-[inherit]`, `pointer-events-none`, `z-below`) — `surfaceRef` is attached here.
-- `useRipple` dynamically spawns `<span class="ripple__wave">` inside `.ripple`.
+- `useRipple` dynamically spawns `<span class="ripple__wave">` inside `.uix-ripple`.
 - `.ripple__wave` is defined top-level in `app/styles/tailwind.css` (line 434–451):
 
 ```css
@@ -234,7 +234,7 @@ Ripple = **animated radial expansion** from the touch point (NOT from the center
     border-radius: 50%;
     opacity: 0.3;
     transform: scale(0);
-    animation: ripple-anim 600ms var(--ease-md3) forwards;
+    animation: ripple-anim 600ms var(--ease-ui) forwards;
   }
 }
 
@@ -251,7 +251,7 @@ Ripple = **animated radial expansion** from the touch point (NOT from the center
 MUST be set in every variant in `.css`:
 
 ```css
-.md3-btn--primary {
+.ui-btn--primary {
   --ripple-color: var(--color-on-primary);
   @apply bg-primary text-on-primary;
 }
@@ -289,7 +289,7 @@ Where to connect:
 
 1. `surfaceRef` → `<span class="{block}__ripple">` (element with `overflow-hidden`, `rounded-[inherit]`, `pointer-events-none`).
 2. `handlers` → spread on the interactive element (button, link, checkbox, menu item, segmented button item).
-3. `rippleState.pressed` → optional state class, e.g., `md3-btn--pressed` (used in `button.tsx`, `chip.tsx`, `menu.tsx`, `checkbox.tsx`).
+3. `rippleState.pressed` → optional state class, e.g., `ui-btn--pressed` (used in `button.tsx`, `chip.tsx`, `menu.tsx`, `checkbox.tsx`).
 4. `rippleState.hovered` is returned, but currently NOT consumed in UI components — all hover effects are implemented by state layer.
 
 ### SSR guard (Cloudflare Workers)
@@ -298,7 +298,7 @@ Where to connect:
 
 ### `prefers-reduced-motion`
 
-In `useRipple.spawnRipple` (line 54–55): `window.matchMedia("(prefers-reduced-motion: reduce)").matches` → skip ripple animation. State layer remains.
+In `useRipple.spawnRipple` (line 54–55): `window.matchMedia("(prefers-reduced-motion: reduce)").matches` → skip uix-ripple animation. State layer remains.
 
 ## 5. Shape / radius
 
@@ -320,26 +320,26 @@ Every component type has an explicit radius — there is no "rounded-md as defau
 | Component / element | Radius | Source |
 | --- | --- | --- |
 | Button, Chip, MenuItem, SegmentedButton item | `rounded-full` (pill) | `button.css`, `chip.css`, `menu.css`, `segmented-button.css` |
-| Menu content | `rounded-md` | `menu.css` (`.md3-menu__content`) |
-| TextField container | `rounded-lg` | `text-field.css` (`.md3-text-field`) |
-| TextField input container | `rounded-[inherit]` | `text-field.css` (`.md3-text-field__container`) |
-| Checkbox box | `rounded-xs` | `checkbox.css` (`.md3-checkbox`, `.md3-checkbox__box`) |
-| Dialog content | `rounded-2xl` | `dialog.css` (`.md3-dialog__content`) |
+| Menu content | `rounded-md` | `menu.css` (`.ui-menu__content`) |
+| TextField container | `rounded-lg` | `text-field.css` (`.ui-text-field`) |
+| TextField input container | `rounded-[inherit]` | `text-field.css` (`.ui-text-field__container`) |
+| Checkbox box | `rounded-xs` | `checkbox.css` (`.ui-checkbox`, `.ui-checkbox__box`) |
+| Dialog content | `rounded-2xl` | `dialog.css` (`.ui-dialog__content`) |
 | Alert | `rounded-lg` | `alert.tsx` (`className="... rounded-lg"`) |
 
-`rounded-[inherit]` on state layer/ripple ensures the overlay always has the same radius as the component.
+`rounded-[inherit]` on state layer/uix-ripple ensures the overlay always has the same radius as the component.
 
 ## 6. Motion
 
 ### Easing
 
 ```css
---ease-md3: cubic-bezier(0.2, 0, 0, 1);
---ease-md3-decelerated: cubic-bezier(0, 0, 0, 1);
---ease-md3-accelerated: cubic-bezier(0.3, 0, 1, 1);
+--ease-ui: cubic-bezier(0.2, 0, 0, 1);
+--ease-ui-decelerated: cubic-bezier(0, 0, 0, 1);
+--ease-ui-accelerated: cubic-bezier(0.3, 0, 1, 1);
 ```
 
-**FORBIDDEN** `ease-in`/`ease-out`/`linear`/`ease` and inline `ease-[cubic-bezier(...)]` — only `ease-md3*`.
+**FORBIDDEN** `ease-in`/`ease-out`/`linear`/`ease` and inline `ease-[cubic-bezier(...)]` — only `ease-ui*`.
 
 ### Duration
 
@@ -362,16 +362,16 @@ Every component type has an explicit radius — there is no "rounded-md as defau
 
 ### Patterns
 
-- Standard: `transition-all duration-medium-2 ease-md3` (buttons/chips/segmented).
-- Fast: `transition-colors duration-short-3 ease-md3` (menu items/checkbox/text-field border).
-- State layer fade: `transition-opacity duration-short-3 ease-md3`.
+- Standard: `transition-all duration-medium-2 ease-ui` (buttons/chips/segmented).
+- Fast: `transition-colors duration-short-3 ease-ui` (menu items/checkbox/text-field border).
+- State layer fade: `transition-opacity duration-short-3 ease-ui`.
 
 ### `prefers-reduced-motion`
 
 Every CSS/JS animation must honor `prefers-reduced-motion: reduce`:
 
-- `useRipple` skips the ripple animation (state layer remains).
-- Button spinner (`md3-btn__spinner`) in `@media (prefers-reduced-motion: reduce)` changes `animation-duration` to 1.5 s (`button.css`, line 210–214).
+- `useRipple` skips the uix-ripple animation (state layer remains).
+- Button spinner (`ui-btn__spinner`) in `@media (prefers-reduced-motion: reduce)` changes `animation-duration` to 1.5 s (`button.css`, line 210–214).
 - Marquee and other continuous animations should have `motion-reduce:animate-none` in TSX.
 
 ## 7. Typography
@@ -391,11 +391,11 @@ Layout grid (`w-mod-unit-*`, `cont`, `px-site`) → `tokens.md` § "w-mod-unit".
 1. `import "./{component}.css"` at the top of TSX.
 2. TSX structure (CVA, `useRipple`, `cn`, `data-state`, render spans) → `components.md` § "TSX — structure".
 3. CSS in `@layer components`, sections in order, `@apply` with property order → `styling.md` § "@layer cascade" + "Property order".
-4. State layer + ripple (`bg-current`, `opacity-[0.1]`, `--ripple-color` in variant) → § 3 + § 4.
+4. State layer + uix-ripple (`bg-current`, `opacity-[0.1]`, `--ripple-color` in variant) → § 3 + § 4.
 5. `h-{comp}-{size}` rem tokens (NOT `h-10`/`h-12`) — UI ALWAYS, custom when appropriate → `tokens.md` § "Size tokens".
-6. `transition-* duration-* ease-md3` → § 6.
+6. `transition-* duration-* ease-ui` → § 6.
 7. Keyframes top-level (OUTSIDE `@layer`) → `styling.md` § "Animations".
-8. A11y: `aria-*`, `role`, keyboard, focus ring; `aria-hidden` on state layer/ripple → `components.md` § "A11y".
+8. A11y: `aria-*`, `role`, keyboard, focus ring; `aria-hidden` on state layer/uix-ripple → `components.md` § "A11y".
 9. SSR guard in `useRipple` → `components.md` § "SSR".
 10. Named exports, no barrel exports → `components.md` § "Utility helpers".
 

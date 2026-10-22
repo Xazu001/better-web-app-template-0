@@ -13,8 +13,8 @@
     pointer-events: none;
     transform: translateX(-50%) translateY(0);
     transition:
-      opacity var(--transition-duration-medium-3) var(--ease-md3),
-      transform var(--transition-duration-medium-3) var(--ease-md3);
+      opacity var(--transition-duration-medium-3) var(--ease-ui),
+      transform var(--transition-duration-medium-3) var(--ease-ui);
   }
 
   .floating-label--visible {

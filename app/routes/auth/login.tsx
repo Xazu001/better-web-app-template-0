@@ -137,7 +137,7 @@ export default function Index() {
         </Button>
         <p className="text-center text-md text-on-glass">
           Don't have an account?{" "}
-          <Link to="/register" className="link-muted-primary-underline">
+          <Link to="/register" className="uix-link-muted-primary-underline">
             Register
           </Link>
         </p>

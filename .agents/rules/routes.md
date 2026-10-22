@@ -7,7 +7,7 @@
 
 - `app/components/` — `ui/`, `custom/`, `pages/`
 - `app/lib/` — `hooks/`, `router/`, `utils/`, `seo/`
-- `app/styles/` — `main.css` (entry; `@layer reset, base, components, custom, routes, overrides;` on line 1), `tailwind.css` (`@theme` + `:root` + `@utility` + `@layer base/components/overrides`), `base/` (`reset,scrollbar,toastify,loading-bar` — `@layer reset/base/custom/overrides`), `utilities/` (`layout,links,md3,form,nav-aside` — `@utility`), `components/` (`button,dialog,select` — shared `@layer components` shells)
+- `app/styles/` — `main.css` (entry; `@layer reset, base, components, custom, routes, overrides;` on line 1), `tailwind.css` (`@theme` + `:root` + `@utility` + `@layer base/components/overrides`), `base/` (`reset,scrollbar,toastify,loading-bar` — `@layer reset/base/custom/overrides`), `utilities/` (`layout,links,ui,form,nav-aside` — `@utility`), `components/` (`button,dialog,select` — shared `@layer components` shells)
 - `app/routes/` — route files; `root.tsx` — root route (special, sees the whole tree)
 - `app/routes.ts` — central route registration for React Router v8
 

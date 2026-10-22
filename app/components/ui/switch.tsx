@@ -8,12 +8,12 @@ import { useRipple } from "#/lib/hooks/use-ripple";
 // Variants
 // ──────────────────────────────────────────────────────────────
 
-const switchVariants = createVariants("md3-switch", {
+const switchVariants = createVariants("ui-switch", {
   variants: {
     size: {
-      sm: "md3-switch--sm",
-      md: "md3-switch--md",
-      lg: "md3-switch--lg"
+      sm: "ui-switch--sm",
+      md: "ui-switch--md",
+      lg: "ui-switch--lg"
     }
   },
   defaultVariants: {
@@ -71,7 +71,7 @@ const Switch = React.forwardRef<HTMLButtonElement, SwitchProps>(
 
     const { surfaceRef, handlers, rippleState } = useRipple<HTMLSpanElement>(disabled);
 
-    const md3State = disabled ? "disabled" : checked ? "checked" : "enabled";
+    const uiState = disabled ? "disabled" : checked ? "checked" : "enabled";
 
     const handleClick = (e: React.MouseEvent<HTMLButtonElement>) => {
       e.stopPropagation();
@@ -82,13 +82,13 @@ const Switch = React.forwardRef<HTMLButtonElement, SwitchProps>(
 
     const cls = cn(
       switchVariants({ size: size || "md" }),
-      disabled && "md3-switch--disabled",
-      rippleState.pressed && "md3-switch--pressed",
+      disabled && "ui-switch--disabled",
+      rippleState.pressed && "ui-switch--pressed",
       className
     );
 
     return (
-      <div className={cn("md3-switch__wrapper", wrapperClassName)}>
+      <div className={cn("ui-switch__wrapper", wrapperClassName)}>
         {name && <input type="hidden" name={name} value={checked ? "on" : "off"} />}
         <button
           ref={ref}
@@ -97,26 +97,26 @@ const Switch = React.forwardRef<HTMLButtonElement, SwitchProps>(
           role="switch"
           name={name}
           className={cls}
-          data-state={md3State}
+          data-state={uiState}
           aria-checked={checked}
           disabled={disabled}
           onClick={handleClick}
           {...handlers}
           {...props}
         >
-          <span className="md3-switch__track">
-            <span ref={surfaceRef} className="md3-switch__ripple" aria-hidden="true">
-              <span className="ripple" />
+          <span className="ui-switch__track">
+            <span ref={surfaceRef} className="ui-switch__ripple" aria-hidden="true">
+              <span className="uix-ripple" />
             </span>
-            <span className="md3-switch__state-layer" aria-hidden="true" />
-            <span className="md3-switch__thumb">
+            <span className="ui-switch__state-layer" aria-hidden="true" />
+            <span className="ui-switch__thumb">
               {iconOff && !checked && (
-                <span className="md3-switch__icon md3-switch__icon--off" aria-hidden="true">
+                <span className="ui-switch__icon ui-switch__icon--off" aria-hidden="true">
                   {iconOff}
                 </span>
               )}
               {iconOn && checked && (
-                <span className="md3-switch__icon md3-switch__icon--on" aria-hidden="true">
+                <span className="ui-switch__icon ui-switch__icon--on" aria-hidden="true">
                   {iconOn}
                 </span>
               )}
@@ -124,7 +124,7 @@ const Switch = React.forwardRef<HTMLButtonElement, SwitchProps>(
           </span>
         </button>
         {label && (
-          <label htmlFor={switchId} className={cn("md3-switch__label", labelClassName)}>
+          <label htmlFor={switchId} className={cn("ui-switch__label", labelClassName)}>
             {label}
           </label>
         )}

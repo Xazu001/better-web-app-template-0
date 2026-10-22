@@ -9,23 +9,23 @@ import { useRipple } from "#/lib/hooks/use-ripple";
 // Variants
 // ──────────────────────────────────────────────────────────────
 
-const chipVariants = createVariants("md3-chip", {
+const chipVariants = createVariants("ui-chip", {
   variants: {
     variant: {
-      assist: "md3-chip--assist",
-      primary: "md3-chip--primary",
-      success: "md3-chip--success",
-      error: "md3-chip--error",
-      outline: "md3-chip--outline",
-      tonal: "md3-chip--tonal"
+      assist: "ui-chip--assist",
+      primary: "ui-chip--primary",
+      success: "ui-chip--success",
+      error: "ui-chip--error",
+      outline: "ui-chip--outline",
+      tonal: "ui-chip--tonal"
     },
     size: {
-      sm: "md3-chip--sm",
-      md: "md3-chip--md",
-      lg: "md3-chip--lg"
+      sm: "ui-chip--sm",
+      md: "ui-chip--md",
+      lg: "ui-chip--lg"
     },
     selected: {
-      true: "md3-chip--selected",
+      true: "ui-chip--selected",
       false: ""
     }
   },
@@ -74,13 +74,13 @@ const Chip = React.forwardRef<HTMLSpanElement | HTMLAnchorElement, ChipProps>(
     const { surfaceRef, handlers, rippleState } = useRipple<HTMLSpanElement>(
       state === "disabled" || !interactive
     );
-    const md3State = selected ? "selected" : state === "default" ? "enabled" : state;
+    const uiState = selected ? "selected" : state === "default" ? "enabled" : state;
 
     const cls = cn(
       chipVariants({ variant, size: size || "md", selected }),
-      interactive && "md3-chip--interactive",
-      state === "disabled" && "md3-chip--disabled",
-      rippleState.pressed && "md3-chip--pressed",
+      interactive && "ui-chip--interactive",
+      state === "disabled" && "ui-chip--disabled",
+      rippleState.pressed && "ui-chip--pressed",
       className
     );
 
@@ -88,15 +88,15 @@ const Chip = React.forwardRef<HTMLSpanElement | HTMLAnchorElement, ChipProps>(
       <>
         {interactive && (
           <>
-            <span ref={surfaceRef} className="md3-chip__ripple" aria-hidden="true">
-              <span className="ripple" />
+            <span ref={surfaceRef} className="ui-chip__ripple" aria-hidden="true">
+              <span className="uix-ripple" />
             </span>
-            <span className="md3-chip__state-layer" aria-hidden="true" />
+            <span className="ui-chip__state-layer" aria-hidden="true" />
           </>
         )}
-        {Icon && IconPosition === "BeforeText" && <span className="md3-chip__icon">{Icon}</span>}
-        <span className="md3-chip__label">{children}</span>
-        {Icon && IconPosition === "AfterText" && <span className="md3-chip__icon">{Icon}</span>}
+        {Icon && IconPosition === "BeforeText" && <span className="ui-chip__icon">{Icon}</span>}
+        <span className="ui-chip__label">{children}</span>
+        {Icon && IconPosition === "AfterText" && <span className="ui-chip__icon">{Icon}</span>}
       </>
     );
 
@@ -106,7 +106,7 @@ const Chip = React.forwardRef<HTMLSpanElement | HTMLAnchorElement, ChipProps>(
           ref={ref as React.Ref<HTMLAnchorElement>}
           to={to}
           className={cls}
-          data-state={md3State}
+          data-state={uiState}
           {...(props as React.AnchorHTMLAttributes<HTMLAnchorElement>)}
           {...handlers}
         >
@@ -121,7 +121,7 @@ const Chip = React.forwardRef<HTMLSpanElement | HTMLAnchorElement, ChipProps>(
           ref={ref as React.Ref<HTMLButtonElement>}
           type="button"
           className={cls}
-          data-state={md3State}
+          data-state={uiState}
           disabled={state === "disabled"}
           onClick={onClick}
           {...handlers}
@@ -133,7 +133,7 @@ const Chip = React.forwardRef<HTMLSpanElement | HTMLAnchorElement, ChipProps>(
     }
 
     return (
-      <span ref={ref} className={cls} data-state={md3State} {...props}>
+      <span ref={ref} className={cls} data-state={uiState} {...props}>
         {content}
       </span>
     );

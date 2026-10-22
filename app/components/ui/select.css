@@ -1,12 +1,12 @@
 @layer components {
   /* ────────────────────────────────────────────────────────────
-   * md3-select — UI color variant (theme tokens)
+   * ui-select — UI color variant (theme tokens)
    * Structure lives in app/styles/components/select.css.
    * This file only sets the `--select-*` color custom props + the
    * popover variant backgrounds (float / popover / elevation).
    * ──────────────────────────────────────────────────────────── */
 
-  .md3-select {
+  .ui-select {
     --select-fg: var(--color-on-surface);
     --select-bg: var(--color-surface);
     --select-border: var(--color-outline-variant);
@@ -20,15 +20,15 @@
 
   /* Popover — variants (theme tokens) */
 
-  .md3-select__popover--float {
+  .ui-select__popover--float {
     @apply bg-float text-on-float;
   }
 
-  .md3-select__popover--popover {
+  .ui-select__popover--popover {
     @apply bg-popover text-on-popover;
   }
 
-  .md3-select__popover--elevation {
+  .ui-select__popover--elevation {
     @apply bg-elevation-2 text-on-surface;
   }
 }

@@ -1,11 +1,11 @@
 # React components — implementation (pure React MD3)
 
-> Component implementation patterns. MD3 concepts (color roles, state layer, ripple, shape, motion) → `md3-design.md`. CSS mechanics → `styling.md`. Tokens → `tokens.md`.
+> Component implementation patterns. MD3 concepts (color roles, state layer, uix-ripple, shape, motion) → `md3-design.md`. CSS mechanics → `styling.md`. Tokens → `tokens.md`.
 > **Forbidden:** `@material/web`, `@lit-labs/ssr`, lit. MD3 components written from scratch (TSX + `.css`). SSR native on Cloudflare Workers (no `customElements.define`).
 
 ## Categories and locations
 
-- **UI** — `app/components/ui/` — pure MD3 (`md3-*` BEM, `useRipple`, state layer)
+- **UI** — `app/components/ui/` — pure MD3 (`ui-*` BEM, `useRipple`, state layer)
 - **Custom** — `app/components/custom/` — business logic (Nav, Slider, FileDrop), minimal intervention. Not present in the template — add per project.
 - **Pages** — `app/components/pages/` — ONLY location for route-specific components, one folder per route (`pages/main/home/`, `pages/main/play/`). Not present in the template — add per project.
 - **Utils** — `app/components/utils/` — `cn.ts` (clsx wrapper), `variants.ts` (CVA `createVariants`), `modifiers.ts` (`getModifierClasses`)
@@ -18,7 +18,7 @@ UI/custom components ALWAYS use `@apply` in co-located `.css` (never long inline
 
 ## File naming
 
-- UI MD3: `button.tsx` + `button.css` (BEM `md3-*`, `@apply`)
+- UI MD3: `button.tsx` + `button.css` (BEM `ui-*`, `@apply`)
 - Custom: `pad.tsx` + `pad.css` (BEM, `@apply`)
 - Pages (route-specific): `pages/{page}/{component}.tsx` (e.g. `hero.tsx`, `loading.tsx`) — inline Tailwind by default; `.css` ONLY when complicated. Client-only: `beams.client.tsx`. See § "Pages components (route-specific)".
 - Route file: `home.tsx` / `users.tsx` — composition + meta + re-exports only, NO components. Inline Tailwind; route `.css` RARE. See `styling.md` § "3-tier hybrid".
@@ -41,11 +41,12 @@ When `.css` is created: BEM, block = `{page}-{component}` (`home-hero`, `users-t
 
 ## BEM
 
-- UI: prefix `md3-` (`md3-btn`, `md3-btn--primary`, `md3-btn__state-layer`)
+- UI: prefix `ui-` (`ui-btn`, `ui-btn--primary`, `ui-btn__state-layer`)
 - Custom: no prefix (`pad`, `pad__ripple`, `pad--active`, `nav`, `nav__link`)
+- Repeating `@utility` style bundles in `app/styles/utilities/` — grouped styles applied directly in markup that don't fit as a component (links, headers bundling size+color+font, surface cards): prefix `uix-` (`uix-link-primary`, `uix-nav-link`, `uix-elevation-1-bordered`, `uix-ripple`). UI-internal primitives keep `ui-` (`ui-ripple-surface`, `ui-state-layer`); shared fragments stay unprefixed (`input-*`, `state-layer`); atomic layout utilities stay `kebab-case` (`cont`, `px-site`, `w-mod-unit-*`)
 - `block` = component name (kebab-case) · `block__element` = sub-element · `block--modifier` = variant/state
 - Modifier = variant (`--primary`) OR state (`--disabled`, `--loading`, `--selected`); interactive state (hover/focus/pressed) NEVER as a modifier — implemented via `__state-layer`
-- **Forbidden** `is-`/`has-`/`js-` prefixes (state in `data-state` + BEM modifier). Exception: `--has-toggle`/`--has-toggle` when describing a permanent structural feature (e.g. `md3-text-field--has-toggle`), NOT state.
+- **Forbidden** `is-`/`has-`/`js-` prefixes (state in `data-state` + BEM modifier). Exception: `--has-toggle`/`--has-toggle` when describing a permanent structural feature (e.g. `ui-text-field--has-toggle`), NOT state.
 
 ## UI component anatomy — example (button)
 
@@ -62,16 +63,16 @@ import { cn } from "#/components/utils";
 import { type VariantProps, createVariants } from "#/components/utils/variants";
 import { useRipple } from "#/lib/hooks/use-ripple";
 
-// 1. CVA: first arg = BEM block; variant classes are `md3-btn--{value}`
-const buttonVariants = createVariants("md3-btn", {
+// 1. CVA: first arg = BEM block; variant classes are `ui-btn--{value}`
+const buttonVariants = createVariants("ui-btn", {
   variants: {
     variant: {
-      primary: "md3-btn--primary",
-      outline: "md3-btn--outline",
-      error: "md3-btn--error"
+      primary: "ui-btn--primary",
+      outline: "ui-btn--outline",
+      error: "ui-btn--error"
     },
-    size: { sm: "md3-btn--sm", md: "md3-btn--md", lg: "md3-btn--lg" },
-    aspectSquare: { true: "md3-btn--square", false: "" }
+    size: { sm: "ui-btn--sm", md: "ui-btn--md", lg: "ui-btn--lg" },
+    aspectSquare: { true: "ui-btn--square", false: "" }
   },
   defaultVariants: { variant: "primary", size: "md", aspectSquare: false }
 });
@@ -104,26 +105,26 @@ const Button = React.forwardRef<HTMLButtonElement | HTMLAnchorElement, ButtonPro
   ) => {
     // 4. useRipple<T>(disabled) — surfaceRef on <span __ripple>, handlers on root
     const { surfaceRef, handlers, rippleState } = useRipple<HTMLSpanElement>(state === "disabled");
-    // 5. md3State: "default" → "enabled"; selected → "selected"; loading → "loading"
-    const md3State = state === "default" ? "enabled" : state;
+    // 5. uiState: "default" → "enabled"; selected → "selected"; loading → "loading"
+    const uiState = state === "default" ? "enabled" : state;
 
     // 6. cn: variants, states, rippleState.pressed, className ALWAYS last
     const cls = cn(
       buttonVariants({ variant, size: size || "md", aspectSquare }),
-      state === "loading" && "md3-btn--loading",
-      rippleState.pressed && "md3-btn--pressed",
+      state === "loading" && "ui-btn--loading",
+      rippleState.pressed && "ui-btn--pressed",
       className
     );
 
-    // 7. content: __ripple (with <span class="ripple">) → __state-layer → __icon → __label
+    // 7. content: __ripple (with <span class="uix-ripple">) → __state-layer → __icon → __label
     const content = (
       <>
-        <span ref={surfaceRef} className="md3-btn__ripple" aria-hidden="true">
-          <span className="ripple" />
+        <span ref={surfaceRef} className="ui-btn__ripple" aria-hidden="true">
+          <span className="uix-ripple" />
         </span>
-        <span className="md3-btn__state-layer" aria-hidden="true" />
-        {Icon && <span className="md3-btn__icon">{Icon}</span>}
-        <span className="md3-btn__label">{children}</span>
+        <span className="ui-btn__state-layer" aria-hidden="true" />
+        {Icon && <span className="ui-btn__icon">{Icon}</span>}
+        <span className="ui-btn__label">{children}</span>
       </>
     );
 
@@ -134,7 +135,7 @@ const Button = React.forwardRef<HTMLButtonElement | HTMLAnchorElement, ButtonPro
           ref={ref as React.Ref<HTMLAnchorElement>}
           to={to}
           className={cls}
-          data-state={md3State}
+          data-state={uiState}
           {...(props as React.AnchorHTMLAttributes<HTMLAnchorElement>)}
           {...handlers}
         >
@@ -146,7 +147,7 @@ const Button = React.forwardRef<HTMLButtonElement | HTMLAnchorElement, ButtonPro
       <button
         ref={ref as React.Ref<HTMLButtonElement>}
         className={cls}
-        data-state={md3State}
+        data-state={uiState}
         disabled={state === "disabled"}
         {...handlers}
         {...props}
@@ -167,61 +168,61 @@ Section order (CRITICAL): base → size variants RIGHT AFTER base → sub-elemen
 
 ```css
 @layer components {
-  .md3-btn {
+  .ui-btn {
     @apply inline-flex relative items-center justify-center h-btn-md rounded-full
       font-medium text-md select-none transition-all isolate;
   }
 
   /* Size variants — RIGHT AFTER base */
-  .md3-btn--sm {
+  .ui-btn--sm {
     @apply h-btn-sm px-1 text-sm;
   }
-  .md3-btn--md {
+  .ui-btn--md {
     @apply h-btn-md px-3 text-md;
   }
-  .md3-btn--lg {
+  .ui-btn--lg {
     @apply h-btn-lg px-4 text-lg;
   }
 
   /* Sub-elements */
-  .md3-btn__ripple {
+  .ui-btn__ripple {
     @apply absolute inset-0 z-below overflow-hidden rounded-[inherit] pointer-events-none;
   }
-  .md3-btn__state-layer {
+  .ui-btn__state-layer {
     @apply absolute inset-0 bg-current rounded-[inherit] opacity-0 pointer-events-none transition-opacity;
   }
 
   /* State layer hover/focus/active */
-  .md3-btn:focus-visible .md3-btn__state-layer {
+  .ui-btn:focus-visible .ui-btn__state-layer {
     @apply opacity-[0.1];
   }
-  .md3-btn:active .md3-btn__state-layer {
+  .ui-btn:active .ui-btn__state-layer {
     @apply opacity-[0.1];
   }
   @media (hover: hover) {
-    .md3-btn:hover .md3-btn__state-layer {
+    .ui-btn:hover .ui-btn__state-layer {
       @apply opacity-[0.1];
     }
   }
 
   /* Color variants — set --ripple-color and bg/text */
-  .md3-btn--primary {
+  .ui-btn--primary {
     --ripple-color: var(--color-on-primary);
     @apply bg-primary text-on-primary;
   }
-  .md3-btn--outline {
+  .ui-btn--outline {
     --ripple-color: var(--color-elevation-1);
     @apply bg-transparent border border-outline text-on-surface;
   }
 
   /* States */
-  .md3-btn[data-state="disabled"] {
+  .ui-btn[data-state="disabled"] {
     @apply opacity-50 cursor-not-allowed;
   }
 }
 
 /* Keyframes OUTSIDE @layer */
-@keyframes md3-btn-spin {
+@keyframes ui-btn-spin {
   to {
     transform: rotate(360deg);
   }
@@ -234,44 +235,44 @@ Both `__ripple` and `__state-layer` MUST use `rounded-[inherit]` — NEVER a har
 
 ### Overlay utilities (preferred — less boilerplate)
 
-`app/styles/utilities/md3.css` defines two `@utility` primitives that encapsulate the full overlay pattern. Use them via `@apply` in component `__ripple` / `__state-layer` instead of repeating 6-7 declarations:
+`app/styles/utilities/ui.css` defines two `@utility` primitives that encapsulate the full overlay pattern. Use them via `@apply` in component `__ripple` / `__state-layer` instead of repeating 6-7 declarations:
 
 | Utility | Replaces | Used on |
 | --- | --- | --- |
-| `md3-ripple-surface` | `absolute inset-0 z-below overflow-hidden rounded-[inherit] pointer-events-none` | `__ripple` overlay |
-| `md3-state-layer` | `absolute inset-0 bg-current rounded-[inherit] opacity-0 pointer-events-none transition-opacity` | `__state-layer` overlay |
+| `ui-ripple-surface` | `absolute inset-0 z-below overflow-hidden rounded-[inherit] pointer-events-none` | `__ripple` overlay |
+| `ui-state-layer` | `absolute inset-0 bg-current rounded-[inherit] opacity-0 pointer-events-none transition-opacity` | `__state-layer` overlay |
 
 ```css
 /* PREFERRED — one line, no boilerplate */
-.md3-select__item-ripple {
-  @apply md3-ripple-surface;
+.ui-select__item-ripple {
+  @apply ui-ripple-surface;
 }
-.md3-select__item-state-layer {
-  @apply md3-state-layer;
+.ui-select__item-state-layer {
+  @apply ui-state-layer;
 }
 ```
 
 ```css
 /* LEGACY — still works, but verbose. Migrate to utilities when touching a file. */
-.md3-btn__ripple {
+.ui-btn__ripple {
   @apply absolute inset-0 z-below overflow-hidden rounded-[inherit] pointer-events-none;
 }
-.md3-btn__state-layer {
+.ui-btn__state-layer {
   @apply absolute inset-0 bg-current rounded-[inherit] opacity-0 pointer-events-none transition-opacity;
 }
 ```
 
 ```css
 /* WRONG — hardcoded token drifts from parent shape */
-.md3-btn__state-layer {
+.ui-btn__state-layer {
   @apply ... rounded-full ...;
 }
-.md3-checkbox__ripple {
+.ui-checkbox__ripple {
   @apply ... rounded-xs ...;
 }
 ```
 
-Prerequisite: the parent block (`.md3-btn`, `.md3-checkbox`, `.md3-select__item`, etc.) MUST set its own `rounded-*` in the base class — `inherit` resolves to it. If the parent has no `rounded-*` on the base class (e.g. `.md3-switch` originally had none), ADD it there first (`rounded-full` for switch), then use `rounded-[inherit]` on the overlays.
+Prerequisite: the parent block (`.ui-btn`, `.ui-checkbox`, `.ui-select__item`, etc.) MUST set its own `rounded-*` in the base class — `inherit` resolves to it. If the parent has no `rounded-*` on the base class (e.g. `.ui-switch` originally had none), ADD it there first (`rounded-full` for switch), then use `rounded-[inherit]` on the overlays.
 
 Applies to ALL components in `app/components/` (ui, custom, pages) that render a `__ripple` and/or `__state-layer` overlay.
 
@@ -291,7 +292,7 @@ Applies to ALL components in `app/components/` (ui, custom, pages) that render a
 | `error` | validation error state | TextField, TextArea, Select |
 | `focused` | manually managed focus (e.g. TextArea) | TextArea |
 
-Mapping in TSX: `const md3State = isError ? "error" : props.disabled ? "disabled" : "enabled"` (TextField) or `selected ? "selected" : state === "default" ? "enabled" : state` (Button/Chip). Never keep `hover`/`focus`/`pressed` in `data-state`.
+Mapping in TSX: `const uiState = isError ? "error" : props.disabled ? "disabled" : "enabled"` (TextField) or `selected ? "selected" : state === "default" ? "enabled" : state` (Button/Chip). Never keep `hover`/`focus`/`pressed` in `data-state`.
 
 ## `iconButton` (instead of a separate IconButton)
 
@@ -313,27 +314,27 @@ Implementation:
 
 - The SVG keeps its `viewBox` (e.g. `viewBox="0 0 24 24"`) and a fallback `width`/`height` attribute (e.g. `1.5rem`) — the CSS rule overrides it per size.
 - **`Icon` component (lucide/simple-icons) workaround:** the `Icon` wrapper sets inline `style={{ width, height }}` when `size` is a string (`"sm"`/`"md"`/…). Inline style beats CSS — so to let CSS control icon size per component `size`, pass a **numeric** `size` (e.g. `size={24}`) which bypasses the inline style path. CSS then overrides the SVG's `width`/`height` attributes. Used in `TextField` (`__toggle-icon`, `__error-icon`).
-- **`--md3-icon-size` custom property (preferred):** set `--md3-icon-size` on the base class (default `md`) and override it in each `--sm`/`--lg` size modifier. Then use a single rule per icon wrapper — no 3× repetition:
+- **`--ui-icon-size` custom property (preferred):** set `--ui-icon-size` on the base class (default `md`) and override it in each `--sm`/`--lg` size modifier. Then use a single rule per icon wrapper — no 3× repetition:
 
 ```css
-.md3-select {
-  --md3-icon-size: 1.75rem; /* default = md */
+.ui-select {
+  --ui-icon-size: 1.75rem; /* default = md */
 }
-.md3-select--sm {
-  --md3-icon-size: 1.5rem;
+.ui-select--sm {
+  --ui-icon-size: 1.5rem;
 }
-.md3-select--lg {
-  --md3-icon-size: 2rem;
+.ui-select--lg {
+  --ui-icon-size: 2rem;
 }
 
-/* Single rule — inherits --md3-icon-size from nearest size ancestor */
-.md3-select__chevron svg {
-  width: var(--md3-icon-size);
-  height: var(--md3-icon-size);
+/* Single rule — inherits --ui-icon-size from nearest size ancestor */
+.ui-select__chevron svg {
+  width: var(--ui-icon-size);
+  height: var(--ui-icon-size);
 }
 ```
 
-- For portaled content (Select popover, Menu content, Dialog) the size class MUST be added to the portal root — the portal escapes the component subtree, so `.md3-select--lg` on the container does NOT reach the popover. Add `md3-select__popover--${size}` (or `--items-${itemsSize}` when item size is independent, like Play Select) to the portal root in TSX. Set `--md3-icon-size` on the portal root's size modifier too (the var does NOT inherit through portals).
+- For portaled content (Select popover, Menu content, Dialog) the size class MUST be added to the portal root — the portal escapes the component subtree, so `.ui-select--lg` on the container does NOT reach the popover. Add `ui-select__popover--${size}` (or `--items-${itemsSize}` when item size is independent, like Play Select) to the portal root in TSX. Set `--ui-icon-size` on the portal root's size modifier too (the var does NOT inherit through portals).
 - When a component has separate `size` (trigger) and `itemsSize` (list items) props (e.g. Play Select), the trigger icon (chevron) scales with `size`, the item icons (`__item-icon`, `__item-check`) scale with `itemsSize`.
 - Place the icon-size rules in `.css` right after the size variants / chevron section, grouped under a `/* Icon sizes */` label — NOT scattered across the file.
 - Applies to ALL components in `app/components/` (ui, custom, pages) that render inline SVG icons. External icon libraries (when used) follow the same rule via the wrapping `__icon` span.
@@ -348,9 +349,9 @@ By default a component's `--sm`/`--md`/`--lg` only swaps **height** (`h-btn-md`)
 
 | Component | `px`/`py`/`gap`/`rounded` per size | Where (size modifier) |
 | --- | --- | --- |
-| `Button` | `gap` only (`px`/`rounded` constant) | `app/styles/components/button.css` — `.md3-btn--{size}`, `.play-btn--{size}` |
-| `Select` | trigger + popover items | `select.css` — `.md3-select--{size} .md3-select__trigger`, `.md3-select__popover--{size} .md3-select__item` |
-| `Menu` | content + items | `menu.css` — `.md3-menu__content--{size}`, `.md3-menu__content--{size} .md3-menu__item` |
+| `Button` | `gap` only (`px`/`rounded` constant) | `app/styles/components/button.css` — `.ui-btn--{size}`, `.play-btn--{size}` |
+| `Select` | trigger + popover items | `select.css` — `.ui-select--{size} .ui-select__trigger`, `.ui-select__popover--{size} .ui-select__item` |
+| `Menu` | content + items | `menu.css` — `.ui-menu__content--{size}`, `.ui-menu__content--{size} .ui-menu__item` |
 
 ### How it looks (+ example)
 
@@ -358,20 +359,20 @@ Base class keeps ONLY the constant properties (layout, font, color, cursor, tran
 
 ```css
 /* Base — no px/py/gap/rounded (they vary per size) */
-.md3-select__trigger {
+.ui-select__trigger {
   @apply relative flex items-center w-full bg-surface border border-outline-variant
     font-body text-left text-md text-on-surface cursor-pointer select-none
-    duration-short-3 ease-md3 transition-colors isolate;
+    duration-short-3 ease-ui transition-colors isolate;
 }
 
 /* Size modifiers — px, py, rounded per size */
-.md3-select--sm .md3-select__trigger {
+.ui-select--sm .ui-select__trigger {
   @apply px-2 py-1.5 rounded-xs;
 }
-.md3-select--md .md3-select__trigger {
+.ui-select--md .ui-select__trigger {
   @apply px-3 py-2   rounded-sm;
 }
-.md3-select--lg .md3-select__trigger {
+.ui-select--lg .ui-select__trigger {
   @apply px-4 py-3   rounded-md;
 }
 ```
@@ -379,13 +380,13 @@ Base class keeps ONLY the constant properties (layout, font, color, cursor, tran
 For container-like elements (popover, menu content) `gap` also varies per size:
 
 ```css
-.md3-menu__content--sm {
+.ui-menu__content--sm {
   @apply min-w-[8rem] p-1   gap-0.5 rounded-sm;
 }
-.md3-menu__content--md {
+.ui-menu__content--md {
   @apply min-w-[10rem] p-1.5 gap-1   rounded-md;
 }
-.md3-menu__content--lg {
+.ui-menu__content--lg {
   @apply min-w-[12rem] p-2   gap-1.5 rounded-lg;
 }
 ```
@@ -396,7 +397,7 @@ For container-like elements (popover, menu content) `gap` also varies per size:
 - **Remove from base, add to modifier.** When enabling size-driven spacing for a component, move `px`/`py`/`gap`/`rounded` OUT of the base class and INTO each `--sm`/`--md`/`--lg` modifier — never duplicate (base + modifier with different values = cascade conflict).
 - **Height token optional.** With `py-*` controlling height, `h-text-field-*` / `h-list-item-*` can be dropped — `py` + content height defines the box. Keep the height token ONLY if the component must match a fixed-height sibling (e.g. TextField inside a form row).
 - **Icon size still applies** (see section above) — independent of whether spacing is size-driven.
-- **Scoped modifier for sub-elements.** When the sub-element lives in a portal or nested subtree (Select popover items, Menu items inside `__content`), scope the size override by the ancestor that carries the size: `.md3-select__popover--{size} .md3-select__item { … }`, `.md3-menu__content--{size} .md3-menu__item { … }`.
+- **Scoped modifier for sub-elements.** When the sub-element lives in a portal or nested subtree (Select popover items, Menu items inside `__content`), scope the size override by the ancestor that carries the size: `.ui-select__popover--{size} .ui-select__item { … }`, `.ui-menu__content--{size} .ui-menu__item { … }`.
 - **Place size-driven spacing rules RIGHT AFTER the base class** (same slot as regular size variants — see "CSS — section order"). Group trigger/item spacing under a `/* Size modifiers */` label.
 
 ## `variant` — when it is / when it is NOT
@@ -415,7 +416,7 @@ Components without `variant` MUST have `border-primary` on hover/focus/active (i
 
 Three independent axes of a component. Never mix them in one prop or one CVA variant.
 
-- **variant** = color role (visual axis). Goes through CVA: `createVariants("md3-btn", { variants: { variant: { primary, outline, error } } })`. Each variant sets `--ripple-color` + `bg-*` + `text-*`. Does not carry size or state information.
+- **variant** = color role (visual axis). Goes through CVA: `createVariants("ui-btn", { variants: { variant: { primary, outline, error } } })`. Each variant sets `--ripple-color` + `bg-*` + `text-*`. Does not carry size or state information.
 - **size** = `"sm" | "md" | "lg"`. Separate CVA variant (`size: { sm, md, lg }`). Classes `--sm`/`--md`/`--lg` RIGHT AFTER base in `.css`, use component height tokens (`h-*`, e.g. `h-btn-md`, `h-chip-md`). Custom components: `h-{comp}-{size}` when a matching token exists, otherwise `h-*` in rem. Responsive sizing in route: breakpoint variants (`phone:`/`tablet:`/`desktop:`), NOT `responsiveSize` prop.
 - **state** = `data-state` + BEM modifier class (`--disabled`, `--loading`, `--selected`, `--pressed`). State is runtime, NOT a design variant. `state` prop (`"default" | "disabled" | "loading"`) maps to `data-state` (`default`→`enabled`); `selected`/`checked` are separate booleans mapping to `data-state="selected"`/`"checked"`.
 
@@ -444,9 +445,9 @@ Components without `to` (e.g. TextField, Switch) have simpler ref type (`HTMLInp
 
 ## TSX — structure (summary)
 
-- `createVariants("md3-btn", { variants: { variant, size, aspectSquare }, defaultVariants: { variant: "primary", size: "md", aspectSquare: false } })` — CVA; first arg = BEM block, variant classes are `md3-btn--{value}`; `VariantProps<typeof x>` for typing component props
+- `createVariants("ui-btn", { variants: { variant, size, aspectSquare }, defaultVariants: { variant: "primary", size: "md", aspectSquare: false } })` — CVA; first arg = BEM block, variant classes are `ui-btn--{value}`; `VariantProps<typeof x>` for typing component props
 - `useRipple<T>(state === "disabled")` → `{ surfaceRef, handlers, rippleState }`; `surfaceRef` ref on `<span __ripple>` (not root); `handlers` spread on root element; `rippleState.pressed` → `--pressed` class
-- `cn(variants, states, rippleState.pressed && "md3-btn--pressed", className)` — `className` ALWAYS at the end (allows override from outside)
+- `cn(variants, states, rippleState.pressed && "ui-btn--pressed", className)` — `className` ALWAYS at the end (allows override from outside)
 - Render: `<span ref={surfaceRef} __ripple>` + `<span __state-layer>` + `Icon` (in `<span __icon>`) + `<span __label>{children}</span>`; `IconPosition` = `BeforeText`/`AfterText`
 - `to` → render `<Link>` (ref cast to `HTMLAnchorElement`, props as `AnchorHTMLAttributes`), else `<button>` (ref on `HTMLButtonElement`)
 - `React.forwardRef<...>` + `Button.displayName = "Button"` — ALWAYS; ref cast because union `HTMLButtonElement | HTMLAnchorElement`
@@ -494,7 +495,7 @@ Full SSR rules (guard, `useEffect` for listeners, `window.matchMedia` only in `u
 - `cn` (`app/components/utils/cn.ts`) — clsx wrapper: `clsx(inputs)` (accepts `ClassValue[]`)
 - `createVariants` (`app/components/utils/variants.ts`) — thin CVA wrapper: `cva<T>(...args)` with re-export of `VariantProps` and `cva`
 - `getModifierClasses` (`app/components/utils/modifiers.ts`) — Proxy-based builder → `${componentName}--{kebab}` (camelCase → kebab). Used rarely (when modifiers are dynamic, not in main CVA flow)
-- `useRipple` (`app/lib/hooks/use-ripple.ts`) — ripple + state layer
+- `useRipple` (`app/lib/hooks/use-ripple.ts`) — uix-ripple + state layer
 - **No barrel exports** — import per-file. Exception: `utils/index.ts` (re-exports `cn` from `cn.ts`)
 
 ## A11y
@@ -514,11 +515,11 @@ Full SSR rules (guard, `useEffect` for listeners, `window.matchMedia` only in `u
 Before creating a new file, go through the list:
 
 1. **Location.** UI (`app/components/ui/`) when pure MD3, generic, without domain. Custom (`app/components/custom/`) when business logic (Nav, Slider, FileDrop). Pages (`app/components/pages/{page}/`) when specific to one route — the ONLY location for route-specific components (never inline in `route.tsx`, never in `app/routes/**`). If a component is shared between pages → UI or custom.
-2. **Naming.** kebab-case file = BEM block. UI → `md3-` prefix (`md3-btn`, `md3-text-field`). Custom → no prefix (`pad`, `nav`, `file-drop`). Pages → no `md3-`, block = `{page}-{component}` (`home-hero`, `play-btn`).
+2. **Naming.** kebab-case file = BEM block. UI → `ui-` prefix (`ui-btn`, `ui-text-field`). Custom → no prefix (`pad`, `nav`, `file-drop`). Pages → no `ui-`, block = `{page}-{component}` (`home-hero`, `play-btn`).
 3. **Co-located CSS.** UI/custom: `.css` next to `.tsx` (`button.tsx` + `button.css`), ALWAYS. Pages: inline Tailwind by default, `.css` only when complicated (criteria → § "Pages components (route-specific)"). Always `.css`, never another extension. UI → `@layer components`, custom → `@layer custom`, pages → `@layer custom`/`routes`, mix → both.
-4. **Ripple if interactive.** `useRipple<T>(disabled)` on every clickable component (Button, Chip interactive, Switch, Checkbox, SegmentedButton item). `surfaceRef` on `<span __ripple>`, `handlers` on root, `rippleState.pressed` → `--pressed`. Non-interactive components (TextField input, display-only Chip) skip ripple.
+4. **Ripple if interactive.** `useRipple<T>(disabled)` on every clickable component (Button, Chip interactive, Switch, Checkbox, SegmentedButton item). `surfaceRef` on `<span __ripple>`, `handlers` on root, `rippleState.pressed` → `--pressed`. Non-interactive components (TextField input, display-only Chip) skip uix-ripple.
 5. **CVA if variants.** `createVariants(block, { variants: { variant, size, ... }, defaultVariants })` when component has `variant` (color role) or `size`. Classes `--{value}`. `VariantProps<typeof x>` in props interface. If no variants (e.g. TextField has no color role `variant`, has `size` and glass `variant`) — still CVA for `size`, glass as structural variant.
-6. **`data-state` if states.** `data-state` on root for `enabled`/`disabled`/`loading`/`selected`/`checked`/`indeterminate`/`open`/`closed`/`error`/`focused`. Interactive state (hover/focus/pressed) via `__state-layer`, NOT via `data-state`. Mapping in TSX: `const md3State = isError ? "error" : disabled ? "disabled" : "enabled"`.
+6. **`data-state` if states.** `data-state` on root for `enabled`/`disabled`/`loading`/`selected`/`checked`/`indeterminate`/`open`/`closed`/`error`/`focused`. Interactive state (hover/focus/pressed) via `__state-layer`, NOT via `data-state`. Mapping in TSX: `const uiState = isError ? "error" : disabled ? "disabled" : "enabled"`.
 7. **forwardRef + displayName.** `React.forwardRef<HTMLElement, Props>` + `Component.displayName = "Name"`. Ref cast to union if `to` (`HTMLButtonElement | HTMLAnchorElement`).
 8. **Props shape.** `extends React.{Button,Span,Input}HTMLAttributes<HTMLElement>, VariantProps<typeof variants>`. `className` ALWAYS last in `cn`. `size?: "sm" | "md" | "lg"`. `Icon`/`IconPosition` if icons. `to` if navigation.
 9. **No barrel export.** Import per-file from `#/components/ui/button` (not `#/components/ui`). Exception: `#/components/utils` (barrel OK).
@@ -567,7 +568,7 @@ Before creating a new file, go through the list:
   ```css
   /* Size variants — RIGHT AFTER base */
   /* Hover gating — only on devices that support hover */
-  /* Icon size via --md3-icon-size */
+  /* Icon size via --ui-icon-size */
   ```
 - **Comment consistency** — every logical section should have a header; group related rules with comments
 
@@ -576,7 +577,7 @@ Before creating a new file, go through the list:
 - **Be concise** — explain WHY, not WHAT (code shows what)
 - **No redundancy** — don't comment obvious code
 - **Keep current** — update comments when code changes
-- **Use consistent terminology** — match project language (MD3, BEM, state layer, ripple, etc.)
+- **Use consistent terminology** — match project language (MD3, BEM, state layer, uix-ripple, etc.)
 
 ## Don't (component-specific)
 

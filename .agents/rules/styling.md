@@ -1,6 +1,6 @@
 # Styling — CSS mechanics (Tailwind v4)
 
-> Tailwind/CSS mechanics for routes and components. MD3 concepts (color roles, state layer, ripple, shape, motion, typography) → `md3-design.md`. Tokens → `tokens.md`. Component implementation → `components.md`.
+> Tailwind/CSS mechanics for routes and components. MD3 concepts (color roles, state layer, uix-ripple, shape, motion, typography) → `md3-design.md`. Tokens → `tokens.md`. Component implementation → `components.md`.
 
 ## 3-tier hybrid (CRITICAL)
 
@@ -20,10 +20,11 @@
   3. Animation → `@keyframes` in `tailwind.css` (cross-route) or route `.css` (route-specific).
   4. `@apply` in route `.css` → ONLY ordered.
 - **`@utility` extraction criteria:** pattern 3+ times in the same file OR 2+ times in different files, ≥3 classes, cross-route (generic, not specific to one route). Do not extract: route-specific layout, single classes, patterns 1-2x in one file.
+- **`uix-*` prefix:** repeating `@utility` style bundles in `app/styles/utilities/` — grouped styles applied directly in markup that don't fit as a component (links, headers bundling size+color+font, surface cards) — get the `uix-` prefix: `uix-link-primary`, `uix-link-muted`, `uix-nav-link`, `uix-elevation-1-bordered`, `uix-ripple`. Atomic primitives (`cont`, `px-site`, `input-*`, `state-layer`) stay unprefixed; UI-internal overlay primitives use `ui-` (`ui-ripple-surface`, `ui-state-layer`).
 - **Mixing rules (CRITICAL):**
-  - `@utility` (`link-muted`, `nav-link`, `cont`, `px-site`, `flex`, `gap-4`, …) + inline Tailwind on the same element → **OK** (both are generic Tailwind utilities, same cascade).
+  - `@utility` (`uix-link-muted`, `uix-nav-link`, `cont`, `px-site`, `flex`, `gap-4`, …) + inline Tailwind on the same element → **OK** (both are generic Tailwind utilities, same cascade).
   - Route BEM class (`plans__glow`, `users__toolbar`) + inline Tailwind → **NO** (one element = one convention for route classes; children can have inline).
-  - UI/custom BEM (`md3-btn`, `pad`, `nav`) + inline → **NO** (they ALWAYS `@apply` in `.css`; exception: `@utility` like `cont`/`px-site`). Pages components are inline Tailwind — BEM only when a `.css` exists.
+  - UI/custom BEM (`ui-btn`, `pad`, `nav`) + inline → **NO** (they ALWAYS `@apply` in `.css`; exception: `@utility` like `cont`/`px-site`). Pages components are inline Tailwind — BEM only when a `.css` exists.
 - **Semantic signal in `className`:** `__` in the name → component OR route BEM (`@apply` in `.css`, reusable). Utility chain → route element (inline — default).
 
 ## Core rules
@@ -49,7 +50,7 @@
 > `gap` > `padding` > `margin`. `margin` = last resort, not default.
 
 - **`gap`** — between children (flex/grid parent). Always first. Parent controls group spacing, children stay "clean" (no per-item `m-*`). No margin-collapse, no "extra" spacing at the end. Change in one place (`gap-4` → `gap-6`), not on N children.
-- **`padding`** — inside the element (`px-2` in `md3-btn`, `p-desktop-menu` in play panel, `px-site` section, `p-5` in `md3-dialog__content`). Space between border/bg and content. Padding belongs to the element's "box", not neighbors. Works with size tokens (`h-btn-md` + `px-2` defines the button).
+- **`padding`** — inside the element (`px-2` in `ui-btn`, `p-desktop-menu` in play panel, `px-site` section, `p-5` in `ui-dialog__content`). Space between border/bg and content. Padding belongs to the element's "box", not neighbors. Works with size tokens (`h-btn-md` + `px-2` defines the button).
 - **`margin`** — last resort: `mt-auto` (push to bottom in flex-col), `mx-auto` (centering, `.cont`), offset between independent sections without a flex/grid parent (`<header>` and `<main>` at `<body>` level — `gap` does not exist because parent is not flex/grid), `margin-inline: auto` (centering).
 - **Mixing legal:** `flex gap-4` + child `mt-auto` OK (align utility, not spacing). `flex gap-4` + child `mx-auto` OK (centering). `p-5` dialog + `gap-1` flex-inside-dialog OK (padding=outside group, gap=inside group). `mt-8` between sections without flex parent OK.
 - **Do not do this:**
@@ -94,7 +95,7 @@ The root is fluid (`--f-font-size`): `1rem ≈ 6.86–8px`, frozen at `8px` abov
 ```css
 @utility cont {
   width: 100%;
-  max-width: var(--n-container-max-width); /* 1920px → 95vw above huge */
+  max-width: var(--x-container-max-width); /* 1920px → 95vw above huge */
   margin-inline: auto;
 }
 ```
@@ -143,7 +144,7 @@ The declaration is also repeated in `app/root.tsx` (lines 92-96) as an inline `<
 @layer reset, base, components, custom, routes, overrides;
 ```
 
-- `reset` (box-sizing, margin reset) → `base` (typography, NO layout) → `components` (`md3-*`, `ripple__wave`) → `custom` (`nav`, `beams-background`, page-specific blocks) → `routes` (RARE, e.g. `plans-page`) → `overrides` (MUI/`!important`/`cursor:none`). Priority increases downward: `custom` overrides `components`, `routes` overrides components — RARE, `overrides` = last resort.
+- `reset` (box-sizing, margin reset) → `base` (typography, NO layout) → `components` (`ui-*`, `ripple__wave`) → `custom` (`nav`, `beams-background`, page-specific blocks) → `routes` (RARE, e.g. `plans-page`) → `overrides` (MUI/`!important`/`cursor:none`). Priority increases downward: `custom` overrides `components`, `routes` overrides components — RARE, `overrides` = last resort.
 - Every co-located `*.css` MUST be in the correct `@layer` (`@layer components { … }` / `@layer custom { … }` / `@layer routes { … }`). `@keyframes` outside `@layer` (top-level, global, no specificity). Components with MD3 base + custom parts → **both** `@layer components` and `@layer custom` (MD3 base in `components`, custom variants in `custom`).
 
 ### Co-located `.css` — wrapping examples
@@ -152,35 +153,35 @@ UI component (MD3 base) — `app/components/ui/button.css`:
 
 ```css
 @layer components {
-  .md3-btn {
-    @apply inline-flex relative items-center justify-center gap-1 h-btn-md px-2 rounded-full font-body font-medium text-md select-none duration-medium-2 ease-md3 transition-all isolate;
+  .ui-btn {
+    @apply inline-flex relative items-center justify-center gap-1 h-btn-md px-2 rounded-full font-body font-medium text-md select-none duration-medium-2 ease-ui transition-all isolate;
   }
 
   /* Sizes — RIGHT after base */
-  .md3-btn--sm {
+  .ui-btn--sm {
     @apply h-btn-sm px-1 text-sm;
   }
-  .md3-btn--md {
+  .ui-btn--md {
     @apply h-btn-md px-3 text-md;
   }
-  .md3-btn--lg {
+  .ui-btn--lg {
     @apply h-btn-lg px-4 text-lg;
   }
 
-  .md3-btn__ripple {
+  .ui-btn__ripple {
     /* … */
   }
-  .md3-btn__state-layer {
+  .ui-btn__state-layer {
     /* … */
   }
 
   /* Variants */
-  .md3-btn--primary {
+  .ui-btn--primary {
     @apply bg-primary text-on-primary;
   }
 
   @media (hover: hover) {
-    .md3-btn:hover .md3-btn__state-layer {
+    .ui-btn:hover .ui-btn__state-layer {
       @apply opacity-[0.1];
     }
   }
@@ -246,7 +247,7 @@ Route-specific — `app/routes/main/plans.css`:
 
 ### Section in component `.css` (CRITICAL)
 
-Base class → **size variants `--sm`/`--md`/`--lg` (RIGHT after base, before everything)** → sub-elements (`__ripple`/`__state-layer`/…) → state layer hover/focus/active → color variants → square/icon → responsive (`--{bp}-sm/md/lg`) → states (`data-state`/`--loading`/…) → remaining sub-elements. Size variants BEFORE everything else — applies to ALL components (UI `md3-*` + custom + page-specific).
+Base class → **size variants `--sm`/`--md`/`--lg` (RIGHT after base, before everything)** → sub-elements (`__ripple`/`__state-layer`/…) → state layer hover/focus/active → color variants → square/icon → responsive (`--{bp}-sm/md/lg`) → states (`data-state`/`--loading`/…) → remaining sub-elements. Size variants BEFORE everything else — applies to ALL components (UI `ui-*` + custom + page-specific).
 
 - **Default size variant** = height token (`h-btn-md`) + text (`text-md`) + icon size only. `px`/`py`/`gap`/`rounded` stay on the base class (constant across sizes).
 - **Size-driven spacing & shape (per-component, on demand)** — when explicitly requested for a specific component, the size modifier ALSO overrides `px`/`py`/`gap`/`rounded` (each size gets its own values). Move these out of the base class into each `--sm`/`--md`/`--lg` modifier — never duplicate. Currently: `Select` (trigger + popover items), `Menu` (content + items). Full rules + examples → `components.md` § "Size-driven spacing & shape".
@@ -264,24 +265,24 @@ Before adding **any** utility to `className` (route) OR `@apply` in `.css` (comp
    - `<main className="text-on-surface font-body">` NO (inherited from body).
    - `<div className="font-header font-semibold text-2xl">` OK (non-heading — needed, `div` does not inherit heading defaults).
 2. **`@apply` in co-located `.css` of the component** — do not add again in `className`.
-   - `<Button className="bg-primary text-on-primary rounded-full">` NO — `.md3-btn` and `.md3-btn--primary` already set it.
+   - `<Button className="bg-primary text-on-primary rounded-full">` NO — `.ui-btn` and `.ui-btn--primary` already set it.
    - `<Button className="shadow-md">` OK — only override.
    - `<Button variant="primary" />` OK — variant decides.
-   - `<Dialog className="bg-elevation-2 rounded-2xl shadow-lg">` NO — `.md3-dialog__content` already has it.
+   - `<Dialog className="bg-elevation-2 rounded-2xl shadow-lg">` NO — `.ui-dialog__content` already has it.
    - `<Dialog className="max-w-mod-unit-8">` OK — override.
 3. **Variant** — contains ONLY override; do not repeat base.
-   - `.md3-btn--primary` = only `bg-primary text-on-primary` (does not repeat `rounded-full`/`transition-all`/`isolate`).
-   - `.md3-btn--sm` = only `h-btn-sm px-1 text-sm` (does not repeat `inline-flex`/`relative`/`font-body`).
-   - `.md3-btn--square` = only `gap-0 aspect-square p-0` (does not repeat size).
+   - `.ui-btn--primary` = only `bg-primary text-on-primary` (does not repeat `rounded-full`/`transition-all`/`isolate`).
+   - `.ui-btn--sm` = only `h-btn-sm px-1 text-sm` (does not repeat `inline-flex`/`relative`/`font-body`).
+   - `.ui-btn--square` = only `gap-0 aspect-square p-0` (does not repeat size).
 4. **Token `@theme`** — use utility instead of arbitrary values.
    - `bg-surface` instead of `bg-[oklch(14%_0.019_274.6deg)]`.
    - `h-btn-md` instead of `h-[5.5rem]`.
-   - `ease-md3` instead of `ease-[cubic-bezier(0.2,0,0,1)]`.
+   - `ease-ui` instead of `ease-[cubic-bezier(0.2,0,0,1)]`.
    - `rounded-xl` instead of `rounded-[1.5rem]`.
-5. **State layer/ripple** — do NOT add `hover:bg-*` if the component has `__state-layer`.
+5. **State layer/uix-ripple** — do NOT add `hover:bg-*` if the component has `__state-layer`.
    - `<Button className="hover:bg-elevation-2">` NO — state layer overlay does that.
-   - `.md3-btn:hover { @apply bg-elevation-2; }` NO — this is state layer, not bg change.
-   - `.md3-btn:hover .md3-btn__state-layer { @apply opacity-[0.1]; }` OK (in `@media (hover: hover)`).
+   - `.ui-btn:hover { @apply bg-elevation-2; }` NO — this is state layer, not bg change.
+   - `.ui-btn:hover .ui-btn__state-layer { @apply opacity-[0.1]; }` OK (in `@media (hover: hover)`).
 6. **CSS inheritance** — `color`/`font-family`/`font-size`/`font-weight`/`line-height`/`letter-spacing`/`text-align`/`cursor`/`list-style`/`visibility` are inherited; do not repeat.
    - `<section className="text-on-surface"><div className="text-on-surface">` NO — child inherits.
    - `<main className="font-body"><p className="font-body">` NO — both inherit from body.
@@ -336,7 +337,7 @@ Classes outside groups are sorted alphabetically at the end. Autofix:
 Unsorted (demonstration example, do not commit in this order):
 
 ```css
-@apply isolate transition-all duration-medium-2 ease-md3 select-none font-medium text-md font-body rounded-full px-2 h-btn-md gap-1 justify-center items-center relative inline-flex;
+@apply isolate transition-all duration-medium-2 ease-ui select-none font-medium text-md font-body rounded-full px-2 h-btn-md gap-1 justify-center items-center relative inline-flex;
 ```
 
 After `stylelint --fix` / `pnpm fmt:style` (order from `ORDER_GROUPS`):
@@ -355,7 +356,7 @@ After `stylelint --fix` / `pnpm fmt:style` (order from `ORDER_GROUPS`):
   text-md
   select-none
   duration-medium-2
-  ease-md3
+  ease-ui
   transition-all
   isolate;
 ```
@@ -363,14 +364,14 @@ After `stylelint --fix` / `pnpm fmt:style` (order from `ORDER_GROUPS`):
 (This exact order is used in `app/components/ui/button.css` lines 3-18.)
 
 - `/* 1. … */` comments — optional, recommended in long `@apply` (5+ utilities), omitted in short ones.
-- State pseudo-classes — only change: `.md3-btn:hover .md3-btn__state-layer { @apply opacity-[0.1]; }`.
+- State pseudo-classes — only change: `.ui-btn:hover .ui-btn__state-layer { @apply opacity-[0.1]; }`.
 - Variant classes — only override (size+spacing+typography for `--sm`/`--md`/`--lg`; color+effects for `--primary`).
 
 ## Inline (routes) — what and how
 
 - **All route elements default → inline Tailwind**, any number of classes (no threshold).
 - `@media` → `phone:`/`tablet:`/`desktop:`/… variants. `group` + `group-hover:` for sub-element states.
-- 3rd-party override → arbitrary variants `[&_.md3-*]:`. **BEM `__` → spaces!** Use `String.raw` + `\_`: `String.raw\`[&_.md3-text-field\_\_container]:border-on-primary\``.
+- 3rd-party override → arbitrary variants `[&_.ui-*]:`. **BEM `__` → spaces!** Use `String.raw` + `\_`: `String.raw\`[&_.ui-text-field\_\_container]:border-on-primary\``.
 - `color-mix`/`radial-gradient` → inline `style` or arbitrary values: `text-[color-mix(in_oklch,var(--color-primary)_40%,transparent)]`.
 - Logical state → conditional `className` (`cn("base", isOpen && "max-h-[500px] px-8 pb-8")`), NOT BEM `--open`.
 - After migrating `.css`→inline: remove empty classes; empty `.css` → delete file + `@import` from `main.css`.
@@ -380,11 +381,11 @@ After `stylelint --fix` / `pnpm fmt:style` (order from `ORDER_GROUPS`):
 - **Cross-route `@keyframes`:** top-level in `app/styles/tailwind.css` (outside `@layer`) — e.g. `ripple-anim`. Complex cross-route animations may also be React components.
 - **Route-specific:** co-located route `.css` in `@layer routes`, BEM (route prefix = block) + `@keyframes`, e.g. `pulse-glow` in `app/routes/main/plans.css`.
 - **`@keyframes` ALWAYS requires `@media (prefers-reduced-motion: reduce) { animation: none }`.** Without exceptions.
-- Use tokens (`--ease-md3`, `--duration-*`), never hardcode `cubic-bezier(0.2,0,0,1)`/`300ms`.
+- Use tokens (`--ease-ui`, `--duration-*`), never hardcode `cubic-bezier(0.2,0,0,1)`/`300ms`.
 
 ## Hover gating (CRITICAL — CSS mechanics)
 
-On touch devices `:hover` becomes "sticky" after tap — the browser emulates hover and leaves it active. Fix: gate `:hover` on `@media (hover: hover)` (only real pointing device). On touch, feedback comes from `:active` (pressed state layer) + ripple.
+On touch devices `:hover` becomes "sticky" after tap — the browser emulates hover and leaves it active. Fix: gate `:hover` on `@media (hover: hover)` (only real pointing device). On touch, feedback comes from `:active` (pressed state layer) + uix-ripple.
 
 - **Two kinds of hover — different rules:**
   - Tailwind `hover:`/`group-hover:` in TSX → **already gated** (v4 default, do not override with `@custom-variant hover (&:hover);` — that un-gates).
@@ -398,7 +399,7 @@ Wrong — raw `:hover` in `.css` without gating:
 
 ```css
 @layer components {
-  .md3-btn:hover .md3-btn__state-layer {
+  .ui-btn:hover .ui-btn__state-layer {
     @apply opacity-[0.1];
   }
 }
@@ -409,7 +410,7 @@ Right — always wrap in `@media (hover: hover)`:
 ```css
 @layer components {
   @media (hover: hover) {
-    .md3-btn:hover .md3-btn__state-layer {
+    .ui-btn:hover .ui-btn__state-layer {
       @apply opacity-[0.1];
     }
   }
@@ -420,9 +421,9 @@ Right — always wrap in `@media (hover: hover)`:
 
 ## `data-state` + naming
 
-- `data-state="…"` (kebab-case) on components with dynamic state. In `.css`: `[data-state="…"]` or `.md3-{comp}--{state}` (preferred). **No `is-`/`has-`/`js-` prefixes.**
+- `data-state="…"` (kebab-case) on components with dynamic state. In `.css`: `[data-state="…"]` or `.ui-{comp}--{state}` (preferred). **No `is-`/`has-`/`js-` prefixes.**
 - Interactive states (hover/focus/pressed) = state layer, NOT `data-state` → `md3-design.md` § 3.
-- BEM naming (UI `md3-*`, custom without prefix, route `{route}__`) → `components.md` § "BEM".
+- BEM naming (UI `ui-*`, custom without prefix, route `{route}__`) → `components.md` § "BEM".
 - `@theme inline` for fluid `clamp()` — `:root` var + `@theme inline { --text-md: var(--fluid-text-md) }`.
 
 ## Don't (CSS mechanics)
@@ -438,7 +439,7 @@ Right — always wrap in `@media (hover: hover)`:
 - `className` on a component without need — omit; only route overrides.
 - `@apply` in routes auto by class count — RARE, only ordered/CSS-only needs.
 - Inline + route BEM on the same element (`<section className="plans bg-black">`).
-- Arbitrary `max-w-[calc(var(--n-w-mod-unit)*N)]` — use `*-mod-unit-N` (1-24).
+- Arbitrary `max-w-[calc(var(--x-w-mod-unit)*N)]` — use `*-mod-unit-N` (1-24).
 - Global layout in `@layer base`; duplicates from base/`.css`/inheritance in `className`.
 - Variant repeating base; size variants out of position right after base.
 - Raw `:hover` in `.css` without `@media (hover: hover)`; `:focus-visible`/`:active` inside `@media (hover: hover)`.

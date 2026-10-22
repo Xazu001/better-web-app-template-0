@@ -82,9 +82,9 @@
   --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 10%), 0 4px 6px -4px rgb(0 0 0 / 10%);
 
   /* Motion — ease-* + duration-* (MD3: cubic-bezier(0.2, 0, 0, 1), 75–400ms) */
-  --ease-md3: cubic-bezier(0.2, 0, 0, 1);
-  --ease-md3-decelerated: cubic-bezier(0, 0, 0, 1);
-  --ease-md3-accelerated: cubic-bezier(0.3, 0, 1, 1);
+  --ease-ui: cubic-bezier(0.2, 0, 0, 1);
+  --ease-ui-decelerated: cubic-bezier(0, 0, 0, 1);
+  --ease-ui-accelerated: cubic-bezier(0.3, 0, 1, 1);
   --transition-duration-short-1: 75ms;
   --transition-duration-short-2: 100ms;
   --transition-duration-short-3: 150ms;
@@ -325,8 +325,8 @@
   --fluid-text-0: clamp(5rem, 16vw, 16.5rem);
 
   /* w-mod-unit layout (grid 24 columns) */
-  --n-container-max-width: 1920px;
-  --n-w-mod-unit: calc(var(--n-container-max-width) / 24);
+  --x-container-max-width: 1920px;
+  --x-w-mod-unit: calc(var(--x-container-max-width) / 24);
   --spacing-x-site: 2.5rem;
 
   /* Site top padding — mobile 24rem/1.5, desktop 24rem */
@@ -366,7 +366,7 @@
     --fluid-text-4xl: 7rem;
     --fluid-text-5xl: 9rem;
     --fluid-text-0: 16.5rem;
-    --n-container-max-width: 95vw;
+    --x-container-max-width: 95vw;
 
     font-size: 8px;
   }
@@ -434,7 +434,7 @@
     border-radius: 50%;
     opacity: 0.3;
     transform: scale(0);
-    animation: ripple-anim 600ms var(--ease-md3) forwards;
+    animation: ripple-anim 600ms var(--ease-ui) forwards;
   }
 }
 

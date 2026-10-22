@@ -1,37 +1,37 @@
 @layer components {
-  .md3-file-input {
+  .ui-file-input {
     @apply relative flex flex-col gap-1 w-full rounded-lg;
   }
 
   /* Header */
 
-  .md3-file-input__header {
+  .ui-file-input__header {
     @apply flex items-center justify-between gap-1;
   }
 
-  .md3-file-input__label {
+  .ui-file-input__label {
     @apply font-medium text-on-surface text-sm;
   }
 
-  .md3-file-input__error {
+  .ui-file-input__error {
     @apply inline-flex items-center gap-1 text-error text-sm;
   }
 
-  .md3-file-input__error-icon {
+  .ui-file-input__error-icon {
     @apply text-error;
   }
 
-  .md3-file-input__helper {
+  .ui-file-input__helper {
     @apply text-on-surface-variant text-sm;
   }
 
-  .md3-file-input__helper--error {
+  .ui-file-input__helper--error {
     @apply text-error;
   }
 
   /* Dropzone */
 
-  .md3-file-input__dropzone {
+  .ui-file-input__dropzone {
     @apply relative
       overflow-hidden
       flex
@@ -45,63 +45,63 @@
       cursor-pointer
       select-none
       duration-short-3
-      ease-md3
+      ease-ui
       transition-[border-color,background-color]
       isolate;
   }
 
   /* Sizes */
 
-  .md3-file-input--sm .md3-file-input__dropzone {
+  .ui-file-input--sm .ui-file-input__dropzone {
     @apply min-h-text-field-sm p-1;
   }
 
-  .md3-file-input--md .md3-file-input__dropzone {
+  .ui-file-input--md .ui-file-input__dropzone {
     @apply min-h-text-field-md p-2;
   }
 
-  .md3-file-input--lg .md3-file-input__dropzone {
+  .ui-file-input--lg .ui-file-input__dropzone {
     @apply min-h-text-field-lg p-3;
   }
 
   /* Focus */
 
-  .md3-file-input__dropzone:focus-visible,
-  .md3-file-input__dropzone:active {
+  .ui-file-input__dropzone:focus-visible,
+  .ui-file-input__dropzone:active {
     @apply border-primary;
   }
 
-  .md3-file-input--dragging .md3-file-input__dropzone {
+  .ui-file-input--dragging .ui-file-input__dropzone {
     @apply bg-primary/5 border-primary;
   }
 
   /* Error */
 
-  .md3-file-input--error .md3-file-input__dropzone {
+  .ui-file-input--error .ui-file-input__dropzone {
     @apply border-error;
   }
 
   /* Disabled */
 
-  .md3-file-input[data-state="disabled"] {
+  .ui-file-input[data-state="disabled"] {
     @apply opacity-50 cursor-not-allowed;
   }
 
-  .md3-file-input[data-state="disabled"] .md3-file-input__dropzone {
+  .ui-file-input[data-state="disabled"] .ui-file-input__dropzone {
     @apply cursor-not-allowed pointer-events-none;
   }
 
   /* Variants */
 
-  .md3-file-input--elevation-1 .md3-file-input__dropzone {
+  .ui-file-input--elevation-1 .ui-file-input__dropzone {
     @apply bg-elevation-1 border-dashed border-outline-variant;
   }
 
-  .md3-file-input--elevation-2 .md3-file-input__dropzone {
+  .ui-file-input--elevation-2 .ui-file-input__dropzone {
     @apply bg-elevation-2 border-outline-variant border-solid;
   }
 
-  .md3-file-input__ripple {
+  .ui-file-input__ripple {
     @apply absolute
       inset-0
       z-below
@@ -110,7 +110,7 @@
       pointer-events-none;
   }
 
-  .md3-file-input__state-layer {
+  .ui-file-input__state-layer {
     @apply absolute
       inset-0
       bg-current
@@ -120,49 +120,49 @@
       transition-opacity;
   }
 
-  .md3-file-input__dropzone:focus-visible .md3-file-input__state-layer {
+  .ui-file-input__dropzone:focus-visible .ui-file-input__state-layer {
     @apply opacity-[0.1];
   }
 
-  .md3-file-input__dropzone:active .md3-file-input__state-layer {
+  .ui-file-input__dropzone:active .ui-file-input__state-layer {
     @apply opacity-[0.1];
   }
 
   /* Native input */
 
-  .md3-file-input__native {
+  .ui-file-input__native {
     @apply absolute inset-0 h-full w-full opacity-0 pointer-events-none;
   }
 
   /* Empty state */
 
-  .md3-file-input__empty {
+  .ui-file-input__empty {
     @apply relative z-base flex flex-col items-center gap-1 text-center pointer-events-none;
   }
 
-  .md3-file-input__icon {
+  .ui-file-input__icon {
     @apply text-on-surface-variant;
   }
 
-  .md3-file-input__empty-text {
+  .ui-file-input__empty-text {
     @apply flex flex-col gap-1;
   }
 
-  .md3-file-input__empty-title {
+  .ui-file-input__empty-title {
     @apply font-medium text-md text-on-surface;
   }
 
-  .md3-file-input__empty-helper {
+  .ui-file-input__empty-helper {
     @apply text-on-surface-variant text-sm;
   }
 
   /* File list */
 
-  .md3-file-input__list {
+  .ui-file-input__list {
     @apply relative z-base flex flex-col gap-1 w-full p-0 m-0 pointer-events-none list-none;
   }
 
-  .md3-file-input__item {
+  .ui-file-input__item {
     @apply inline-flex
       items-center
       gap-1
@@ -178,21 +178,21 @@
       text-sm;
   }
 
-  .md3-file-input__item-icon {
+  .ui-file-input__item-icon {
     @apply shrink-0 text-primary;
   }
 
-  .md3-file-input__item-name {
+  .ui-file-input__item-name {
     @apply flex-1 truncate;
   }
 
-  .md3-file-input__item-size {
+  .ui-file-input__item-size {
     @apply shrink-0 text-on-surface-variant text-sm;
   }
 
   /* Remove button */
 
-  .md3-file-input__remove {
+  .ui-file-input__remove {
     @apply inline-flex
       items-center
       justify-center
@@ -204,42 +204,42 @@
       cursor-pointer
       pointer-events-auto
       duration-short-3
-      ease-md3
+      ease-ui
       transition-[color];
   }
 
-  .md3-file-input__remove:disabled {
+  .ui-file-input__remove:disabled {
     @apply opacity-40 cursor-not-allowed;
   }
 
-  .md3-file-input__remove-icon {
+  .ui-file-input__remove-icon {
     @apply pointer-events-none;
   }
 
-  .md3-file-input__dropzone:focus-visible .md3-file-input__icon {
+  .ui-file-input__dropzone:focus-visible .ui-file-input__icon {
     @apply text-primary;
   }
 
   @media (hover: hover) {
-    .md3-file-input__remove:hover {
+    .ui-file-input__remove:hover {
       @apply text-error;
     }
   }
 
   @media (hover: hover) {
-    .md3-file-input__dropzone:hover .md3-file-input__icon {
+    .ui-file-input__dropzone:hover .ui-file-input__icon {
       @apply text-primary;
     }
   }
 
   @media (hover: hover) {
-    .md3-file-input__dropzone:hover .md3-file-input__state-layer {
+    .ui-file-input__dropzone:hover .ui-file-input__state-layer {
       @apply opacity-[0.1];
     }
   }
 
   @media (hover: hover) {
-    .md3-file-input--elevation-2:hover .md3-file-input__dropzone {
+    .ui-file-input--elevation-2:hover .ui-file-input__dropzone {
       @apply border-outline;
     }
   }
@@ -247,7 +247,7 @@
   /* Hover */
 
   @media (hover: hover) {
-    .md3-file-input:hover .md3-file-input__dropzone {
+    .ui-file-input:hover .ui-file-input__dropzone {
       @apply border-outline;
     }
   }

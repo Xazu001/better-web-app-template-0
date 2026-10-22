@@ -13,7 +13,7 @@
 | Component Size Tokens (rem)                                         | `--size-*` → `size-*` / `h-*` / `w-*` per component (sm/md/lg/xl)   |
 | Motion (MD3)                                                        | `--ease-*`, `--duration-*`                                          |
 | Line height / Letter spacing / Radius / Z-index / Shadows / Spacing | remaining `@theme` namespaces + generated utilities                 |
-| w-mod-unit (layout grid)                                            | `--n-*`, `--spacing-*`, `@utility` layout utils                     |
+| w-mod-unit (layout grid)                                            | `--x-*`, `--spacing-*`, `@utility` layout utils                     |
 | Unit scale                                                          | `--container-unit-*` → `w-unit-*` / `min-w-unit-*` / `max-w-unit-*` |
 | Breakpoints                                                         | `phone:` … `huge:` ↔ `@custom-media --bp-*`                         |
 | Custom `@utility`                                                   | per-file tables from `utilities/*.css`                              |
@@ -201,7 +201,7 @@ Above `1920px` fluid typography freezes to fixed values, and the root `font-size
 | `--fluid-text-4xl`        | `7rem`          |
 | `--fluid-text-5xl`        | `9rem`          |
 | `--fluid-text-0`          | `16.5rem`       |
-| `--n-container-max-width` | `95vw`          |
+| `--x-container-max-width` | `95vw`          |
 | `font-size`               | `8px`           |
 
 ## Component Size Tokens (rem)
@@ -231,9 +231,9 @@ Above `1920px` fluid typography freezes to fixed values, and the root `font-size
 
 | Var                      | Value                        | Usage               |
 | ------------------------ | ---------------------------- | ------------------- |
-| `--ease-md3`             | `cubic-bezier(0.2, 0, 0, 1)` | Default UI easing.  |
-| `--ease-md3-decelerated` | `cubic-bezier(0, 0, 0, 1)`   | Entrances / expand. |
-| `--ease-md3-accelerated` | `cubic-bezier(0.3, 0, 1, 1)` | Exits / collapse.   |
+| `--ease-ui`             | `cubic-bezier(0.2, 0, 0, 1)` | Default UI easing.  |
+| `--ease-ui-decelerated` | `cubic-bezier(0, 0, 0, 1)`   | Entrances / expand. |
+| `--ease-ui-accelerated` | `cubic-bezier(0.3, 0, 1, 1)` | Exits / collapse.   |
 
 ### Durations (`@theme` → `duration-*`)
 
@@ -327,8 +327,8 @@ Most custom elevation shadow tokens have been removed — elevation is implement
 
 | Var                       | Value                                     | `@media` override                                                           |
 | ------------------------- | ----------------------------------------- | --------------------------------------------------------------------------- |
-| `--n-container-max-width` | `1920px`                                  | `--bp-huge`: `95vw`                                                         |
-| `--n-w-mod-unit`          | `calc(var(--n-container-max-width) / 24)` | —                                                                           |
+| `--x-container-max-width` | `1920px`                                  | `--bp-huge`: `95vw`                                                         |
+| `--x-w-mod-unit`          | `calc(var(--x-container-max-width) / 24)` | —                                                                           |
 | `--spacing-x-site`        | `2.5rem`                                  | `--bp-phone`: `4rem` · `--bp-desktop`: `6rem` · `--bp-large-desktop`: `4vw` |
 | `--spacing-top-site`      | `16rem`                                   | `--bp-desktop`: `24rem`                                                     |
 
@@ -338,16 +338,16 @@ The grid is based on 24 columns, so `w-mod-unit-*` effectively takes values 1–
 
 | Utility                | Definition                                                                                           |
 | ---------------------- | ---------------------------------------------------------------------------------------------------- |
-| `cont`                 | `width: 100%; max-width: var(--n-container-max-width); margin-inline: auto`                          |
+| `cont`                 | `width: 100%; max-width: var(--x-container-max-width); margin-inline: auto`                          |
 | `px-site`              | `padding-inline: var(--spacing-x-site)`                                                              |
 | `p-site`               | `padding: var(--spacing-x-site)`                                                                     |
 | `pt-top-site`          | `padding-top: var(--spacing-top-site)`                                                               |
 | `section-full-width`   | `padding-inline: 0`                                                                                  |
-| `w-mod-unit-*`         | `width: calc(var(--n-w-mod-unit) * --value(integer))`                                                |
-| `min-w-mod-unit-*`     | `min-width: calc(var(--n-w-mod-unit) * --value(integer))`                                            |
-| `max-w-mod-unit-*`     | `max-width: calc(var(--n-w-mod-unit) * --value(integer))`                                            |
-| `basis-mod-unit-*`     | `flex-basis: calc(var(--n-w-mod-unit) * --value(integer))`                                           |
-| `grid-cols-mod-unit-*` | `grid-template-columns: repeat(auto-fill, minmax(calc(var(--n-w-mod-unit) * --value(number)), 1fr))` |
+| `w-mod-unit-*`         | `width: calc(var(--x-w-mod-unit) * --value(integer))`                                                |
+| `min-w-mod-unit-*`     | `min-width: calc(var(--x-w-mod-unit) * --value(integer))`                                            |
+| `max-w-mod-unit-*`     | `max-width: calc(var(--x-w-mod-unit) * --value(integer))`                                            |
+| `basis-mod-unit-*`     | `flex-basis: calc(var(--x-w-mod-unit) * --value(integer))`                                           |
+| `grid-cols-mod-unit-*` | `grid-template-columns: repeat(auto-fill, minmax(calc(var(--x-w-mod-unit) * --value(number)), 1fr))` |
 
 **`cont` — when to use:** → `styling.md` § "`cont` — site container".
 
@@ -381,14 +381,17 @@ Own named width scale — `--container-unit-*` tokens in `@theme` (`app/styles/t
 
 ## Custom `@utility` (`utilities/*.css`)
 
-| Utility                        | File        | Definition                                                                                                         |
-| ------------------------------ | ----------- | ------------------------------------------------------------------------------------------------------------------ |
-| `link-muted`                   | `links.css` | `text-on-surface-variant` + hover → `text-on-surface`                                                              |
-| `link-muted-primary-underline` | `links.css` | `underline text-primary`                                                                                           |
-| `nav-link`                     | `links.css` | `px-2 py-1 rounded-sm text-on-surface-variant` + hover → `color-mix(surface 75%, transparent)` + `text-on-surface` |
-| `state-layer`                  | `md3.css`   | `position: relative; isolation: isolate`                                                                           |
-| `ripple`                       | `md3.css`   | `position: absolute; inset: 0; overflow: hidden; pointer-events: none`                                             |
-| `elevation-1-bordered`         | `md3.css`   | `bg-elevation-1 border border-outline-variant rounded-xl`                                                          |
+| Utility                          | File        | Definition                                                                                                         |
+| -------------------------------- | ----------- | ------------------------------------------------------------------------------------------------------------------ |
+| `uix-link-muted`                   | `links.css` | `text-on-surface-variant` + hover → `text-on-surface`                                                              |
+| `uix-link-muted-primary-underline` | `links.css` | `underline text-primary`                                                                                           |
+| `uix-link-primary`                 | `links.css` | `text-primary`                                                                                                     |
+| `uix-nav-link`                     | `links.css` | `px-2 py-1 rounded-sm text-on-surface-variant` + hover → `color-mix(surface 75%, transparent)` + `text-on-surface` |
+| `state-layer`                      | `ui.css`    | `position: relative; isolation: isolate`                                                                           |
+| `uix-ripple`                       | `ui.css`    | `position: absolute; inset: 0; overflow: hidden; pointer-events: none`                                             |
+| `ui-ripple-surface`                | `ui.css`    | `__ripple` overlay primitive (absolute inset-0 z-below overflow-hidden rounded-[inherit] pointer-events-none)      |
+| `ui-state-layer`                   | `ui.css`    | `__state-layer` overlay primitive (absolute inset-0 bg-current rounded-[inherit] opacity-0 transition-opacity)     |
+| `uix-elevation-1-bordered`         | `ui.css`    | `bg-elevation-1 border border-outline-variant rounded-xl`                                                          |
 
 ## `@layer components` + keyframes
 
@@ -400,7 +403,7 @@ background: color-mix(in oklch, var(--ripple-color, currentcolor) 60%, white);
 border-radius: 50%;
 opacity: 0.3;
 transform: scale(0);
-animation: ripple-anim 600ms var(--ease-md3) forwards;
+animation: ripple-anim 600ms var(--ease-ui) forwards;
 ```
 
 ### Keyframes (top-level, outside `@layer`)
@@ -417,7 +420,7 @@ animation: ripple-anim 600ms var(--ease-md3) forwards;
 ```css
 background: var(--color-kit-play-primary, var(--color-primary));
 @apply fixed left-0 top-0 z-toast h-1 w-full pointer-events-none origin-left
-  animate-[loading-bar-expand_var(--transition-duration-long-2)_var(--ease-md3)_forwards];
+  animate-[loading-bar-expand_var(--transition-duration-long-2)_var(--ease-ui)_forwards];
 ```
 
 Respects `prefers-reduced-motion: reduce` via `animation: none`.

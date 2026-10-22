@@ -1,6 +1,6 @@
 @utility cont {
   width: 100%;
-  max-width: var(--n-container-max-width);
+  max-width: var(--x-container-max-width);
   margin-inline: auto;
 }
 
@@ -21,24 +21,24 @@
 }
 
 @utility w-mod-unit-* {
-  width: calc(var(--n-w-mod-unit) * --value(integer));
+  width: calc(var(--x-w-mod-unit) * --value(integer));
 }
 
 @utility min-w-mod-unit-* {
-  min-width: calc(var(--n-w-mod-unit) * --value(integer));
+  min-width: calc(var(--x-w-mod-unit) * --value(integer));
 }
 
 @utility max-w-mod-unit-* {
-  max-width: calc(var(--n-w-mod-unit) * --value(integer));
+  max-width: calc(var(--x-w-mod-unit) * --value(integer));
 }
 
 @utility basis-mod-unit-* {
-  flex-basis: calc(var(--n-w-mod-unit) * --value(integer));
+  flex-basis: calc(var(--x-w-mod-unit) * --value(integer));
 }
 
 @utility grid-cols-mod-unit-* {
   grid-template-columns: repeat(
     auto-fill,
-    minmax(calc(var(--n-w-mod-unit) * --value(number)), 1fr)
+    minmax(calc(var(--x-w-mod-unit) * --value(number)), 1fr)
   );
 }

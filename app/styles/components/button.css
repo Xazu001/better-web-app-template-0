@@ -1,6 +1,6 @@
 @layer components {
   /* ────────────────────────────────────────────────────────────
-   * Button — shared structure for `.md3-btn` (ui) and `.play-btn`
+   * Button — shared structure for `.ui-btn` (ui) and `.play-btn`
    * (kit-play). Sizes are parameterized via `--btn-h-*` / `--btn-px-*`
    * custom props set per variant in:
    *   - app/components/ui/button.css                       (theme tokens)
@@ -14,7 +14,7 @@
 
   /* Root */
 
-  .md3-btn,
+  .ui-btn,
   .play-btn {
     --btn-spinner-size: calc(var(--btn-h-md) * 0.35);
 
@@ -31,14 +31,14 @@
       text-md
       select-none
       duration-medium-2
-      ease-md3
+      ease-ui
       transition-all
       isolate;
   }
 
   /* Sizes */
 
-  .md3-btn--sm,
+  .ui-btn--sm,
   .play-btn--sm {
     --btn-spinner-size: calc(var(--btn-h-sm) * 0.35);
 
@@ -48,7 +48,7 @@
     @apply gap-1 text-sm;
   }
 
-  .md3-btn--md,
+  .ui-btn--md,
   .play-btn--md {
     --btn-spinner-size: calc(var(--btn-h-md) * 0.35);
 
@@ -58,7 +58,7 @@
     @apply gap-2 text-md;
   }
 
-  .md3-btn--lg,
+  .ui-btn--lg,
   .play-btn--lg {
     --btn-spinner-size: calc(var(--btn-h-lg) * 0.35);
 
@@ -70,7 +70,7 @@
 
   /* Ripple surface */
 
-  .md3-btn__ripple,
+  .ui-btn__ripple,
   .play-btn__ripple {
     @apply absolute
       inset-0
@@ -82,7 +82,7 @@
 
   /* State layer */
 
-  .md3-btn__state-layer,
+  .ui-btn__state-layer,
   .play-btn__state-layer {
     @apply absolute
       inset-0
@@ -93,8 +93,8 @@
       transition-opacity;
   }
 
-  .md3-btn:focus-visible .md3-btn__state-layer,
-  .md3-btn:active .md3-btn__state-layer,
+  .ui-btn:focus-visible .ui-btn__state-layer,
+  .ui-btn:active .ui-btn__state-layer,
   .play-btn:focus-visible .play-btn__state-layer,
   .play-btn:active .play-btn__state-layer {
     @apply opacity-[0.1];
@@ -102,24 +102,24 @@
 
   /* Square */
 
-  .md3-btn--square,
+  .ui-btn--square,
   .play-btn--square {
     @apply gap-0 aspect-square p-0;
   }
 
-  .md3-btn--sm.md3-btn--square,
+  .ui-btn--sm.ui-btn--square,
   .play-btn--sm.play-btn--square {
     width: var(--btn-h-sm);
     height: var(--btn-h-sm);
   }
 
-  .md3-btn--md.md3-btn--square,
+  .ui-btn--md.ui-btn--square,
   .play-btn--md.play-btn--square {
     width: var(--btn-h-md);
     height: var(--btn-h-md);
   }
 
-  .md3-btn--lg.md3-btn--square,
+  .ui-btn--lg.ui-btn--square,
   .play-btn--lg.play-btn--square {
     width: var(--btn-h-lg);
     height: var(--btn-h-lg);
@@ -127,24 +127,24 @@
 
   /* IconButton */
 
-  .md3-btn--icon-button,
+  .ui-btn--icon-button,
   .play-btn--icon-button {
     @apply gap-0 aspect-square p-0 rounded-full;
   }
 
-  .md3-btn--sm.md3-btn--icon-button,
+  .ui-btn--sm.ui-btn--icon-button,
   .play-btn--sm.play-btn--icon-button {
     width: var(--btn-h-sm);
     height: var(--btn-h-sm);
   }
 
-  .md3-btn--md.md3-btn--icon-button,
+  .ui-btn--md.ui-btn--icon-button,
   .play-btn--md.play-btn--icon-button {
     width: var(--btn-h-md);
     height: var(--btn-h-md);
   }
 
-  .md3-btn--lg.md3-btn--icon-button,
+  .ui-btn--lg.ui-btn--icon-button,
   .play-btn--lg.play-btn--icon-button {
     width: var(--btn-h-lg);
     height: var(--btn-h-lg);
@@ -152,36 +152,36 @@
 
   /* Label / Icon */
 
-  .md3-btn__label,
+  .ui-btn__label,
   .play-btn__label {
     @apply inline-flex items-center justify-center gap-1;
   }
 
-  .md3-btn__icon,
+  .ui-btn__icon,
   .play-btn__icon {
     @apply inline-flex items-center;
   }
 
   /* States */
 
-  .md3-btn[data-state="disabled"],
+  .ui-btn[data-state="disabled"],
   .play-btn[data-state="disabled"] {
     @apply opacity-50 cursor-not-allowed;
   }
 
-  .md3-btn--loading,
+  .ui-btn--loading,
   .play-btn--loading {
     @apply cursor-progress;
   }
 
-  .md3-btn--loading .md3-btn__label,
+  .ui-btn--loading .ui-btn__label,
   .play-btn--loading .play-btn__label {
     @apply opacity-0;
   }
 
   /* Spinner */
 
-  .md3-btn__spinner,
+  .ui-btn__spinner,
   .play-btn__spinner {
     width: var(--btn-spinner-size);
     height: var(--btn-spinner-size);
@@ -199,7 +199,7 @@
   /* Hover gating */
 
   @media (hover: hover) {
-    .md3-btn:hover .md3-btn__state-layer,
+    .ui-btn:hover .ui-btn__state-layer,
     .play-btn:hover .play-btn__state-layer {
       @apply opacity-[0.1];
     }
@@ -213,7 +213,7 @@
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .md3-btn__spinner,
+  .ui-btn__spinner,
   .play-btn__spinner {
     animation-duration: 1.5s;
   }

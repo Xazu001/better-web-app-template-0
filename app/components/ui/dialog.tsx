@@ -77,16 +77,16 @@ const DialogCloseButton = ({ onOpenChange }: { onOpenChange: (open: boolean) => 
   return (
     <button
       type="button"
-      className={cn("md3-dialog__close", rippleState.pressed && "is-pressed")}
+      className={cn("ui-dialog__close", rippleState.pressed && "is-pressed")}
       aria-label="Close"
       onClick={() => onOpenChange(false)}
       {...handlers}
     >
       <Icon.X size="sm" />
-      <span ref={surfaceRef} className="md3-dialog__close-ripple" aria-hidden="true">
-        <span className="ripple" />
+      <span ref={surfaceRef} className="ui-dialog__close-ripple" aria-hidden="true">
+        <span className="uix-ripple" />
       </span>
-      <span className="md3-dialog__close-state-layer" aria-hidden="true" />
+      <span className="ui-dialog__close-state-layer" aria-hidden="true" />
     </button>
   );
 };
@@ -112,24 +112,24 @@ const DialogContent = React.forwardRef<HTMLDivElement, DialogContentProps>(
 
     return createPortal(
       <div
-        className={cn("md3-dialog", dialogClassName)}
+        className={cn("ui-dialog", dialogClassName)}
         role="dialog"
         aria-modal="true"
         aria-label={ariaLabel}
         aria-labelledby={ariaLabelledBy}
       >
         <div
-          className="md3-dialog__scrim"
+          className="ui-dialog__scrim"
           onClick={() => dismissible && onOpenChange(false)}
           aria-hidden="true"
         />
-        <div className={cn("md3-dialog__surface", `md3-dialog__surface--${size}`)}>
+        <div className={cn("ui-dialog__surface", `ui-dialog__surface--${size}`)}>
           <div
             ref={ref}
             className={cn(
-              "md3-dialog__content",
-              `md3-dialog__content--${variant}`,
-              !hideClose && dismissible && "md3-dialog__content--with-close",
+              "ui-dialog__content",
+              `ui-dialog__content--${variant}`,
+              !hideClose && dismissible && "ui-dialog__content--with-close",
               className
             )}
             {...props}

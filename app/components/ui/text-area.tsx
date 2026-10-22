@@ -34,7 +34,7 @@ const TextArea = React.forwardRef<HTMLTextAreaElement, TextAreaProps>(
     const inputId = id || generatedId;
     const helperId = `${inputId}-helper`;
     const [focused, setFocused] = React.useState(false);
-    const md3State = error
+    const uiState = error
       ? "error"
       : props.disabled
         ? "disabled"
@@ -54,24 +54,24 @@ const TextArea = React.forwardRef<HTMLTextAreaElement, TextAreaProps>(
     return (
       <div
         className={cn(
-          "md3-text-area",
-          `md3-text-area--${size || "md"}`,
-          error && "md3-text-area--error",
-          label && "md3-text-area--has-label",
+          "ui-text-area",
+          `ui-text-area--${size || "md"}`,
+          error && "ui-text-area--error",
+          label && "ui-text-area--has-label",
           className
         )}
-        data-state={md3State}
+        data-state={uiState}
       >
         {label && (
-          <label htmlFor={inputId} className={cn("md3-text-area__label", labelClassName)}>
+          <label htmlFor={inputId} className={cn("ui-text-area__label", labelClassName)}>
             {label}
           </label>
         )}
-        <div className="md3-text-area__container">
+        <div className="ui-text-area__container">
           <textarea
             ref={ref}
             id={inputId}
-            className="md3-text-area__input"
+            className="ui-text-area__input"
             placeholder={placeholder}
             aria-invalid={error}
             aria-describedby={helperText ? helperId : undefined}
@@ -83,7 +83,7 @@ const TextArea = React.forwardRef<HTMLTextAreaElement, TextAreaProps>(
         {helperText && (
           <p
             id={helperId}
-            className={cn("md3-text-area__helper", error && "md3-text-area__helper--error")}
+            className={cn("ui-text-area__helper", error && "ui-text-area__helper--error")}
           >
             {helperText}
           </p>

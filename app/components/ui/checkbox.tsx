@@ -57,7 +57,7 @@ const Checkbox = React.forwardRef<HTMLButtonElement, CheckboxProps>(
 
     const { surfaceRef, handlers, rippleState } = useRipple<HTMLSpanElement>(disabled);
 
-    const md3State = disabled
+    const uiState = disabled
       ? "disabled"
       : indeterminate
         ? "indeterminate"
@@ -76,16 +76,16 @@ const Checkbox = React.forwardRef<HTMLButtonElement, CheckboxProps>(
     };
 
     const cls = cn(
-      "md3-checkbox",
-      `md3-checkbox--${size || "md"}`,
-      variant !== "default" && `md3-checkbox--${variant}`,
-      disabled && "md3-checkbox--disabled",
-      rippleState.pressed && "md3-checkbox--pressed",
+      "ui-checkbox",
+      `ui-checkbox--${size || "md"}`,
+      variant !== "default" && `ui-checkbox--${variant}`,
+      disabled && "ui-checkbox--disabled",
+      rippleState.pressed && "ui-checkbox--pressed",
       className
     );
 
     return (
-      <div className={cn("md3-checkbox__wrapper", wrapperClassName)}>
+      <div className={cn("ui-checkbox__wrapper", wrapperClassName)}>
         {name && <input type="hidden" name={name} value={checked ? "on" : "off"} />}
         <button
           ref={ref}
@@ -94,19 +94,19 @@ const Checkbox = React.forwardRef<HTMLButtonElement, CheckboxProps>(
           role="checkbox"
           name={name}
           className={cls}
-          data-state={md3State}
+          data-state={uiState}
           aria-checked={indeterminate ? "mixed" : checked}
           disabled={disabled}
           onClick={handleClick}
           {...handlers}
         >
-          <span ref={surfaceRef} className="md3-checkbox__ripple" aria-hidden="true">
-            <span className="ripple" />
+          <span ref={surfaceRef} className="ui-checkbox__ripple" aria-hidden="true">
+            <span className="uix-ripple" />
           </span>
-          <span className="md3-checkbox__state-layer" aria-hidden="true" />
-          <span className="md3-checkbox__box">
+          <span className="ui-checkbox__state-layer" aria-hidden="true" />
+          <span className="ui-checkbox__box">
             {checked && !indeterminate && (
-              <span className="md3-checkbox__check">
+              <span className="ui-checkbox__check">
                 {Icon || (
                   <svg width="60%" height="60%" viewBox="0 0 24 24" fill="none">
                     <path
@@ -120,11 +120,11 @@ const Checkbox = React.forwardRef<HTMLButtonElement, CheckboxProps>(
                 )}
               </span>
             )}
-            {indeterminate && <span className="md3-checkbox__minus" aria-hidden="true" />}
+            {indeterminate && <span className="ui-checkbox__minus" aria-hidden="true" />}
           </span>
         </button>
         {label && (
-          <label htmlFor={checkboxId} className={cn("md3-checkbox__label", labelClassName)}>
+          <label htmlFor={checkboxId} className={cn("ui-checkbox__label", labelClassName)}>
             {label}
           </label>
         )}

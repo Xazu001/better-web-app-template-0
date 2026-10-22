@@ -45,7 +45,7 @@ const TextField = React.forwardRef<HTMLInputElement, TextFieldProps>(
     const inputId = id || generatedId;
     const errorId = `${inputId}-error`;
     const isError = error || Boolean(errorMessage);
-    const md3State = isError ? "error" : props.disabled ? "disabled" : "enabled";
+    const uiState = isError ? "error" : props.disabled ? "disabled" : "enabled";
 
     const isMobile = useBreakpoint("tablet");
     const showDialog = displayDialogOn && isMobile;
@@ -83,38 +83,38 @@ const TextField = React.forwardRef<HTMLInputElement, TextFieldProps>(
       <>
         <div
           className={cn(
-            "md3-text-field",
-            `md3-text-field--${size || "md"}`,
-            variant !== "default" && `md3-text-field--${variant}`,
-            isError && "md3-text-field--error",
-            label && "md3-text-field--has-label",
-            isPasswordField && "md3-text-field--has-toggle",
-            showDialog && "md3-text-field--dialog-trigger",
+            "ui-text-field",
+            `ui-text-field--${size || "md"}`,
+            variant !== "default" && `ui-text-field--${variant}`,
+            isError && "ui-text-field--error",
+            label && "ui-text-field--has-label",
+            isPasswordField && "ui-text-field--has-toggle",
+            showDialog && "ui-text-field--dialog-trigger",
             className
           )}
-          data-state={md3State}
+          data-state={uiState}
         >
           {(label || errorMessage) && (
-            <div className="md3-text-field__header">
+            <div className="ui-text-field__header">
               {label && (
-                <label htmlFor={inputId} className={cn("md3-text-field__label", labelClassName)}>
+                <label htmlFor={inputId} className={cn("ui-text-field__label", labelClassName)}>
                   {label}
                 </label>
               )}
               {errorMessage && (
-                <span id={errorId} className="md3-text-field__error" role="alert">
-                  <Icon.AlertCircle className="md3-text-field__error-icon" />
+                <span id={errorId} className="ui-text-field__error" role="alert">
+                  <Icon.AlertCircle className="ui-text-field__error-icon" />
                   <span>{errorMessage}</span>
                 </span>
               )}
             </div>
           )}
-          <div className="md3-text-field__container">
+          <div className="ui-text-field__container">
             <input
               ref={ref}
               id={inputId}
               type={resolvedType}
-              className="md3-text-field__input"
+              className="ui-text-field__input"
               aria-invalid={isError}
               aria-describedby={errorMessage ? errorId : undefined}
               readOnly={showDialog}
@@ -126,16 +126,16 @@ const TextField = React.forwardRef<HTMLInputElement, TextFieldProps>(
               <button
                 ref={toggleRef}
                 type="button"
-                className="md3-text-field__toggle"
+                className="ui-text-field__toggle"
                 onClick={handleTogglePassword}
                 aria-label={isPasswordVisible ? "Hide password" : "Show password"}
                 aria-pressed={isPasswordVisible}
                 tabIndex={-1}
               >
                 {isPasswordVisible ? (
-                  <Icon.EyeOff className="md3-text-field__toggle-icon" />
+                  <Icon.EyeOff className="ui-text-field__toggle-icon" />
                 ) : (
-                  <Icon.Eye className="md3-text-field__toggle-icon" />
+                  <Icon.Eye className="ui-text-field__toggle-icon" />
                 )}
               </button>
             )}

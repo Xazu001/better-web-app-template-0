@@ -15,20 +15,20 @@ Tokens and utilities live exclusively in `app/styles/`:
 | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | --------------------------------- |
 | `@theme` (colors, fonts, radius, shadow, z-index, breakpoints, size-\*, motion, leading, tracking, spacing)                                                               | `app/styles/tailwind.css`         |
 | `@theme inline` (fluid typography mapping → `text-*` utility)                                                                                                             | `app/styles/tailwind.css`         |
-| `:root` fluid vars (`--fluid-text-*`, `--n-*`, `--spacing-*`) + `@media` overrides                                                                                        | `app/styles/tailwind.css`         |
+| `:root` fluid vars (`--fluid-text-*`, `--x-*`, `--spacing-*`) + `@media` overrides                                                                                        | `app/styles/tailwind.css`         |
 | `@custom-media --bp-*` (breakpoints)                                                                                                                                      | `app/styles/tailwind.css`         |
 | `@layer base` (body / h1-h5 / .h0-h5 / strong defaults)                                                                                                                   | `app/styles/tailwind.css`         |
 | `@layer components` (`.ripple__wave`) + keyframes (top-level)                                                                                                             | `app/styles/tailwind.css`         |
 | `@utility` layout (cont, px-site, p-site, pt-top-site, section-full-width, w-mod-unit-\*, min-w-mod-unit-\*, max-w-mod-unit-\*, basis-mod-unit-\*, grid-cols-mod-unit-\*) | `app/styles/utilities/layout.css` |
-| `@utility` links (link-muted, link-muted-primary-underline, nav-link)                                                                                                     | `app/styles/utilities/links.css`  |
-| `@utility` md3 (state-layer, ripple, md3-ripple-surface, md3-state-layer, elevation-1-bordered)                                                                           | `app/styles/utilities/md3.css`    |
+| `@utility` links (uix-link-muted, uix-link-muted-primary-underline, uix-nav-link)                                                                                                     | `app/styles/utilities/links.css`  |
+| `@utility` ui (state-layer, uix-ripple, ui-ripple-surface, ui-state-layer, uix-elevation-1-bordered)                                                                           | `app/styles/utilities/ui.css`    |
 | `@utility` form (input-x-_, input-h-_, input-label, input-label-margin-_, input-label-gap-_)                                                                              | `app/styles/utilities/form.css`   |
 | `@utility` theme (`html.light` light-palette overrides)                                                                                                                   | `app/styles/utilities/theme.css`  |
 | `@layer reset` (box-sizing, margin reset, form typography, button/input reset, links/lists)                                                                               | `app/styles/base/reset.css`       |
 | `@layer base` (MD3 scrollbar — Firefox + WebKit, `.no-scrollbar`)                                                                                                         | `app/styles/base/scrollbar.css`   |
 | `@layer overrides` (react-toastify theme override)                                                                                                                        | `app/styles/base/toastify.css`    |
 
-> **No UI component variants** — component props (CVA variants, size, BEM classes `md3-*`) are read directly from `app/components/ui/*.tsx` and `*.css`. Do not duplicate them in `tokens.md`.
+> **No UI component variants** — component props (CVA variants, size, BEM classes `ui-*`) are read directly from `app/components/ui/*.tsx` and `*.css`. Do not duplicate them in `tokens.md`.
 
 ## Steps
 
@@ -43,7 +43,7 @@ Tokens and utilities live exclusively in `app/styles/`:
 4. **Component Size Tokens (rem)** — `--size-*` → `size-*` / `h-*` / `w-*` utilities (with `--height-*` / `--width-*` mirrors) in a table per component (sm/md/lg/xl).
 5. **Motion (MD3)** — `--ease-*` (easings) + `--duration-*` (durations).
 6. **Line height / Letter spacing / Radius / Z-index / Shadows / Spacing** — from `@theme`, with the utility names they generate.
-7. **w-mod-unit (layout grid)** — `:root` vars (`--n-*`, `--spacing-*`) with `@media` overrides + `@utility` utils from `layout.css` in a table with definitions.
+7. **w-mod-unit (layout grid)** — `:root` vars (`--x-*`, `--spacing-*`) with `@media` overrides + `@utility` utils from `layout.css` in a table with definitions.
 8. **Unit scale** — `--container-unit-*` → `w-unit-*` / `min-w-unit-*` / `max-w-unit-*`.
 9. **Breakpoints** — `@theme --breakpoint-*` ↔ `@custom-media --bp-*` ↔ Tailwind variants (`phone:` … `huge:`) in a table.
 10. **Custom `@utility`** — per-file tables from `utilities/*.css`.
@@ -52,7 +52,7 @@ Tokens and utilities live exclusively in `app/styles/`:
 ## Don't
 
 - ❌ Generate prose/descriptions — only raw tokens + utilities + values in tables/lists.
-- ❌ Extract UI component variants / BEM `md3-*` classes / CVA props from `app/components/ui/*` — agents read them directly from the component files.
+- ❌ Extract UI component variants / BEM `ui-*` classes / CVA props from `app/components/ui/*` — agents read them directly from the component files.
 - ❌ Skip `@utility` from `utilities/*.css` — they are utility tokens (used in TSX and `@apply`).
 - ❌ Skip `@theme inline` — fluid typography requires `inline` (static `@theme` doesn't accept `clamp()`).
 - ❌ Skip `:root` `@media` overrides (`--spacing-x-site`, `--spacing-top-site`, `--fluid-text-*` freeze at `--bp-huge`).

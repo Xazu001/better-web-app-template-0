@@ -52,10 +52,10 @@ const Menu = ({
       <div
         ref={containerRef}
         className={cn(
-          "md3-menu",
-          `md3-menu--align-${align}`,
-          `md3-menu--side-${side}`,
-          open && "md3-menu--open",
+          "ui-menu",
+          `ui-menu--align-${align}`,
+          `ui-menu--side-${side}`,
+          open && "ui-menu--open",
           className
         )}
         data-state={open ? "open" : "closed"}
@@ -89,10 +89,10 @@ export interface MenuTriggerProps {
 const MenuTrigger = ({ children, asChild, className }: MenuTriggerProps) => {
   if (asChild && React.isValidElement(children)) {
     return React.cloneElement(children as React.ReactElement<{ className?: string }>, {
-      className: cn("md3-menu__trigger", className, (children.props as any)?.className)
+      className: cn("ui-menu__trigger", className, (children.props as any)?.className)
     });
   }
-  return <div className={cn("md3-menu__trigger", className)}>{children}</div>;
+  return <div className={cn("ui-menu__trigger", className)}>{children}</div>;
 };
 
 // ──────────────────────────────────────────────────────────────
@@ -108,7 +108,7 @@ const MenuContent = React.forwardRef<HTMLDivElement, MenuContentProps>(
     return (
       <div
         ref={ref}
-        className={cn("md3-menu__content", `md3-menu__content--${size}`, className)}
+        className={cn("ui-menu__content", `ui-menu__content--${size}`, className)}
         role="menu"
         {...props}
       >
@@ -123,11 +123,11 @@ MenuContent.displayName = "MenuContent";
 // MenuItem
 // ──────────────────────────────────────────────────────────────
 
-const menuItemVariants = createVariants("md3-menu__item", {
+const menuItemVariants = createVariants("ui-menu__item", {
   variants: {
     variant: {
-      default: "md3-menu__item--default",
-      destructive: "md3-menu__item--destructive"
+      default: "ui-menu__item--default",
+      destructive: "ui-menu__item--destructive"
     }
   },
   defaultVariants: { variant: "default" }
@@ -174,21 +174,21 @@ const MenuItem = React.forwardRef<HTMLButtonElement | HTMLAnchorElement, MenuIte
 
     const cls = cn(
       menuItemVariants({ variant }),
-      selected && "md3-menu__item--selected",
-      disabled && "md3-menu__item--disabled",
-      rippleState.pressed && "md3-menu__item--pressed",
+      selected && "ui-menu__item--selected",
+      disabled && "ui-menu__item--disabled",
+      rippleState.pressed && "ui-menu__item--pressed",
       className
     );
 
     const content = (
       <>
-        <span ref={surfaceRef} className="md3-menu__item-ripple" aria-hidden="true">
-          <span className="ripple" />
+        <span ref={surfaceRef} className="ui-menu__item-ripple" aria-hidden="true">
+          <span className="uix-ripple" />
         </span>
-        <span className="md3-menu__item-state-layer" aria-hidden="true" />
-        {Icon && <span className="md3-menu__item-icon">{Icon}</span>}
-        <span className="md3-menu__item-label">{children}</span>
-        {TrailingIcon && <span className="md3-menu__item-trailing">{TrailingIcon}</span>}
+        <span className="ui-menu__item-state-layer" aria-hidden="true" />
+        {Icon && <span className="ui-menu__item-icon">{Icon}</span>}
+        <span className="ui-menu__item-label">{children}</span>
+        {TrailingIcon && <span className="ui-menu__item-trailing">{TrailingIcon}</span>}
       </>
     );
 
@@ -246,7 +246,7 @@ MenuItem.displayName = "MenuItem";
 
 const MenuSeparator = React.forwardRef<HTMLDivElement, React.HTMLAttributes<HTMLDivElement>>(
   ({ className, ...props }, ref) => {
-    return <div ref={ref} className={cn("md3-menu__separator", className)} {...props} />;
+    return <div ref={ref} className={cn("ui-menu__separator", className)} {...props} />;
   }
 );
 MenuSeparator.displayName = "MenuSeparator";

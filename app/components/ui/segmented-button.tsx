@@ -4,24 +4,24 @@ import { cn } from "#/components/utils";
 import { type VariantProps, createVariants } from "#/components/utils/variants";
 import { useRipple } from "#/lib/hooks/use-ripple";
 
-const segmentedButtonVariants = createVariants("md3-segmented-button", {
+const segmentedButtonVariants = createVariants("ui-segmented-button", {
   variants: {
     direction: {
-      horizontal: "md3-segmented-button--horizontal",
-      vertical: "md3-segmented-button--vertical"
+      horizontal: "ui-segmented-button--horizontal",
+      vertical: "ui-segmented-button--vertical"
     },
     selectMode: {
-      single: "md3-segmented-button--single",
-      multiple: "md3-segmented-button--multiple"
+      single: "ui-segmented-button--single",
+      multiple: "ui-segmented-button--multiple"
     },
     size: {
-      sm: "md3-segmented-button--sm",
-      md: "md3-segmented-button--md",
-      lg: "md3-segmented-button--lg"
+      sm: "ui-segmented-button--sm",
+      md: "ui-segmented-button--md",
+      lg: "ui-segmented-button--lg"
     },
     genre: {
       default: "",
-      nav: "md3-segmented-button--nav"
+      nav: "ui-segmented-button--nav"
     }
   },
   defaultVariants: {
@@ -89,7 +89,7 @@ const SegmentedButton = React.forwardRef<HTMLDivElement, SegmentedButtonProps>(
 
     const cls = cn(
       segmentedButtonVariants({ direction, selectMode, size: size || "md", genre }),
-      disabled && "md3-segmented-button--disabled",
+      disabled && "ui-segmented-button--disabled",
       className
     );
 
@@ -185,22 +185,22 @@ const SegmentedButtonItem = React.forwardRef<HTMLButtonElement, SegmentedButtonI
 
     const { surfaceRef, handlers, rippleState } = useRipple<HTMLSpanElement>(isDisabled);
 
-    const md3State = isDisabled ? "disabled" : isActive ? "active" : "enabled";
+    const uiState = isDisabled ? "disabled" : isActive ? "active" : "enabled";
 
     const cls = cn(
-      "md3-segmented-button__item",
-      isActive && "md3-segmented-button__item--active",
-      isDisabled && "md3-segmented-button__item--disabled",
-      (aspectSquare || iconButton) && "md3-segmented-button__item--square",
-      iconButton && "md3-segmented-button__item--icon-button",
-      rippleState.pressed && "md3-segmented-button__item--pressed",
+      "ui-segmented-button__item",
+      isActive && "ui-segmented-button__item--active",
+      isDisabled && "ui-segmented-button__item--disabled",
+      (aspectSquare || iconButton) && "ui-segmented-button__item--square",
+      iconButton && "ui-segmented-button__item--icon-button",
+      rippleState.pressed && "ui-segmented-button__item--pressed",
       className
     );
 
     const iconCls = cn(
-      "md3-segmented-button__item-icon",
-      groupGenre === "nav" && variant && `md3-segmented-button__item-icon--${variant}`,
-      groupGenre === "nav" && !variant && "md3-segmented-button__item-icon--primary"
+      "ui-segmented-button__item-icon",
+      groupGenre === "nav" && variant && `ui-segmented-button__item-icon--${variant}`,
+      groupGenre === "nav" && !variant && "ui-segmented-button__item-icon--primary"
     );
 
     const handleClick = (e: React.MouseEvent<HTMLButtonElement>) => {
@@ -224,7 +224,7 @@ const SegmentedButtonItem = React.forwardRef<HTMLButtonElement, SegmentedButtonI
         ref={ref}
         type="button"
         className={cls}
-        data-state={md3State}
+        data-state={uiState}
         disabled={isDisabled}
         aria-label={itemLabel}
         aria-pressed={isActive}
@@ -232,14 +232,14 @@ const SegmentedButtonItem = React.forwardRef<HTMLButtonElement, SegmentedButtonI
         {...handlers}
         {...props}
       >
-        <span ref={surfaceRef} className="md3-segmented-button__item-ripple" aria-hidden="true">
-          <span className="ripple" />
+        <span ref={surfaceRef} className="ui-segmented-button__item-ripple" aria-hidden="true">
+          <span className="uix-ripple" />
         </span>
-        <span className="md3-segmented-button__item-state-layer" aria-hidden="true" />
+        <span className="ui-segmented-button__item-state-layer" aria-hidden="true" />
         {Icon && <span className={iconCls}>{Icon}</span>}
-        {!iconButton && label && <span className="md3-segmented-button__item-label">{label}</span>}
+        {!iconButton && label && <span className="ui-segmented-button__item-label">{label}</span>}
         {!iconButton && children && !label && (
-          <span className="md3-segmented-button__item-label">{children}</span>
+          <span className="ui-segmented-button__item-label">{children}</span>
         )}
       </button>
     );

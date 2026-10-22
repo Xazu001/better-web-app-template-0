@@ -1,12 +1,12 @@
 @layer components {
   /* ────────────────────────────────────────────────────────────
-   * Select — shared structure for `.md3-select` (ui) and
+   * Select — shared structure for `.ui-select` (ui) and
    * `.play-select` (kit-play). Colors are parameterized via
    * `--select-*` custom props set per variant in:
    *   - app/components/ui/select.css          (theme tokens)
    *   - app/components/pages/main/play/select.css  (kit-play runtime)
    *
-   * Icon size uses the project-wide `--md3-icon-size` convention
+   * Icon size uses the project-wide `--ui-icon-size` convention
    * (shared with text-field, menu). Popover size modifiers use
    * `--{sm,md,lg}` for ui and `--items-{sm,md,lg}` for play (item
    * size is independent from trigger size in play).
@@ -14,7 +14,7 @@
 
   /* Root */
 
-  .md3-select,
+  .ui-select,
   .play-select {
     color: var(--select-fg);
 
@@ -25,14 +25,14 @@
       font-body
       text-md
       duration-short-3
-      ease-md3
+      ease-ui
       transition-colors
       input-icon-md;
   }
 
   /* Trigger — base */
 
-  .md3-select__trigger,
+  .ui-select__trigger,
   .play-select__trigger {
     background: var(--select-bg);
     border-color: var(--select-border);
@@ -50,7 +50,7 @@
       cursor-pointer
       select-none
       duration-short-3
-      ease-md3
+      ease-ui
       transition-colors
       isolate;
   }
@@ -59,93 +59,93 @@
      Icon size + right offset come from `input-icon-{sm,md,lg}` utilities
      in app/styles/utilities/form.css. */
 
-  .md3-select--sm,
+  .ui-select--sm,
   .play-select--sm {
     @apply input-icon-sm;
   }
 
-  .md3-select--sm.md3-select--has-label,
+  .ui-select--sm.ui-select--has-label,
   .play-select--sm.play-select--has-label {
     @apply input-label-gap-sm input-label-margin-sm;
   }
 
-  .md3-select--sm .md3-select__trigger,
+  .ui-select--sm .ui-select__trigger,
   .play-select--sm .play-select__trigger {
-    padding-inline-end: var(--md3-icon-offset);
+    padding-inline-end: var(--ui-icon-offset);
 
     @apply ps-2 rounded-xs input-h-sm;
   }
 
-  .md3-select--md.md3-select--has-label,
+  .ui-select--md.ui-select--has-label,
   .play-select--md.play-select--has-label {
     @apply input-label-gap-md input-label-margin-md;
   }
 
-  .md3-select--md .md3-select__trigger,
+  .ui-select--md .ui-select__trigger,
   .play-select--md .play-select__trigger {
-    padding-inline-end: var(--md3-icon-offset);
+    padding-inline-end: var(--ui-icon-offset);
 
     @apply ps-3 rounded-sm input-h-md;
   }
 
-  .md3-select--lg,
+  .ui-select--lg,
   .play-select--lg {
     @apply input-icon-lg;
   }
 
-  .md3-select--lg.md3-select--has-label,
+  .ui-select--lg.ui-select--has-label,
   .play-select--lg.play-select--has-label {
     @apply input-label-gap-lg input-label-margin-lg;
   }
 
-  .md3-select--lg .md3-select__trigger,
+  .ui-select--lg .ui-select__trigger,
   .play-select--lg .play-select__trigger {
-    padding-inline-end: var(--md3-icon-offset);
+    padding-inline-end: var(--ui-icon-offset);
 
     @apply ps-4 rounded-lg input-h-lg;
   }
 
   /* Trigger — states */
 
-  .md3-select[data-state="open"] .md3-select__trigger,
+  .ui-select[data-state="open"] .ui-select__trigger,
   .play-select[data-state="open"] .play-select__trigger {
     border-color: var(--select-border-open);
 
     @apply border;
   }
 
-  .md3-select[data-state="disabled"] .md3-select__trigger,
+  .ui-select[data-state="disabled"] .ui-select__trigger,
   .play-select[data-state="disabled"] .play-select__trigger {
     border-color: var(--select-border-disabled);
 
     @apply opacity-50 cursor-not-allowed;
   }
 
-  .md3-select[data-state="error"] .md3-select__trigger,
+  .ui-select[data-state="error"] .ui-select__trigger,
   .play-select[data-state="error"] .play-select__trigger {
     @apply border-error;
   }
 
   /* Label */
 
-  .md3-select__label,
+  .ui-select__label,
   .play-select__label {
     @apply input-label;
   }
 
-  .md3-select[data-state="open"] .md3-select__label,
+  .ui-select[data-state="open"] .ui-select__label,
   .play-select[data-state="open"] .play-select__label {
     color: var(--select-primary);
   }
 
-  .md3-select[data-state="error"] .md3-select__label,
+  .ui-select[data-state="error"] .ui-select__label,
   .play-select[data-state="error"] .play-select__label {
     @apply text-error;
   }
 
   /* Value */
 
-  .md3-select__value,
+  .ui-select__value,
   .play-select__value {
     color: var(--select-fg);
 
@@ -155,38 +155,38 @@
       text-md;
   }
 
-  .md3-select__value--placeholder,
+  .ui-select__value--placeholder,
   .play-select__value--placeholder {
     color: var(--select-placeholder);
   }
 
-  /* Chevron — base + icon size via --md3-icon-size */
+  /* Chevron — base + icon size via --ui-icon-size */
 
-  .md3-select__chevron,
+  .ui-select__chevron,
   .play-select__chevron {
     color: var(--select-placeholder);
 
     @apply inline-flex
       items-center
       duration-short-3
-      ease-md3
+      ease-ui
       transition-transform;
   }
 
-  .md3-select__chevron svg,
+  .ui-select__chevron svg,
   .play-select__chevron svg {
-    width: var(--md3-icon-size);
-    height: var(--md3-icon-size);
+    width: var(--ui-icon-size);
+    height: var(--ui-icon-size);
   }
 
-  .md3-select[data-state="open"] .md3-select__chevron,
+  .ui-select[data-state="open"] .ui-select__chevron,
   .play-select[data-state="open"] .play-select__chevron {
     @apply rotate-180;
   }
 
   /* Popover — base */
 
-  .md3-select__popover,
+  .ui-select__popover,
   .play-select__popover {
     @apply fixed
       z-floating-control
@@ -197,12 +197,12 @@
       rounded-md
       shadow-md
       duration-short-3
-      ease-md3
+      ease-ui
       transition-[opacity,transform]
       input-icon-md;
   }
 
-  .md3-select__popover[data-positioning="true"],
+  .ui-select__popover[data-positioning="true"],
   .play-select__popover[data-positioning="true"] {
     transition: none;
   }
@@ -211,17 +211,17 @@
      ui: `--{sm,md,lg}`; play: `--items-{sm,md,lg}` (independent item size).
      Icon size comes from `input-icon-{sm,md,lg}` utilities. */
 
-  .md3-select__popover--sm,
+  .ui-select__popover--sm,
   .play-select__popover--items-sm {
     @apply rounded-sm input-icon-sm;
   }
 
-  .md3-select__popover--md,
+  .ui-select__popover--md,
   .play-select__popover--items-md {
     @apply rounded-md input-icon-md;
   }
 
-  .md3-select__popover--lg,
+  .ui-select__popover--lg,
   .play-select__popover--items-lg {
     @apply rounded-lg input-icon-lg;
   }
@@ -229,14 +229,14 @@
   /* Popover — direction (no-op under portal; kept for parity.
      Direction is handled via inline top/bottom from useLayoutEffect.) */
 
-  .md3-select--up .md3-select__popover,
+  .ui-select--up .ui-select__popover,
   .play-select--up .play-select__popover {
     @apply bottom-full mb-1 mt-0;
   }
 
   /* Item — base */
 
-  .md3-select__item,
+  .ui-select__item,
   .play-select__item {
     color: var(--select-fg);
 
@@ -251,52 +251,52 @@
       cursor-pointer
       select-none
       duration-short-3
-      ease-md3
+      ease-ui
       transition-colors
       isolate;
   }
 
   /* Item — size modifiers (px, py, rounded) */
 
-  .md3-select__popover--sm .md3-select__item,
+  .ui-select__popover--sm .ui-select__item,
   .play-select__popover--items-sm .play-select__item {
     @apply py-1 rounded-md input-x-sm;
   }
 
-  .md3-select__popover--md .md3-select__item,
+  .ui-select__popover--md .ui-select__item,
   .play-select__popover--items-md .play-select__item {
     @apply py-1.5 rounded-lg input-x-md;
   }
 
-  .md3-select__popover--lg .md3-select__item,
+  .ui-select__popover--lg .ui-select__item,
   .play-select__popover--items-lg .play-select__item {
     @apply py-2 rounded-xl input-x-lg;
   }
 
-  /* Item — icon size via --md3-icon-size (inherited from popover) */
+  /* Item — icon size via --ui-icon-size (inherited from popover) */
 
-  .md3-select__item-icon svg,
-  .md3-select__item-check svg,
+  .ui-select__item-icon svg,
+  .ui-select__item-check svg,
   .play-select__item-icon svg,
   .play-select__item-check svg {
-    width: var(--md3-icon-size);
-    height: var(--md3-icon-size);
+    width: var(--ui-icon-size);
+    height: var(--ui-icon-size);
   }
 
-  /* Item — state layer + ripple (md3 overlay primitives) */
+  /* Item — state layer + ripple (ui overlay primitives) */
 
-  .md3-select__item-ripple,
+  .ui-select__item-ripple,
   .play-select__item-ripple {
-    @apply md3-ripple-surface;
+    @apply ui-ripple-surface;
   }
 
-  .md3-select__item-state-layer,
+  .ui-select__item-state-layer,
   .play-select__item-state-layer {
-    @apply md3-state-layer;
+    @apply ui-state-layer;
   }
 
-  .md3-select__item:focus-visible .md3-select__item-state-layer,
-  .md3-select__item:active .md3-select__item-state-layer,
+  .ui-select__item:focus-visible .ui-select__item-state-layer,
+  .ui-select__item:active .ui-select__item-state-layer,
   .play-select__item:focus-visible .play-select__item-state-layer,
   .play-select__item:active .play-select__item-state-layer {
     @apply opacity-[0.1];
@@ -304,17 +304,17 @@
 
   /* Item — selected / disabled */
 
-  .md3-select__item--selected,
+  .ui-select__item--selected,
   .play-select__item--selected {
     background: var(--select-selected-bg);
   }
 
-  .md3-select__item--disabled,
+  .ui-select__item--disabled,
   .play-select__item--disabled {
     @apply opacity-40 cursor-not-allowed;
   }
 
-  .md3-select__item--multi.md3-select__item--selected .md3-select__item-label,
+  .ui-select__item--multi.ui-select__item--selected .ui-select__item-label,
   .play-select__item--multi.play-select__item--selected .play-select__item-label {
     color: var(--select-primary);
 
@@ -323,24 +323,24 @@
 
   /* ─── Item — parts ─────────────────────────────────────────── */
 
-  .md3-select__item-icon,
+  .ui-select__item-icon,
   .play-select__item-icon {
     color: var(--select-placeholder);
 
     @apply inline-flex items-center;
   }
 
-  .md3-select__item-label,
+  .ui-select__item-label,
   .play-select__item-label {
     @apply flex-1 truncate;
   }
 
-  .md3-select__item--multi,
+  .ui-select__item--multi,
   .play-select__item--multi {
     @apply pr-1;
   }
 
-  .md3-select__item-check,
+  .ui-select__item-check,
   .play-select__item-check {
     color: var(--select-primary);
 
@@ -355,21 +355,21 @@
   /* ─── Hover ────────────────────────────────────────────────── */
 
   @media (hover: hover) {
-    .md3-select__trigger:hover,
+    .ui-select__trigger:hover,
     .play-select__trigger:hover {
       border-color: var(--select-border-hover);
     }
   }
 
   @media (hover: hover) {
-    .md3-select[data-state="error"] .md3-select__trigger:hover,
+    .ui-select[data-state="error"] .ui-select__trigger:hover,
     .play-select[data-state="error"] .play-select__trigger:hover {
       @apply border-error;
     }
   }
 
   @media (hover: hover) {
-    .md3-select__item:hover .md3-select__item-state-layer,
+    .ui-select__item:hover .ui-select__item-state-layer,
     .play-select__item:hover .play-select__item-state-layer {
       @apply opacity-[0.1];
     }

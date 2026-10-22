@@ -5,16 +5,16 @@ import { cn } from "#/components/utils";
 import { type VariantProps, createVariants } from "#/components/utils/variants";
 import { useRipple } from "#/lib/hooks/use-ripple";
 
-const fileInputVariants = createVariants("md3-file-input", {
+const fileInputVariants = createVariants("ui-file-input", {
   variants: {
     variant: {
-      "elevation-1": "md3-file-input--elevation-1",
-      "elevation-2": "md3-file-input--elevation-2"
+      "elevation-1": "ui-file-input--elevation-1",
+      "elevation-2": "ui-file-input--elevation-2"
     },
     size: {
-      sm: "md3-file-input--sm",
-      md: "md3-file-input--md",
-      lg: "md3-file-input--lg"
+      sm: "ui-file-input--sm",
+      md: "ui-file-input--md",
+      lg: "ui-file-input--lg"
     }
   },
   defaultVariants: {
@@ -92,7 +92,7 @@ const FileInput = React.forwardRef<HTMLInputElement, FileInputProps>(
     }
 
     const isError = error || Boolean(errorMessage);
-    const md3State = isError ? "error" : disabled ? "disabled" : "enabled";
+    const uiState = isError ? "error" : disabled ? "disabled" : "enabled";
 
     const acceptTypes = React.useMemo(
       () => (accept ? accept.split(",").map((t) => t.trim().toLowerCase()) : null),
@@ -178,25 +178,25 @@ const FileInput = React.forwardRef<HTMLInputElement, FileInputProps>(
 
     const cls = cn(
       fileInputVariants({ variant, size: size || "md" }),
-      isError && "md3-file-input--error",
-      isDragging && "md3-file-input--dragging",
-      disabled && "md3-file-input--disabled",
-      rippleState.pressed && "md3-file-input--pressed",
+      isError && "ui-file-input--error",
+      isDragging && "ui-file-input--dragging",
+      disabled && "ui-file-input--disabled",
+      rippleState.pressed && "ui-file-input--pressed",
       className
     );
 
     return (
-      <div className={cls} data-state={md3State}>
+      <div className={cls} data-state={uiState}>
         {(label || errorMessage) && (
-          <div className="md3-file-input__header">
+          <div className="ui-file-input__header">
             {label && (
-              <label htmlFor={inputId} className="md3-file-input__label">
+              <label htmlFor={inputId} className="ui-file-input__label">
                 {label}
               </label>
             )}
             {errorMessage && (
-              <span id={errorId} className="md3-file-input__error" role="alert">
-                <Icon.AlertCircle className="md3-file-input__error-icon" size="sm" />
+              <span id={errorId} className="ui-file-input__error" role="alert">
+                <Icon.AlertCircle className="ui-file-input__error-icon" size="sm" />
                 <span>{errorMessage}</span>
               </span>
             )}
@@ -204,7 +204,7 @@ const FileInput = React.forwardRef<HTMLInputElement, FileInputProps>(
         )}
 
         <div
-          className="md3-file-input__dropzone"
+          className="ui-file-input__dropzone"
           role="button"
           tabIndex={disabled ? -1 : 0}
           aria-disabled={disabled}
@@ -218,10 +218,10 @@ const FileInput = React.forwardRef<HTMLInputElement, FileInputProps>(
           onDragLeave={onDragLeave}
           {...handlers}
         >
-          <span ref={surfaceRef} className="md3-file-input__ripple" aria-hidden="true">
-            <span className="ripple" />
+          <span ref={surfaceRef} className="ui-file-input__ripple" aria-hidden="true">
+            <span className="uix-ripple" />
           </span>
-          <span className="md3-file-input__state-layer" aria-hidden="true" />
+          <span className="ui-file-input__state-layer" aria-hidden="true" />
 
           <input
             ref={internalRef}
@@ -231,7 +231,7 @@ const FileInput = React.forwardRef<HTMLInputElement, FileInputProps>(
             accept={accept}
             multiple={multiple}
             disabled={disabled}
-            className="md3-file-input__native"
+            className="ui-file-input__native"
             aria-label={label || "Choose file"}
             aria-describedby={errorMessage ? errorId : helperText ? helperId : undefined}
             aria-invalid={isError}
@@ -240,28 +240,28 @@ const FileInput = React.forwardRef<HTMLInputElement, FileInputProps>(
           />
 
           {files.length === 0 ? (
-            <div className="md3-file-input__empty">
-              <Icon.Upload className="md3-file-input__icon" size="lg" />
-              <span className="md3-file-input__empty-text">
-                <span className="md3-file-input__empty-title">
+            <div className="ui-file-input__empty">
+              <Icon.Upload className="ui-file-input__icon" size="lg" />
+              <span className="ui-file-input__empty-text">
+                <span className="ui-file-input__empty-title">
                   Drop file here or click to browse
                 </span>
                 {helperText && (
-                  <span id={helperId} className="md3-file-input__empty-helper">
+                  <span id={helperId} className="ui-file-input__empty-helper">
                     {helperText}
                   </span>
                 )}
               </span>
             </div>
           ) : (
-            <div className="md3-file-input__files">
+            <div className="ui-file-input__files">
               {files.map((file, index) => (
-                <div key={`${file.name}-${index}`} className="md3-file-input__file">
-                  <span className="md3-file-input__file-name">{file.name}</span>
-                  <span className="md3-file-input__file-size">{formatFileSize(file.size)}</span>
+                <div key={`${file.name}-${index}`} className="ui-file-input__file">
+                  <span className="ui-file-input__file-name">{file.name}</span>
+                  <span className="ui-file-input__file-size">{formatFileSize(file.size)}</span>
                   <button
                     type="button"
-                    className="md3-file-input__remove"
+                    className="ui-file-input__remove"
                     onClick={(e) => removeFile(e, index)}
                     disabled={disabled}
                     aria-label={`Remove ${file.name}`}

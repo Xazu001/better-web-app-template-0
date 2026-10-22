@@ -9,30 +9,30 @@ import { useRipple } from "#/lib/hooks/use-ripple";
 // Variants
 // ──────────────────────────────────────────────────────────────
 
-const buttonVariants = createVariants("md3-btn", {
+const buttonVariants = createVariants("ui-btn", {
   variants: {
     variant: {
-      primary: "md3-btn--primary",
-      transparent: "md3-btn--transparent",
-      "elevation-1": "md3-btn--elevation-1",
-      "elevation-2": "md3-btn--elevation-2",
-      outline: "md3-btn--outline",
-      ghost: "md3-btn--ghost",
-      error: "md3-btn--error",
-      success: "md3-btn--success",
-      "glass-error": "md3-btn--glass-error"
+      primary: "ui-btn--primary",
+      transparent: "ui-btn--transparent",
+      "elevation-1": "ui-btn--elevation-1",
+      "elevation-2": "ui-btn--elevation-2",
+      outline: "ui-btn--outline",
+      ghost: "ui-btn--ghost",
+      error: "ui-btn--error",
+      success: "ui-btn--success",
+      "glass-error": "ui-btn--glass-error"
     },
     size: {
-      sm: "md3-btn--sm",
-      md: "md3-btn--md",
-      lg: "md3-btn--lg"
+      sm: "ui-btn--sm",
+      md: "ui-btn--md",
+      lg: "ui-btn--lg"
     },
     aspectSquare: {
-      true: "md3-btn--square",
+      true: "ui-btn--square",
       false: ""
     },
     iconButton: {
-      true: "md3-btn--icon-button",
+      true: "ui-btn--icon-button",
       false: ""
     }
   },
@@ -91,30 +91,30 @@ const Button = React.forwardRef<HTMLButtonElement | HTMLAnchorElement, ButtonPro
     const { surfaceRef, handlers, rippleState } = useRipple<HTMLSpanElement>(state === "disabled");
     const disabled = state === "disabled" || state === "loading";
     const isButtonActive = active ?? selected ?? false;
-    const md3State = isButtonActive ? "active" : state === "default" ? "enabled" : state;
+    const uiState = isButtonActive ? "active" : state === "default" ? "enabled" : state;
     const accessibleLabel =
       ariaLabel ?? (iconButton && typeof children === "string" ? children : undefined);
 
     const cls = cn(
       buttonVariants({ variant, size: size || "md", aspectSquare, iconButton }),
-      isButtonActive && "md3-btn--active",
-      isButtonActive && "md3-btn--selected",
-      state === "loading" && "md3-btn--loading",
-      state === "disabled" && "md3-btn--disabled",
-      rippleState.pressed && "md3-btn--pressed",
+      isButtonActive && "ui-btn--active",
+      isButtonActive && "ui-btn--selected",
+      state === "loading" && "ui-btn--loading",
+      state === "disabled" && "ui-btn--disabled",
+      rippleState.pressed && "ui-btn--pressed",
       className
     );
 
     const content = (
       <>
-        <span ref={surfaceRef} className="md3-btn__ripple" aria-hidden="true">
-          <span className="ripple" />
+        <span ref={surfaceRef} className="ui-btn__ripple" aria-hidden="true">
+          <span className="uix-ripple" />
         </span>
-        <span className="md3-btn__state-layer" aria-hidden="true" />
-        {Icon && IconPosition === "BeforeText" && <span className="md3-btn__icon">{Icon}</span>}
-        {!iconButton && <span className="md3-btn__label">{children}</span>}
-        {state === "loading" && <span className="md3-btn__spinner" aria-hidden="true" />}
-        {Icon && IconPosition === "AfterText" && <span className="md3-btn__icon">{Icon}</span>}
+        <span className="ui-btn__state-layer" aria-hidden="true" />
+        {Icon && IconPosition === "BeforeText" && <span className="ui-btn__icon">{Icon}</span>}
+        {!iconButton && <span className="ui-btn__label">{children}</span>}
+        {state === "loading" && <span className="ui-btn__spinner" aria-hidden="true" />}
+        {Icon && IconPosition === "AfterText" && <span className="ui-btn__icon">{Icon}</span>}
       </>
     );
 
@@ -126,7 +126,7 @@ const Button = React.forwardRef<HTMLButtonElement | HTMLAnchorElement, ButtonPro
           state={navigationState}
           prefetch={prefetch}
           className={cls}
-          data-state={md3State}
+          data-state={uiState}
           aria-label={accessibleLabel}
           {...(props as React.AnchorHTMLAttributes<HTMLAnchorElement>)}
           {...handlers}
@@ -140,7 +140,7 @@ const Button = React.forwardRef<HTMLButtonElement | HTMLAnchorElement, ButtonPro
       <button
         ref={ref as React.Ref<HTMLButtonElement>}
         className={cls}
-        data-state={md3State}
+        data-state={uiState}
         disabled={disabled}
         aria-label={accessibleLabel}
         {...handlers}

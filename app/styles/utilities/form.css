@@ -25,26 +25,26 @@
 }
 
 /* Icon sizing — shared across TextField / Select / TextArea.
-   Sets `--md3-icon-size` (svg size), `--md3-icon-offset` (right padding
-   for select trigger) and `--md3-input-pr` (text-field input right
+   Sets `--ui-icon-size` (svg size), `--ui-icon-offset` (right padding
+   for select trigger) and `--ui-input-pr` (text-field input right
    padding when has-toggle). Components consume only the vars they need. */
 
 @utility input-icon-sm {
-  --md3-icon-size: 1.5rem;
-  --md3-icon-offset: 0.75rem;
-  --md3-input-pr: 1.75rem;
+  --ui-icon-size: 1.5rem;
+  --ui-icon-offset: 0.75rem;
+  --ui-input-pr: 1.75rem;
 }
 
 @utility input-icon-md {
-  --md3-icon-size: 1.75rem;
-  --md3-icon-offset: 1rem;
-  --md3-input-pr: 2.25rem;
+  --ui-icon-size: 1.75rem;
+  --ui-icon-offset: 1rem;
+  --ui-input-pr: 2.25rem;
 }
 
 @utility input-icon-lg {
-  --md3-icon-size: 2rem;
-  --md3-icon-offset: 2rem;
-  --md3-input-pr: 2.75rem;
+  --ui-icon-size: 2rem;
+  --ui-icon-offset: 2rem;
+  --ui-input-pr: 2.75rem;
 }
 
 /* Label appearance — shared static label above input */

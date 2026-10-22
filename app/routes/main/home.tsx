@@ -60,7 +60,7 @@ export default function Index() {
           <span className="text-on-surface-variant" aria-hidden="true">
             ·
           </span>
-          <Link to="/docs" className="link-muted">
+          <Link to="/docs" className="uix-link-muted">
             Example .md → transformer
           </Link>
         </div>

@@ -9,7 +9,7 @@
       font-body
       text-md
       duration-medium-2
-      ease-md3
+      ease-ui
       transition-all
       state-layer;
   }
@@ -152,7 +152,7 @@
       rounded-full
       text-current
       duration-short-3
-      ease-md3
+      ease-ui
       transition-colors
       state-layer;
   }

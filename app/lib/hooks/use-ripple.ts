@@ -55,7 +55,7 @@ export function useRipple<T extends HTMLElement = HTMLSpanElement>(
     const prefersReduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
     if (prefersReduced) return;
 
-    const ripple = surface.querySelector<HTMLElement>(".ripple");
+    const ripple = surface.querySelector<HTMLElement>(".uix-ripple");
     if (!ripple) return;
 
     const wave = document.createElement("span");

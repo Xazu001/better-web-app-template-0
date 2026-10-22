@@ -90,7 +90,7 @@ const Select = React.forwardRef<HTMLDivElement, SelectProps>(
       return selectedItem?.props.children ?? placeholder ?? "";
     }, [items, selectedValues, multipleSelect, placeholder]);
 
-    const md3State = error ? "error" : disabled ? "disabled" : open ? "open" : "closed";
+    const uiState = error ? "error" : disabled ? "disabled" : open ? "open" : "closed";
 
     // Reset position readiness when the popover closes
     const [wasOpen, setWasOpen] = React.useState(open);
@@ -180,9 +180,9 @@ const Select = React.forwardRef<HTMLDivElement, SelectProps>(
             contentRef.current = node;
           }}
           className={cn(
-            "md3-select__popover",
-            `md3-select__popover--${popoverVariant}`,
-            `md3-select__popover--${size || "md"}`
+            "ui-select__popover",
+            `ui-select__popover--${popoverVariant}`,
+            `ui-select__popover--${size || "md"}`
           )}
           data-positioning={!isPositionReady}
           id={listboxId}
@@ -213,19 +213,19 @@ const Select = React.forwardRef<HTMLDivElement, SelectProps>(
             else if (ref) (ref as React.MutableRefObject<HTMLDivElement | null>).current = node;
           }}
           className={cn(
-            "md3-select",
-            `md3-select--${size || "md"}`,
-            error && "md3-select--error",
-            label && "md3-select--has-label",
+            "ui-select",
+            `ui-select--${size || "md"}`,
+            error && "ui-select--error",
+            label && "ui-select--has-label",
             className
           )}
-          data-state={md3State}
+          data-state={uiState}
         >
           {label && (
             <label
               id={labelId}
               htmlFor={triggerId}
-              className={cn("md3-select__label", labelClassName)}
+              className={cn("ui-select__label", labelClassName)}
             >
               {label}
             </label>
@@ -234,7 +234,7 @@ const Select = React.forwardRef<HTMLDivElement, SelectProps>(
             ref={triggerRef}
             id={triggerId}
             type="button"
-            className="md3-select__trigger"
+            className="ui-select__trigger"
             disabled={disabled}
             onClick={() => !disabled && setOpen((o) => !o)}
             aria-haspopup="listbox"
@@ -243,10 +243,10 @@ const Select = React.forwardRef<HTMLDivElement, SelectProps>(
             aria-label={!label ? placeholder || "Select option" : undefined}
             aria-labelledby={label ? labelId : undefined}
           >
-            <span className={cn("md3-select__value", !value && "md3-select__value--placeholder")}>
+            <span className={cn("ui-select__value", !value && "ui-select__value--placeholder")}>
               {displayLabel}
             </span>
-            <span className="md3-select__chevron" aria-hidden="true">
+            <span className="ui-select__chevron" aria-hidden="true">
               <svg viewBox="0 0 24 24" fill="none">
                 <path
                   d="M6 9l6 6 6-6"
@@ -311,11 +311,11 @@ const SelectItem = React.forwardRef<HTMLButtonElement, SelectItemProps>(
         role="option"
         aria-selected={isSelected}
         className={cn(
-          "md3-select__item",
-          isMulti && "md3-select__item--multi",
-          isSelected && "md3-select__item--selected",
-          disabled && "md3-select__item--disabled",
-          rippleState.pressed && "md3-select__item--pressed"
+          "ui-select__item",
+          isMulti && "ui-select__item--multi",
+          isSelected && "ui-select__item--selected",
+          disabled && "ui-select__item--disabled",
+          rippleState.pressed && "ui-select__item--pressed"
         )}
         data-state={isSelected ? "selected" : disabled ? "disabled" : "enabled"}
         disabled={disabled}
@@ -323,12 +323,12 @@ const SelectItem = React.forwardRef<HTMLButtonElement, SelectItemProps>(
         {...handlers}
         {...props}
       >
-        <span ref={surfaceRef} className="md3-select__item-ripple" aria-hidden="true">
-          <span className="ripple" />
+        <span ref={surfaceRef} className="ui-select__item-ripple" aria-hidden="true">
+          <span className="uix-ripple" />
         </span>
-        <span className="md3-select__item-state-layer" aria-hidden="true" />
+        <span className="ui-select__item-state-layer" aria-hidden="true" />
         {isMulti && (
-          <span className="md3-select__item-check" aria-hidden="true">
+          <span className="ui-select__item-check" aria-hidden="true">
             {isSelected && (
               <svg viewBox="0 0 24 24" fill="none">
                 <path
@@ -342,8 +342,8 @@ const SelectItem = React.forwardRef<HTMLButtonElement, SelectItemProps>(
             )}
           </span>
         )}
-        {Icon && <span className="md3-select__item-icon">{Icon}</span>}
-        <span className="md3-select__item-label">{children}</span>
+        {Icon && <span className="ui-select__item-icon">{Icon}</span>}
+        <span className="ui-select__item-label">{children}</span>
       </button>
     );
   }

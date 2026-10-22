@@ -42,7 +42,7 @@
     border-radius: var(--radius-full);
     transition-property: background-color;
     transition-duration: var(--transition-duration-short-3);
-    transition-timing-function: var(--ease-md3);
+    transition-timing-function: var(--ease-ui);
   }
 
   *::-webkit-scrollbar-thumb:hover {

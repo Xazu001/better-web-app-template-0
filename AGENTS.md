@@ -13,7 +13,7 @@ Rules live in `.agents/rules/`. Read the index first, then only the files releva
 | File              | Topic                                                                                    |
 | ----------------- | ---------------------------------------------------------------------------------------- |
 | `README.md`       | Index — start here                                                                       |
-| `md3-design.md`   | MD3 concepts: color roles, elevation, state layer, ripple, shape, motion                 |
+| `md3-design.md`   | MD3 concepts: color roles, elevation, state layer, uix-ripple, shape, motion                 |
 | `components.md`   | React component implementation: BEM, CVA, `useRipple`, `data-state`, TSX/CSS             |
 | `styling.md`      | CSS mechanics: `@layer`, `color-mix`, hover gating, property order, no-dupes             |
 | `tokens.md`       | Design tokens: colors, typography, sizes, motion, breakpoints, z-index                   |

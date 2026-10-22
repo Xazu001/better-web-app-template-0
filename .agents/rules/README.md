@@ -10,7 +10,7 @@ This file is the canonical index of all project rules. Detailed rules for each t
 
 - React Router v8 · React 19 · Drizzle · Cloudflare Workers · Tailwind v4
 - Design: authentic Google MD3 / Material You, **light + dark** — dark palette is the `@theme` default, `html.light` overrides live in `app/styles/utilities/theme.css`; theme cookie `light`/`dark`/`system` — details in `md3-design.md`
-- **Pure React MD3** — no `@material/web` / `@lit-labs/ssr`; ripple + state layer via `useRipple` + `<span>` overlay
+- **Pure React MD3** — no `@material/web` / `@lit-labs/ssr`; uix-ripple + state layer via `useRipple` + `<span>` overlay
 
 ## Architecture (directories)
 
@@ -46,7 +46,7 @@ Details + OK/FORBIDDEN examples → `aliases.md`.
 
 | File | Topic |
 | --- | --- |
-| `md3-design.md` | MD3 concepts: color roles, elevation, state layer, ripple, shape, motion, typography, anti-patterns |
+| `md3-design.md` | MD3 concepts: color roles, elevation, state layer, uix-ripple, shape, motion, typography, anti-patterns |
 | `components.md` | React component implementation: BEM, CVA, `useRipple`, `data-state`, TSX structure, CSS layers |
 | `styling.md` | CSS mechanics: 3-tier hybrid, `@layer` cascade, `color-mix`, hover gating, property order, no-dupes, spacing |
 | `tokens.md` | Tokens: OKLCH colors, fluid typography, size tokens, motion, breakpoints, z-index, shadows, w-mod-unit |
@@ -64,9 +64,10 @@ Details + OK/FORBIDDEN examples → `aliases.md`.
 | --- | --- |
 | Files/directories | `kebab-case` → `naming.md` |
 | BEM custom | `block__elem--mod` |
-| BEM UI | `md3-*` |
+| BEM UI | `ui-*` |
 | Route class block (RARE) | `{route}` BEM block |
 | `@utility` | `kebab-case` |
+| `@utility` style bundles | `uix-*` (`uix-link-primary`, `uix-header-hero`) |
 | MD3 component / React | `PascalCase` |
 | TS/JS symbols | `camelCase` |
 | CSS custom props | `--kebab-case` |
@@ -90,7 +91,7 @@ Details + OK/FORBIDDEN examples → `aliases.md`.
 - **Breakpoints:** `phone:`/`tablet:`/`desktop:`/`large-desktop:`/`xlarge-desktop:`/`2xlarge-desktop:`/`huge:` in TSX; `@media (--bp_tablet)` in `.css`. **No** `sm:`/`md:`/`lg:`/`xl:`. → `tokens.md` § "Breakpoints"
 - **`@layer base`** contains **ONLY** typography — layout padding explicitly (`px-site`, `pt-*`, `min-h-dvh`).
 - **Property order:** positioning → display/layout → **size** → spacing → typography → color → shape → effects → animation → interaction → custom utility. → `styling.md` § "Property order"
-- **No-duplicate-styles:** don't repeat in `className`/`@apply` what already comes from `@layer base`, `@apply` in `.css`, base BEM class, Tailwind built-in, `@theme`, state layer/ripple, CSS inheritance. → `styling.md` § "No-duplicate-styles"
+- **No-duplicate-styles:** don't repeat in `className`/`@apply` what already comes from `@layer base`, `@apply` in `.css`, base BEM class, Tailwind built-in, `@theme`, state layer/uix-ripple, CSS inheritance. → `styling.md` § "No-duplicate-styles"
 - **color-mix:** percentages multiples of 5; omit `in srgb` (default); keep `in oklch`. → `styling.md` § "color-mix rules"
 - **Spacing:** `gap` > `padding` > `margin`. Never `mb-*` on each child of a list instead of `gap` on the parent. Padding/margin NEVER vary by breakpoint — no `desktop:p-*`/`tablet:py-*`/`phone:m-*` etc., one fixed value (responsive spacing only on explicit request). → `styling.md` § "Spacing"
 - **State layer:** `<span>` child with `bg-current`, `opacity-[0.1]` (hover/focus/active), `rounded-[inherit]`, `pointer-events-none`. NOT `hover:bg-*`, NOT `::after`, NOT `bg-on-surface`. → `md3-design.md` § "State layers"

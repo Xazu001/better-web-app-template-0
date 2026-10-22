@@ -1,10 +1,10 @@
 @layer components {
-  .md3-checkbox__wrapper {
+  .ui-checkbox__wrapper {
     @apply inline-flex items-center gap-2
       cursor-pointer select-none;
   }
 
-  .md3-checkbox {
+  .ui-checkbox {
     @apply inline-flex
       relative
       shrink-0
@@ -16,25 +16,25 @@
       cursor-pointer
       select-none
       duration-short-3
-      ease-md3
+      ease-ui
       transition-colors isolate;
   }
 
   /* Sizes */
 
-  .md3-checkbox--sm {
+  .ui-checkbox--sm {
     @apply h-checkbox-sm w-checkbox-sm;
   }
 
-  .md3-checkbox--md {
+  .ui-checkbox--md {
     @apply h-checkbox-md w-checkbox-md;
   }
 
-  .md3-checkbox--lg {
+  .ui-checkbox--lg {
     @apply h-checkbox-lg w-checkbox-lg;
   }
 
-  .md3-checkbox__ripple {
+  .ui-checkbox__ripple {
     @apply absolute
       inset-0
       z-below
@@ -43,7 +43,7 @@
       pointer-events-none;
   }
 
-  .md3-checkbox__state-layer {
+  .ui-checkbox__state-layer {
     @apply absolute
       inset-0
       bg-current
@@ -53,15 +53,15 @@
       transition-opacity;
   }
 
-  .md3-checkbox:focus-visible .md3-checkbox__state-layer {
+  .ui-checkbox:focus-visible .ui-checkbox__state-layer {
     @apply opacity-[0.1];
   }
 
-  .md3-checkbox:active .md3-checkbox__state-layer {
+  .ui-checkbox:active .ui-checkbox__state-layer {
     @apply opacity-[0.1];
   }
 
-  .md3-checkbox__box {
+  .ui-checkbox__box {
     @apply inline-flex
       relative
       items-center
@@ -74,68 +74,68 @@
       rounded-xs
       pointer-events-none
       duration-short-3
-      ease-md3
+      ease-ui
       transition-colors;
   }
 
   /* Focus */
 
-  .md3-checkbox:focus-visible .md3-checkbox__box,
-  .md3-checkbox:active .md3-checkbox__box {
+  .ui-checkbox:focus-visible .ui-checkbox__box,
+  .ui-checkbox:active .ui-checkbox__box {
     @apply border-primary;
   }
 
   /* Checked */
 
-  .md3-checkbox[data-state="checked"] .md3-checkbox__box {
+  .ui-checkbox[data-state="checked"] .ui-checkbox__box {
     @apply bg-primary border-primary;
   }
 
   /* Indeterminate */
 
-  .md3-checkbox[data-state="indeterminate"] .md3-checkbox__box {
+  .ui-checkbox[data-state="indeterminate"] .ui-checkbox__box {
     @apply bg-primary border-primary;
   }
 
   /* Disabled */
 
-  .md3-checkbox[data-state="disabled"] {
+  .ui-checkbox[data-state="disabled"] {
     @apply opacity-40 cursor-not-allowed;
   }
 
   /* Glass */
 
-  .md3-checkbox--glass-elevation-1 .md3-checkbox__box {
+  .ui-checkbox--glass-elevation-1 .ui-checkbox__box {
     @apply border-glass-outline-variant;
   }
 
-  .md3-checkbox--glass-elevation-1 ~ .md3-checkbox__label {
+  .ui-checkbox--glass-elevation-1 ~ .ui-checkbox__label {
     @apply text-on-glass-elevation-1;
   }
 
-  .md3-checkbox--glass-elevation-2 .md3-checkbox__box {
+  .ui-checkbox--glass-elevation-2 .ui-checkbox__box {
     @apply border-glass-outline;
   }
 
-  .md3-checkbox--glass-elevation-2 ~ .md3-checkbox__label {
+  .ui-checkbox--glass-elevation-2 ~ .ui-checkbox__label {
     @apply text-on-glass-elevation-2;
   }
 
-  .md3-checkbox--glass-elevation-1:focus-visible .md3-checkbox__box,
-  .md3-checkbox--glass-elevation-1:active .md3-checkbox__box,
-  .md3-checkbox--glass-elevation-2:focus-visible .md3-checkbox__box,
-  .md3-checkbox--glass-elevation-2:active .md3-checkbox__box {
+  .ui-checkbox--glass-elevation-1:focus-visible .ui-checkbox__box,
+  .ui-checkbox--glass-elevation-1:active .ui-checkbox__box,
+  .ui-checkbox--glass-elevation-2:focus-visible .ui-checkbox__box,
+  .ui-checkbox--glass-elevation-2:active .ui-checkbox__box {
     @apply border-primary;
   }
 
-  .md3-checkbox--glass-elevation-1[data-state="checked"] .md3-checkbox__box,
-  .md3-checkbox--glass-elevation-1[data-state="indeterminate"] .md3-checkbox__box,
-  .md3-checkbox--glass-elevation-2[data-state="checked"] .md3-checkbox__box,
-  .md3-checkbox--glass-elevation-2[data-state="indeterminate"] .md3-checkbox__box {
+  .ui-checkbox--glass-elevation-1[data-state="checked"] .ui-checkbox__box,
+  .ui-checkbox--glass-elevation-1[data-state="indeterminate"] .ui-checkbox__box,
+  .ui-checkbox--glass-elevation-2[data-state="checked"] .ui-checkbox__box,
+  .ui-checkbox--glass-elevation-2[data-state="indeterminate"] .ui-checkbox__box {
     @apply bg-primary border-primary;
   }
 
-  .md3-checkbox__check {
+  .ui-checkbox__check {
     transform: scale(1);
 
     @apply inline-flex
@@ -143,11 +143,11 @@
       justify-center
       text-on-primary
       duration-short-3
-      ease-md3
+      ease-ui
       transition-transform;
   }
 
-  .md3-checkbox__minus {
+  .ui-checkbox__minus {
     @apply block
       h-[10%] w-[60%]
       bg-on-primary
@@ -156,25 +156,25 @@
 
   /* Label */
 
-  .md3-checkbox__label {
+  .ui-checkbox__label {
     @apply font-body leading-none
       text-md text-on-surface cursor-pointer select-none;
   }
 
-  .md3-checkbox[data-state="disabled"] ~ .md3-checkbox__label {
+  .ui-checkbox[data-state="disabled"] ~ .ui-checkbox__label {
     @apply opacity-40;
   }
 
   @media (hover: hover) {
-    .md3-checkbox--glass-elevation-2:hover:not([data-state="checked"], [data-state="indeterminate"])
-    .md3-checkbox__box {
+    .ui-checkbox--glass-elevation-2:hover:not([data-state="checked"], [data-state="indeterminate"])
+    .ui-checkbox__box {
       @apply border-glass-outline;
     }
   }
 
   @media (hover: hover) {
-    .md3-checkbox--glass-elevation-1:hover:not([data-state="checked"], [data-state="indeterminate"])
-    .md3-checkbox__box {
+    .ui-checkbox--glass-elevation-1:hover:not([data-state="checked"], [data-state="indeterminate"])
+    .ui-checkbox__box {
       @apply border-glass-outline;
     }
   }
@@ -182,14 +182,14 @@
   /* Hover */
 
   @media (hover: hover) {
-    .md3-checkbox:hover:not([data-state="checked"], [data-state="indeterminate"])
-    .md3-checkbox__box {
+    .ui-checkbox:hover:not([data-state="checked"], [data-state="indeterminate"])
+    .ui-checkbox__box {
       @apply border-outline;
     }
   }
 
   @media (hover: hover) {
-    .md3-checkbox:hover .md3-checkbox__state-layer {
+    .ui-checkbox:hover .ui-checkbox__state-layer {
       @apply opacity-[0.1];
     }
   }
