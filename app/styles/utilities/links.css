@@ -13,7 +13,17 @@
 }
 
 @utility uix-link-primary {
-  @apply text-primary duration-medium-2 ease-ui transition-colors;
+  &:focus {
+    @apply outline-2 outline-offset-2 outline-primary rounded-sm;
+  }
+
+  @media (hover: hover) {
+    &:hover {
+      @apply underline text-tone-primary/112;
+    }
+  }
+
+  @apply font-medium no-underline text-primary duration-medium-3 ease-ui transition-colors;
 }
 
 @utility uix-nav-link {

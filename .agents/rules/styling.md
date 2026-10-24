@@ -4,13 +4,13 @@
 
 ## 3-tier hybrid (CRITICAL)
 
-| Tier | Where | Convention | When |
-| --- | --- | --- | --- |
-| UI/custom components | `app/components/ui/**`, `custom/**` | BEM `block__element--modifier` + `@apply` in co-located `.css` | **ALWAYS** |
-| Pages components — default | `app/components/pages/**` | inline Tailwind in TSX | **ALWAYS** (no class threshold) |
-| Pages components — `@apply` | `app/components/pages/**` | BEM block `{page}-{component}` + `@apply` in `.css` (`@layer custom`/`routes`) | **RARE — only complicated** (→ `components.md`) |
-| Routes — default | `app/routes/**` | inline Tailwind in TSX | **ALWAYS** (no class threshold) |
-| Routes — `@apply` | `app/routes/**` | BEM with route prefix = block + `@apply` in `.css` (`@layer routes`) | **RARE — only when explicitly requested** |
+| Tier                        | Where                               | Convention                                                                     | When                                            |
+| --------------------------- | ----------------------------------- | ------------------------------------------------------------------------------ | ----------------------------------------------- |
+| UI/custom components        | `app/components/ui/**`, `custom/**` | BEM `block__element--modifier` + `@apply` in co-located `.css`                 | **ALWAYS**                                      |
+| Pages components — default  | `app/components/pages/**`           | inline Tailwind in TSX                                                         | **ALWAYS** (no class threshold)                 |
+| Pages components — `@apply` | `app/components/pages/**`           | BEM block `{page}-{component}` + `@apply` in `.css` (`@layer custom`/`routes`) | **RARE — only complicated** (→ `components.md`) |
+| Routes — default            | `app/routes/**`                     | inline Tailwind in TSX                                                         | **ALWAYS** (no class threshold)                 |
+| Routes — `@apply`           | `app/routes/**`                     | BEM with route prefix = block + `@apply` in `.css` (`@layer routes`)           | **RARE — only when explicitly requested**       |
 
 - **Route `@apply` is NOT triggered by class count.** Long inline in routes is OK and expected. `@apply` in route `.css` = only when: (a) `@keyframes`/signature animations with `prefers-reduced-motion`, (b) shared layout sibling-routes (e.g. `main/plans.css` — `::before` glow effects used in `main/plans`), (c) very complex `@media` combos unexpressible with variants (`@media (…) and (…)`), (d) explicit user instruction. When used → BEM with route prefix = block (`auth__field`, `plans__glow`, `users__toolbar`), `__` IS used (this IS BEM).
 - Page-specific components in `app/components/pages/**` — inline Tailwind by default (like routes). Co-located `.css` ONLY when complicated (`@keyframes`, selectors unexpressible with variants, complex `@media`) → BEM block `{page}-{component}` + `@apply`, `@layer custom` (or `routes` when purely route layout). Criteria → `components.md` § "Pages components (route-specific)".
@@ -29,7 +29,7 @@
 
 ## Core rules
 
-- **Tailwind v4** — `@theme` + `@theme inline` + `@utility` in CSS, **not** `tailwind.config.js`. Entry CSS `app/styles/main.css` imports `tailwindcss`, then `app/styles/theme.css` (`@theme` config + color palette + `:root` + `@custom-media`); `@theme` glass variants in `app/styles/utilities/colors.css`, light-mode overrides in `app/styles/utilities/theme.css`; `@theme` design tokens + `@utility` + `@layer components` + cross-route keyframes live in `app/styles/utilities/*.css` (`tokens.css`, `animations.css`, …); global overrides (`pointer:coarse`) in `app/styles/base/overrides.css`; `@layer base` typography in `app/styles/base/typography.css`.
+- **Tailwind v4** — `@theme` + `@theme inline` + `@utility` in CSS, **not** `tailwind.config.js`. Entry CSS `app/styles/main.css` imports `tailwindcss`, then `app/styles/theme.css` (`@theme` config + color palette + `:root` + `@custom-media`); `@theme` glass variants + `*-tone-*` utilities in `app/styles/utilities/colors.css`, light-mode `html.light` overrides at the end of `app/styles/theme.css`; component geometry + overlay `@utility` in `app/styles/utilities/ui.css`, `@theme` design tokens in `app/styles/utilities/tokens.css`, `@layer components` + cross-route keyframes in `app/styles/utilities/animations.css`, …); global overrides (`pointer:coarse`) in `app/styles/base/overrides.css`; `@layer base` typography in `app/styles/base/typography.css`.
 - **Units:** `rem` (heights `--size-*`, spacing), `cqw` (animations). Size token values are in rem — they scale with `--f-font-size` (fluid root), do not override with hardcoded px.
 - **Component size tokens:**
   - **UI components** (`app/components/ui/*`) — ALWAYS component height tokens (`h-btn-md`, `h-text-field-md`, `h-chip-md`, `h-checkbox-md`, `h-switch-md`), never `h-10`/`h-12`. Square components (IconButton, Checkbox, Switch, Avatar) use `w-{comp}-{size}` / `h-{comp}-{size}` or `size-{comp}-{size}`.
@@ -71,15 +71,15 @@ The root is fluid (`--f-font-size`): `1rem ≈ 6.86–8px`, frozen at `8px` abov
 
 ### Matrix
 
-| Width is… | Use (in order) | Examples in code |
-| --- | --- | --- |
-| Content `max-w`/`w`/`min-w` tied to typography (measure, sections) | `max-w-unit-*` (xl–6xl = 40–80rem) — FIRST | `max-w-unit-3xl` (56rem), `w-unit-2xl` (48rem) |
-| Rem width genuinely outside the scale (one-off, justified) | `[nrem]` arbitrary | `max-w-[124rem]` page shell |
-| Tool-UI / admin / fixed asset / hard cap that must NOT scale with type | `[npx]` arbitrary | `max-w-[720px]` (`status.tsx`), `max-w-[1600px]` (admin) |
-| Viewport-proportional column or dialog (24-col grid) | `mod-unit-*` (1–24) + `basis-`/`grid-cols-` | `max-w-mod-unit-10` (dialog md) |
-| Pure reading measure (characters per line) | `ch` | `max-w-[65ch]` (FAQ) |
-| Clamped to the viewport itself | `vw` | `max-w-[85vw]` (drawer) |
-| Page container / site padding | `cont` + `px-site` | `<main className="cont px-site">` |
+| Width is…                                                              | Use (in order)                              | Examples in code                                         |
+| ---------------------------------------------------------------------- | ------------------------------------------- | -------------------------------------------------------- |
+| Content `max-w`/`w`/`min-w` tied to typography (measure, sections)     | `max-w-unit-*` (xl–6xl = 40–80rem) — FIRST  | `max-w-unit-3xl` (56rem), `w-unit-2xl` (48rem)           |
+| Rem width genuinely outside the scale (one-off, justified)             | `[nrem]` arbitrary                          | `max-w-[124rem]` page shell                              |
+| Tool-UI / admin / fixed asset / hard cap that must NOT scale with type | `[npx]` arbitrary                           | `max-w-[720px]` (`status.tsx`), `max-w-[1600px]` (admin) |
+| Viewport-proportional column or dialog (24-col grid)                   | `mod-unit-*` (1–24) + `basis-`/`grid-cols-` | `max-w-mod-unit-10` (dialog md)                          |
+| Pure reading measure (characters per line)                             | `ch`                                        | `max-w-[65ch]` (FAQ)                                     |
+| Clamped to the viewport itself                                         | `vw`                                        | `max-w-[85vw]` (drawer)                                  |
+| Page container / site padding                                          | `cont` + `px-site`                          | `<main className="cont px-site">`                        |
 
 ### Rules
 
@@ -128,17 +128,18 @@ The root is fluid (`--f-font-size`): `1rem ≈ 6.86–8px`, frozen at `8px` abov
   - `--color-on-surface-variant: color-mix(in oklch, var(--color-on-surface) 70%, transparent);`
   - `--color-primary-container: color-mix(in oklch, var(--color-primary) 30%, var(--color-surface));`
   - `--color-glass-error: color-mix(in oklch, var(--color-error) 20%, var(--color-glass));` (`app/styles/utilities/colors.css`)
+- **Tone utilities (`*-tone-<color>/<pct>`)** — dynamic OKLCH lightness shades → `tokens.md` § "Dynamic Tones". Decorative shade helper only: not a replacement for semantic `on-*`/container roles or `color-mix` state layers; the `/pct` modifier is lightness, not opacity.
 
 ## @layer cascade (CRITICAL)
 
 ```css
-/* app/styles/main.css — line 1, before @import */
+/* app/styles/main.css — first statement, before @import */
 @layer reset, base, components, custom, routes, overrides;
 @import "tailwindcss";
 @import "./theme.css";
 ```
 
-The declaration is also repeated in `app/root.tsx` (lines 92-96) as an inline `<style>` rendered before `<Links>`, so the layer order is established before the browser loads any co-located CSS:
+The declaration is also repeated in `app/root.tsx` as an inline `<style>` rendered before `<Links>`, so the layer order is established before the browser loads any co-located CSS:
 
 ```css
 @layer reset, base, components, custom, routes, overrides;
@@ -275,7 +276,7 @@ Before adding **any** utility to `className` (route) OR `@apply` in `.css` (comp
    - `.ui-btn--sm` = only `h-btn-sm px-1 text-sm` (does not repeat `inline-flex`/`relative`/`font-body`).
    - `.ui-btn--square` = only `gap-0 aspect-square p-0` (does not repeat size).
 4. **Token `@theme`** — use utility instead of arbitrary values.
-   - `bg-surface` instead of `bg-[oklch(14%_0.019_274.6deg)]`.
+   - `bg-surface` instead of `bg-[oklch(16%_0.015_264deg)]`.
    - `h-btn-md` instead of `h-[5.5rem]`.
    - `ease-ui` instead of `ease-[cubic-bezier(0.2,0,0,1)]`.
    - `rounded-xl` instead of `rounded-[1.5rem]`.

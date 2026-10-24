@@ -21,7 +21,7 @@
 }
 
 /* Color palette (MD3 roles). Glass variants live in utilities/colors.css;
- * light-mode overrides in utilities/theme.css. */
+ * light-mode `html.light` overrides at the end of this file. */
 @theme {
   /* Surfaces (ex-background/card/secondary) */
   --color-surface: oklch(16% 0.015 264deg);
@@ -175,4 +175,70 @@
   --text-4xl: var(--fluid-text-4xl);
   --text-5xl: var(--fluid-text-5xl);
   --text-0: var(--fluid-text-0);
+}
+
+@layer base {
+  /* ── Theme switching ─────────────────────────────────────────
+   * The @theme block in theme.css defines the DARK palette as
+   * the default. `html.light` re-declares the same --color-* vars
+   * with light values — utilities/components pick them up via var().
+   */
+
+  html.dark {
+    color-scheme: dark;
+  }
+
+  html.light {
+    /* Surfaces — clean white with light blue-gray elevations */
+    --color-surface: oklch(100% 0 0deg);
+    --color-on-surface: oklch(20% 0.025 264deg);
+    --color-on-surface-variant: color-mix(in oklch, var(--color-on-surface) 70%, transparent);
+    --color-elevation-1: oklch(96% 0.007 264deg);
+    --color-on-elevation-1: oklch(20% 0.025 264deg);
+    --color-elevation-2: oklch(92.5% 0.009 264deg);
+    --color-on-elevation-2: oklch(22% 0.025 264deg);
+    --color-popover: oklch(98.5% 0.003 264deg);
+    --color-on-popover: oklch(20% 0.025 264deg);
+    --color-float: oklch(98% 0.004 264deg);
+    --color-on-float: oklch(20% 0.025 264deg);
+
+    /* Primary — standard UI blue (#2563eb-ish) */
+    --color-primary: oklch(54.6% 0.24 262deg);
+    --color-on-primary: oklch(99% 0.003 264deg);
+    --color-on-primary-container: oklch(28% 0.09 262deg);
+
+    /* Ghost — dark background + light text (inverse of dark theme) */
+    --color-ghost: oklch(22% 0.025 264deg);
+    --color-on-ghost: oklch(99% 0.003 264deg);
+
+    /* Outline / border */
+    --color-outline: oklch(58% 0.03 264deg);
+    --color-outline-variant: oklch(85% 0.015 264deg);
+
+    /* States */
+    --color-error: oklch(52% 0.19 25deg);
+    --color-on-error: oklch(99% 0.003 264deg);
+    --color-on-error-container: oklch(25% 0.1 25deg);
+    --color-success: oklch(52% 0.12 160deg);
+    --color-on-success: oklch(99% 0.003 264deg);
+    --color-on-success-container: oklch(22% 0.06 160deg);
+    --color-info: oklch(55% 0.14 262deg);
+    --color-on-info: oklch(99% 0.003 264deg);
+    --color-on-info-container: oklch(25% 0.1 262deg);
+    --color-warning: oklch(62% 0.13 75deg);
+    --color-on-warning: oklch(20% 0.02 70deg);
+    --color-on-warning-container: oklch(30% 0.08 70deg);
+    --color-inverse-surface: oklch(20% 0.025 264deg);
+    --color-on-inverse-surface: oklch(95% 0.005 264deg);
+
+    /* Secondary / Tertiary */
+    --color-secondary: oklch(47% 0.09 264deg);
+    --color-on-secondary: oklch(99% 0.003 264deg);
+    --color-on-secondary-container: oklch(25% 0.07 264deg);
+    --color-tertiary: oklch(52% 0.11 300deg);
+    --color-on-tertiary: oklch(99% 0.003 264deg);
+    --color-on-tertiary-container: oklch(25% 0.08 300deg);
+
+    color-scheme: light;
+  }
 }

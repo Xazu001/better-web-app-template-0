@@ -16,3 +16,33 @@
   --color-glass-info: color-mix(in oklch, var(--color-info) 20%, var(--color-glass));
   --color-on-glass-info: oklch(85% 0.13 262deg);
 }
+
+/* Scale OKLCH lightness by the integer modifier / 100; keep chroma, hue and alpha.
+ * /100 is unchanged, /50 halves lightness, /125 brightens by 25%. This is not opacity. */
+@utility bg-tone-* {
+  background-color: oklch(from --value(--color-*) clamp(0, calc(l * --modifier(integer) / 100), 1) c h);
+}
+
+@utility text-tone-* {
+  color: oklch(from --value(--color-*) clamp(0, calc(l * --modifier(integer) / 100), 1) c h);
+}
+
+@utility border-tone-* {
+  border-color: oklch(from --value(--color-*) clamp(0, calc(l * --modifier(integer) / 100), 1) c h);
+}
+
+@utility outline-tone-* {
+  outline-color: oklch(from --value(--color-*) clamp(0, calc(l * --modifier(integer) / 100), 1) c h);
+}
+
+@utility ring-tone-* {
+  --tw-ring-color: oklch(from --value(--color-*) clamp(0, calc(l * --modifier(integer) / 100), 1) c h);
+}
+
+@utility fill-tone-* {
+  fill: oklch(from --value(--color-*) clamp(0, calc(l * --modifier(integer) / 100), 1) c h);
+}
+
+@utility stroke-tone-* {
+  stroke: oklch(from --value(--color-*) clamp(0, calc(l * --modifier(integer) / 100), 1) c h);
+}

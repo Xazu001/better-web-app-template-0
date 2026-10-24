@@ -236,31 +236,31 @@ pnpm fmt && pnpm fmt:style   # formatting + class sorting, then re-check the dif
 
 ### All commands
 
-| Command                                | Purpose                                                       |
-| -------------------------------------- | ------------------------------------------------------------- |
-| `pnpm dev`                             | Dev server, fully local emulated bindings (top-level config)  |
-| `pnpm dev:local`                       | Compatibility alias for `pnpm dev`                            |
-| `pnpm dev:remote`                      | Dev server, remote `env.dev` D1/KV/R2 (queues/email emulated) |
-| `pnpm typecheck`                       | `wrangler types` + `react-router typegen` + `tsc -b`          |
-| `pnpm db:generate`                     | Generate D1 migrations (dev/local history)                    |
-| `pnpm db:generate:prod`                | Generate D1 migrations (prod history `drizzle-prod/`)         |
-| `pnpm db` / `db:local` / `db:prod`     | Apply migrations: remote dev / local / remote prod            |
-| `pnpm db:full` / `db:full:local`       | Generate + apply dev history (remote dev / local)             |
-| `pnpm db:full:prod`                    | Generate prod history + apply to remote prod                  |
-| `pnpm db:migrate` / `db:migrate:local` | Compatibility aliases for `db` / `db:local`                   |
-| `pnpm fmt` / `lint`                    | oxfmt (import sort) / oxlint                                  |
-| `pnpm fmt:style`                       | stylelint --fix + Tailwind class sorting                      |
-| `pnpm test`                            | vitest (unit)                                                 |
-| `pnpm test:e2e`                        | Playwright (boots `pnpm dev`) — smoke tests in `test/e2e/`    |
-| `pnpm check:docs`                      | Validate agent docs — `.md` refs exist, `pnpm` scripts exist  |
-| `pnpm gen:keys`                        | Generate local JWT keypair into `.dev.vars`                   |
+| Command                                | Purpose                                                                                       |
+| -------------------------------------- | --------------------------------------------------------------------------------------------- |
+| `pnpm dev`                             | Dev server, fully local emulated bindings (top-level config)                                  |
+| `pnpm dev:local`                       | Compatibility alias for `pnpm dev`                                                            |
+| `pnpm dev:remote`                      | Dev server, remote `env.dev` D1/KV/R2 (queues/email emulated)                                 |
+| `pnpm typecheck`                       | `wrangler types` + `react-router typegen` + `tsc -b`                                          |
+| `pnpm db:generate`                     | Generate D1 migrations (dev/local history)                                                    |
+| `pnpm db:generate:prod`                | Generate D1 migrations (prod history `drizzle-prod/`)                                         |
+| `pnpm db` / `db:local` / `db:prod`     | Apply migrations: remote dev / local / remote prod                                            |
+| `pnpm db:full` / `db:full:local`       | Generate + apply dev history (remote dev / local)                                             |
+| `pnpm db:full:prod`                    | Generate prod history + apply to remote prod                                                  |
+| `pnpm db:migrate` / `db:migrate:local` | Compatibility aliases for `db` / `db:local`                                                   |
+| `pnpm fmt` / `lint`                    | oxfmt (import sort) / oxlint                                                                  |
+| `pnpm fmt:style`                       | stylelint --fix + Tailwind class sorting                                                      |
+| `pnpm test`                            | vitest (unit)                                                                                 |
+| `pnpm test:e2e`                        | Playwright (boots `pnpm dev`) — smoke tests in `test/e2e/`                                    |
+| `pnpm check:docs`                      | Validate agent docs — `.md` refs exist, `pnpm` scripts exist                                  |
+| `pnpm gen:keys`                        | Generate local JWT keypair into `.dev.vars`                                                   |
 | `pnpm env:init`                        | Create/update `.dev.vars` + `.env`; `--env dev` creates `.dev.vars.dev` for `pnpm dev:remote` |
-| `pnpm env:examples`                    | Regenerate tracked environment examples from the manifest     |
-| `pnpm bootstrap`                       | Local-only bootstrap (any flag rejected)                      |
-| `pnpm cf:setup` / `cf:setup:prod`      | Provision CF resources (offline plan; `--apply` gated)        |
-| `pnpm check:setup`                     | Read-only setup health check (`--strict` = fail on warnings)  |
-| `pnpm deploy` / `deploy:dev`           | dev build + `wrangler deploy` (`deploy` aliases `deploy:dev`) |
-| `pnpm deploy:prod`                     | prod build + deploy to the prod worker                        |
+| `pnpm env:examples`                    | Regenerate tracked environment examples from the manifest                                     |
+| `pnpm bootstrap`                       | Local-only bootstrap (any flag rejected)                                                      |
+| `pnpm cf:setup` / `cf:setup:prod`      | Provision CF resources (offline plan; `--apply` gated)                                        |
+| `pnpm check:setup`                     | Read-only setup health check (`--strict` = fail on warnings)                                  |
+| `pnpm deploy` / `deploy:dev`           | dev build + `wrangler deploy` (`deploy` aliases `deploy:dev`)                                 |
+| `pnpm deploy:prod`                     | prod build + deploy to the prod worker                                                        |
 
 ## Branching & Git workflow
 

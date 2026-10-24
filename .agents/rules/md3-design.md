@@ -7,7 +7,7 @@
 - The app must look and behave like an **authentic Google product** (MD3 / Material You, dark), not "MD3-inspired".
 - Stack: pure React MD3 (without `@material/web`), React Router v8, React 19, Cloudflare Workers, Tailwind v4.
 - Implementation source of truth: `app/components/ui/*.tsx` + `*.css`.
-- Color tokens in `@theme` (OKLCH): palette in `app/styles/theme.css`, glass variants in `app/styles/utilities/colors.css`, light-mode overrides in `app/styles/utilities/theme.css`. Components in `app/components/ui/`.
+- Color tokens in `@theme` (OKLCH): palette in `app/styles/theme.css`, glass variants in `app/styles/utilities/colors.css`, light-mode `html.light` overrides at the end of `app/styles/theme.css`. Components in `app/components/ui/`.
 - `useRipple` hook: `app/lib/hooks/use-ripple.ts`.
 
 ## 1. Color roles (not "colors")
@@ -20,67 +20,67 @@ Tokens generate `bg-*`, `text-*`, `border-*` utilities. Groups below.
 
 #### Surfaces (surface hierarchy)
 
-| Role | CSS var | Tailwind | Description |
-| --- | --- | --- | --- |
-| `surface` | `--color-surface` | `bg-surface` / `text-on-surface` | Base background, darkest |
-| `on-surface` | `--color-on-surface` | `text-on-surface` | Text on `surface` |
-| `on-surface-variant` | `--color-on-surface-variant` | `text-on-surface-variant` | Secondary/muted text (`color-mix(on-surface 70%, transparent)`) |
-| `elevation-1` | `--color-elevation-1` | `bg-elevation-1` / `text-on-elevation-1` | Item on `surface` |
-| `elevation-2` | `--color-elevation-2` | `bg-elevation-2` / `text-on-elevation-2` | Static panels above `elevation-1` |
-| `float` | `--color-float` | `bg-float` / `text-on-float` | Floating chrome (translucent + blur) |
-| `popover` | `--color-popover` | `bg-popover` / `text-on-popover` | Modal/floating overlay above `scrim` |
-| `scrim` | `--color-scrim` | `bg-scrim` | 60% black overlay under dialog/menu/popover |
+| Role                 | CSS var                      | Tailwind                                 | Description                                                     |
+| -------------------- | ---------------------------- | ---------------------------------------- | --------------------------------------------------------------- |
+| `surface`            | `--color-surface`            | `bg-surface` / `text-on-surface`         | Base background, darkest                                        |
+| `on-surface`         | `--color-on-surface`         | `text-on-surface`                        | Text on `surface`                                               |
+| `on-surface-variant` | `--color-on-surface-variant` | `text-on-surface-variant`                | Secondary/muted text (`color-mix(on-surface 70%, transparent)`) |
+| `elevation-1`        | `--color-elevation-1`        | `bg-elevation-1` / `text-on-elevation-1` | Item on `surface`                                               |
+| `elevation-2`        | `--color-elevation-2`        | `bg-elevation-2` / `text-on-elevation-2` | Static panels above `elevation-1`                               |
+| `float`              | `--color-float`              | `bg-float` / `text-on-float`             | Floating chrome (translucent + blur)                            |
+| `popover`            | `--color-popover`            | `bg-popover` / `text-on-popover`         | Modal/floating overlay above `scrim`                            |
+| `scrim`              | `--color-scrim`              | `bg-scrim`                               | 60% black overlay under dialog/menu/popover                     |
 
 #### Primary / Secondary / Tertiary
 
-| Role | CSS var | Tailwind | Description |
-| --- | --- | --- | --- |
-| `primary` | `--color-primary` | `bg-primary` / `text-on-primary` | Main CTA |
-| `primary-container` | `--color-primary-container` | `bg-primary-container` / `text-on-primary-container` | Subtly tinted surface (`color-mix(primary 30%, surface)`) |
-| `secondary` | `--color-secondary` | `bg-secondary` / `text-on-secondary` | Tonal MD3 role |
-| `secondary-container` | `--color-secondary-container` | `bg-secondary-container` / `text-on-secondary-container` | Tonal surface |
-| `tertiary` | `--color-tertiary` | `bg-tertiary` / `text-on-tertiary` | Tonal MD3 role |
-| `tertiary-container` | `--color-tertiary-container` | `bg-tertiary-container` / `text-on-tertiary-container` | Tonal surface |
+| Role                  | CSS var                       | Tailwind                                                 | Description                                               |
+| --------------------- | ----------------------------- | -------------------------------------------------------- | --------------------------------------------------------- |
+| `primary`             | `--color-primary`             | `bg-primary` / `text-on-primary`                         | Main CTA                                                  |
+| `primary-container`   | `--color-primary-container`   | `bg-primary-container` / `text-on-primary-container`     | Subtly tinted surface (`color-mix(primary 30%, surface)`) |
+| `secondary`           | `--color-secondary`           | `bg-secondary` / `text-on-secondary`                     | Tonal MD3 role                                            |
+| `secondary-container` | `--color-secondary-container` | `bg-secondary-container` / `text-on-secondary-container` | Tonal surface                                             |
+| `tertiary`            | `--color-tertiary`            | `bg-tertiary` / `text-on-tertiary`                       | Tonal MD3 role                                            |
+| `tertiary-container`  | `--color-tertiary-container`  | `bg-tertiary-container` / `text-on-tertiary-container`   | Tonal surface                                             |
 
 #### Outline
 
-| Role | CSS var | Tailwind | Description |
-| --- | --- | --- | --- |
-| `outline` | `--color-outline` | `border-outline` | Stronger border (hover, focus) |
+| Role              | CSS var                   | Tailwind                 | Description                                  |
+| ----------------- | ------------------------- | ------------------------ | -------------------------------------------- |
+| `outline`         | `--color-outline`         | `border-outline`         | Stronger border (hover, focus)               |
 | `outline-variant` | `--color-outline-variant` | `border-outline-variant` | Subtler default border (TextField, Checkbox) |
 
 #### States (error / success / info / warning)
 
-| Role | CSS var | Tailwind | Description |
-| --- | --- | --- | --- |
-| `error` | `--color-error` | `bg-error` / `text-on-error` | Error / destructive |
-| `error-container` | `--color-error-container` | `bg-error-container` / `text-on-error-container` | Muted error surface |
-| `success` | `--color-success` | `bg-success` / `text-on-success` | Success |
+| Role                | CSS var                     | Tailwind                                             | Description           |
+| ------------------- | --------------------------- | ---------------------------------------------------- | --------------------- |
+| `error`             | `--color-error`             | `bg-error` / `text-on-error`                         | Error / destructive   |
+| `error-container`   | `--color-error-container`   | `bg-error-container` / `text-on-error-container`     | Muted error surface   |
+| `success`           | `--color-success`           | `bg-success` / `text-on-success`                     | Success               |
 | `success-container` | `--color-success-container` | `bg-success-container` / `text-on-success-container` | Muted success surface |
-| `info` | `--color-info` | `bg-info` / `text-on-info` | Info |
-| `info-container` | `--color-info-container` | `bg-info-container` / `text-on-info-container` | Muted info surface |
-| `warning` | `--color-warning` | `bg-warning` / `text-on-warning` | Warning |
+| `info`              | `--color-info`              | `bg-info` / `text-on-info`                           | Info                  |
+| `info-container`    | `--color-info-container`    | `bg-info-container` / `text-on-info-container`       | Muted info surface    |
+| `warning`           | `--color-warning`           | `bg-warning` / `text-on-warning`                     | Warning               |
 | `warning-container` | `--color-warning-container` | `bg-warning-container` / `text-on-warning-container` | Muted warning surface |
 
 #### Ghost / Inverse
 
-| Role | CSS var | Tailwind | Description |
-| --- | --- | --- | --- |
-| `ghost` | `--color-ghost` | `bg-ghost` / `text-on-ghost` | White background + dark text, high-contrast CTA on dark surface |
-| `inverse-surface` | `--color-inverse-surface` | `bg-inverse-surface` / `text-on-inverse-surface` | Inverted pair (light background + dark text), e.g. snackbar |
+| Role              | CSS var                   | Tailwind                                         | Description                                                     |
+| ----------------- | ------------------------- | ------------------------------------------------ | --------------------------------------------------------------- |
+| `ghost`           | `--color-ghost`           | `bg-ghost` / `text-on-ghost`                     | White background + dark text, high-contrast CTA on dark surface |
+| `inverse-surface` | `--color-inverse-surface` | `bg-inverse-surface` / `text-on-inverse-surface` | Inverted pair (light background + dark text), e.g. snackbar     |
 
 #### Glass (for auth/landing — translucency + blur)
 
-| Role | CSS var | Tailwind | Description |
-| --- | --- | --- | --- |
-| `glass` | `--color-glass` | `bg-glass` / `text-on-glass` | Base glass |
-| `glass-elevation-1` | `--color-glass-elevation-1` | `bg-glass-elevation-1` / `text-on-glass-elevation-1` | Elevated glass 1 |
-| `glass-elevation-2` | `--color-glass-elevation-2` | `bg-glass-elevation-2` / `text-on-glass-elevation-2` | Elevated glass 2 |
-| `glass-outline` | `--color-glass-outline` | `border-glass-outline` | Glass border |
-| `glass-outline-variant` | `--color-glass-outline-variant` | `border-glass-outline-variant` | Subtle glass border |
-| `glass-error` | `--color-glass-error` | `bg-glass-error` / `text-on-glass-error` | Glass error (`color-mix(error 20%, glass)`) |
-| `glass-success` | `--color-glass-success` | `bg-glass-success` / `text-on-glass-success` | Glass success |
-| `glass-info` | `--color-glass-info` | `bg-glass-info` / `text-on-glass-info` | Glass info |
+| Role                    | CSS var                         | Tailwind                                             | Description                                 |
+| ----------------------- | ------------------------------- | ---------------------------------------------------- | ------------------------------------------- |
+| `glass`                 | `--color-glass`                 | `bg-glass` / `text-on-glass`                         | Base glass                                  |
+| `glass-elevation-1`     | `--color-glass-elevation-1`     | `bg-glass-elevation-1` / `text-on-glass-elevation-1` | Elevated glass 1                            |
+| `glass-elevation-2`     | `--color-glass-elevation-2`     | `bg-glass-elevation-2` / `text-on-glass-elevation-2` | Elevated glass 2                            |
+| `glass-outline`         | `--color-glass-outline`         | `border-glass-outline`                               | Glass border                                |
+| `glass-outline-variant` | `--color-glass-outline-variant` | `border-glass-outline-variant`                       | Subtle glass border                         |
+| `glass-error`           | `--color-glass-error`           | `bg-glass-error` / `text-on-glass-error`             | Glass error (`color-mix(error 20%, glass)`) |
+| `glass-success`         | `--color-glass-success`         | `bg-glass-success` / `text-on-glass-success`         | Glass success                               |
+| `glass-info`            | `--color-glass-info`            | `bg-glass-info` / `text-on-glass-info`               | Glass info                                  |
 
 ## 2. Elevation
 
@@ -96,14 +96,14 @@ Tonal elevation via color roles (lighter = higher), without decorative shadows. 
 
 `surface` → `elevation-1` → `elevation-2` → `float` → `popover` → `scrim`
 
-| Role | When to use |
-| --- | --- |
-| `surface` | Base background (darkest) — pages, sections, containers without elevation |
-| `elevation-1` | Item on surface — cards, raised buttons, TopAppBar/NavBar on surface, FAB, lists |
-| `elevation-2` | Item on elevation-1 — strongly elevated panels, active card over card (lightest L) |
-| `float` | Floating chrome (translucent + `backdrop-blur`) — nav/top app bar, select dropdown, menu |
-| `popover` | Modal/floating overlay — dialog, toast, popover (above scrim) |
-| `scrim` | 60% black overlay — background under dialog/menu/popover |
+| Role          | When to use                                                                              |
+| ------------- | ---------------------------------------------------------------------------------------- |
+| `surface`     | Base background (darkest) — pages, sections, containers without elevation                |
+| `elevation-1` | Item on surface — cards, raised buttons, TopAppBar/NavBar on surface, FAB, lists         |
+| `elevation-2` | Item on elevation-1 — strongly elevated panels, active card over card (lightest L)       |
+| `float`       | Floating chrome (translucent + `backdrop-blur`) — nav/top app bar, select dropdown, menu |
+| `popover`     | Modal/floating overlay — dialog, toast, popover (above scrim)                            |
+| `scrim`       | 60% black overlay — background under dialog/menu/popover                                 |
 
 - `bg-elevation-1` = raised content (elevated buttons, cards, FAB). `bg-elevation-2` = static panels above elevation-1. `bg-float` = floating chrome (TopAppBar, NavigationBar, dropdown) with `backdrop-blur`. `bg-popover` = modal overlay above scrim (Dialog, Toast, Popover).
 - **DO NOT** use `bg-elevation-2` for Dialog/Toast/Popover → `bg-popover`. `elevation-2` is for static panels, not floating overlay.
@@ -173,7 +173,7 @@ Every raw `:hover` in `.css` MUST be in `@media (hover: hover) { ... }` — othe
 
 ### Conditional state layer
 
-Components with conditional state layer + uix-ripple render them ONLY when interactive. Example from `chip.tsx` (line 60–83):
+Components with conditional state layer + uix-ripple render them ONLY when interactive. Example from `chip.tsx`:
 
 ```tsx
 const interactive = Boolean(to || onClick);
@@ -294,11 +294,11 @@ Where to connect:
 
 ### SSR guard (Cloudflare Workers)
 
-`typeof window === "undefined"` in `spawnRipple` (line 49) and in `useAutoRippleColor` in `PlayButton`. All DOM operations ONLY in handlers (after hydration). `prefers-reduced-motion` check also only in handlers.
+`typeof window === "undefined"` in `spawnRipple` and in `useAutoRippleColor` in `PlayButton`. All DOM operations ONLY in handlers (after hydration). `prefers-reduced-motion` check also only in handlers.
 
 ### `prefers-reduced-motion`
 
-In `useRipple.spawnRipple` (line 54–55): `window.matchMedia("(prefers-reduced-motion: reduce)").matches` → skip uix-ripple animation. State layer remains.
+In `useRipple.spawnRipple`: `window.matchMedia("(prefers-reduced-motion: reduce)").matches` → skip uix-ripple animation. State layer remains.
 
 ## 5. Shape / radius
 
@@ -317,15 +317,15 @@ Radius tokens in `@theme` (`app/styles/utilities/tokens.css`):
 
 Every component type has an explicit radius — there is no "rounded-md as default".
 
-| Component / element | Radius | Source |
-| --- | --- | --- |
+| Component / element                          | Radius                | Source                                                       |
+| -------------------------------------------- | --------------------- | ------------------------------------------------------------ |
 | Button, Chip, MenuItem, SegmentedButton item | `rounded-full` (pill) | `button.css`, `chip.css`, `menu.css`, `segmented-button.css` |
-| Menu content | `rounded-md` | `menu.css` (`.ui-menu__content`) |
-| TextField container | `rounded-lg` | `text-field.css` (`.ui-text-field`) |
-| TextField input container | `rounded-[inherit]` | `text-field.css` (`.ui-text-field__container`) |
-| Checkbox box | `rounded-xs` | `checkbox.css` (`.ui-checkbox`, `.ui-checkbox__box`) |
-| Dialog content | `rounded-2xl` | `dialog.css` (`.ui-dialog__content`) |
-| Alert | `rounded-lg` | `alert.tsx` (`className="... rounded-lg"`) |
+| Menu content                                 | `rounded-md`          | `menu.css` (`.ui-menu__content`)                             |
+| TextField container                          | `rounded-lg`          | `text-field.css` (`.ui-text-field`)                          |
+| TextField input container                    | `rounded-[inherit]`   | `text-field.css` (`.ui-text-field__container`)               |
+| Checkbox box                                 | `rounded-xs`          | `checkbox.css` (`.ui-checkbox`, `.ui-checkbox__box`)         |
+| Dialog content                               | `rounded-2xl`         | `dialog.css` (`.ui-dialog__content`)                         |
+| Alert                                        | `rounded-lg`          | `alert.tsx` (`className="... rounded-lg"`)                   |
 
 `rounded-[inherit]` on state layer/uix-ripple ensures the overlay always has the same radius as the component.
 
@@ -371,7 +371,7 @@ Every component type has an explicit radius — there is no "rounded-md as defau
 Every CSS/JS animation must honor `prefers-reduced-motion: reduce`:
 
 - `useRipple` skips the uix-ripple animation (state layer remains).
-- Button spinner (`ui-btn__spinner`) in `@media (prefers-reduced-motion: reduce)` changes `animation-duration` to 1.5 s (`button.css`, line 210–214).
+- Button spinner (`ui-btn__spinner`) in `@media (prefers-reduced-motion: reduce)` changes `animation-duration` to 1.5 s (`button.css`).
 - Marquee and other continuous animations should have `motion-reduce:animate-none` in TSX.
 
 ## 7. Typography

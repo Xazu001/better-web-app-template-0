@@ -11,24 +11,24 @@ Regenerate `.agents/rules/tokens.md` from the current token/utility definitions 
 
 Tokens and utilities live exclusively in `app/styles/`:
 
-| What                                                                                                                                                                      | File                              |
-| ------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | --------------------------------- |
-| `@theme` config (colors, breakpoints, spacing, font families)                                                                                                              | `app/styles/theme.css`            |
-| `@theme` glass variants                                                                                                                                                   | `app/styles/utilities/colors.css` |
-| `@theme` design tokens (font weights, radius, shadow, z-index, size-\*, motion, leading, tracking)                                                                        | `app/styles/utilities/tokens.css` |
-| `@theme inline` (fluid typography mapping → `text-*` utility)                                                                                                             | `app/styles/theme.css`            |
-| `:root` fluid vars (`--fluid-text-*`, `--x-*`, `--spacing-*`) + `@media` overrides                                                                                        | `app/styles/theme.css`            |
-| `@custom-media --bp-*` (breakpoints)                                                                                                                                      | `app/styles/theme.css`            |
-| `@layer base` (body / h1-h5 / .h0-h5 / strong defaults)                                                                                                                   | `app/styles/base/typography.css`  |
-| `@layer components` (`.ripple__wave`) + keyframes (top-level)                                                                                                             | `app/styles/utilities/animations.css` |
-| `@utility` layout (cont, px-site, p-site, pt-top-site, section-full-width, w-mod-unit-\*, min-w-mod-unit-\*, max-w-mod-unit-\*, basis-mod-unit-\*, grid-cols-mod-unit-\*) | `app/styles/utilities/layout.css` |
-| `@utility` links (uix-link-muted, uix-link-muted-primary-underline, uix-nav-link)                                                                                                     | `app/styles/utilities/links.css`  |
-| `@utility` ui (state-layer, uix-ripple, ui-ripple-surface, ui-state-layer, uix-elevation-1-bordered)                                                                           | `app/styles/utilities/ui.css`    |
-| `@utility` form (input-x-_, input-h-_, input-label, input-label-margin-_, input-label-gap-_)                                                                              | `app/styles/utilities/form.css`   |
-| `@utility` theme (`html.light` light-palette overrides)                                                                                                                   | `app/styles/utilities/theme.css`  |
-| `@layer reset` (box-sizing, margin reset, form typography, button/input reset, links/lists)                                                                               | `app/styles/base/reset.css`       |
-| `@layer base` (MD3 scrollbar — Firefox + WebKit, `.no-scrollbar`)                                                                                                         | `app/styles/base/scrollbar.css`   |
-| `@layer overrides` (react-toastify theme override)                                                                                                                        | `app/styles/base/toastify.css`    |
+| What                                                                                                                                                                                  | File                                  |
+| ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------- |
+| `@theme` config (colors, breakpoints, spacing, font families)                                                                                                                         | `app/styles/theme.css`                |
+| `@theme` glass variants                                                                                                                                                               | `app/styles/utilities/colors.css`     |
+| `@theme` design tokens (font weights, radius, shadow, z-index, motion, leading, tracking)                                                                                             | `app/styles/utilities/tokens.css`     |
+| `@theme inline` (fluid typography mapping → `text-*` utility)                                                                                                                         | `app/styles/theme.css`                |
+| `:root` fluid vars (`--fluid-text-*`, `--x-*`, `--spacing-*`) + `@media` overrides                                                                                                    | `app/styles/theme.css`                |
+| `@custom-media --bp-*` (breakpoints)                                                                                                                                                  | `app/styles/theme.css`                |
+| `@layer base` (body / h1-h5 / .h0-h5 / strong defaults)                                                                                                                               | `app/styles/base/typography.css`      |
+| `@layer components` (`.ripple__wave`) + keyframes (top-level)                                                                                                                         | `app/styles/utilities/animations.css` |
+| `@utility` layout (cont, px-site, p-site, pt-top-site, section-full-width, w-mod-unit-\*, min-w-mod-unit-\*, max-w-mod-unit-\*, basis-mod-unit-\*, grid-cols-mod-unit-\*)             | `app/styles/utilities/layout.css`     |
+| `@utility` links (uix-link-muted, uix-link-muted-primary-underline, uix-nav-link)                                                                                                     | `app/styles/utilities/links.css`      |
+| `@theme` component geometry (`--size-\*` + `--height-\*`/`--width-\*` mirrors) + `@utility` ui (state-layer, uix-ripple, ui-ripple-surface, ui-state-layer, uix-elevation-1-bordered) | `app/styles/utilities/ui.css`         |
+| `@utility` form (input-x-_, input-h-_, input-label, input-label-margin-_, input-label-gap-_)                                                                                          | `app/styles/utilities/form.css`       |
+| `@layer base` (`html.light` light-palette overrides + `color-scheme`)                                                                                                                 | `app/styles/theme.css`                |
+| `@layer reset` (box-sizing, margin reset, form typography, button/input reset, links/lists)                                                                                           | `app/styles/base/reset.css`           |
+| `@layer base` (MD3 scrollbar — Firefox + WebKit, `.no-scrollbar`)                                                                                                                     | `app/styles/base/scrollbar.css`       |
+| `@layer overrides` (react-toastify theme override)                                                                                                                                    | `app/styles/base/toastify.css`        |
 
 > **No UI component variants** — component props (CVA variants, size, BEM classes `ui-*`) are read directly from `app/components/ui/*.tsx` and `*.css`. Do not duplicate them in `tokens.md`.
 

@@ -1,7 +1,7 @@
 # Design Tokens — rules for using tokens from `app/styles/`
 
-> Source: `app/styles/theme.css` (`@theme` config + `--color-*` palette, `@theme inline`, `:root`, `@custom-media`) + `app/styles/utilities/colors.css` (`@theme` glass variants) + `app/styles/utilities/tokens.css` (`@theme` design tokens) + `app/styles/utilities/theme.css` (light-mode `@layer base` overrides) + `app/styles/utilities/animations.css` (`@layer components` + keyframes) + `app/styles/base/*.css` (`@layer reset/base/overrides`) + `app/styles/utilities/*.css` (`@utility`). The layer ordering declaration `@layer reset, base, components, custom, routes, overrides;` is in `app/styles/main.css` (line 1) and repeated in `app/root.tsx` as an inline `<style>`.
-> **Themes:** dark palette is the `@theme` default; `html.light` re-declares `--color-*` with light values in `app/styles/utilities/theme.css`. Theme cookie: `light`/`dark`/`system` (`server/lib/cookies/cookies.ts`). MD3 concepts (color roles, elevation, state layer) → `md3-design.md`. CSS mechanics (`@layer`, `color-mix`, hover gating) → `styling.md`. Component implementation (CVA, BEM, size variants) → `components.md`.
+> Source: `app/styles/theme.css` (`@theme` config + `--color-*` palette, `@theme inline`, `:root`, `@custom-media`) + `app/styles/utilities/colors.css` (`@theme` glass variants + `*-tone-*` utilities) + `app/styles/utilities/tokens.css` (`@theme` design tokens) + `app/styles/utilities/ui.css` (`@theme` component geometry + `@utility` overlay primitives) + `app/styles/utilities/animations.css` (`@layer components` + keyframes) + `app/styles/base/*.css` (`@layer reset/base/overrides`) + `app/styles/utilities/*.css` (`@utility`). The layer ordering declaration `@layer reset, base, components, custom, routes, overrides;` is the first statement of `app/styles/main.css` and repeated in `app/root.tsx` as an inline `<style>`.
+> **Themes:** dark palette is the `@theme` default; `html.light` re-declares `--color-*` with light values in `app/styles/theme.css`. Theme cookie: `light`/`dark`/`system` (`server/lib/cookies/cookies.ts`). MD3 concepts (color roles, elevation, state layer) → `md3-design.md`. CSS mechanics (`@layer`, `color-mix`, hover gating) → `styling.md`. Component implementation (CVA, BEM, size variants) → `components.md`.
 
 ## Contents
 
@@ -18,10 +18,11 @@
 | Breakpoints                                                         | `phone:` … `huge:` ↔ `@custom-media --bp-*`                         |
 | Custom `@utility`                                                   | per-file tables from `utilities/*.css`                              |
 | `@layer components` + keyframes                                     | shared shells, `.ripple__wave`, keyframes                           |
+| Dynamic Tones (`*-tone-<color>/<pct>`)                              | OKLCH lightness scaling utilities in `utilities/colors.css`         |
 
 ## General Rules
 
-- Single source of truth for tokens: `app/styles/theme.css` (config + `--color-*` palette) + `app/styles/utilities/colors.css` (glass variants) + `app/styles/utilities/tokens.css` (design tokens). Do not create new tokens ad-hoc in components; add missing color roles in `@theme` in `theme.css`, glass variants in `@theme` in `colors.css`.
+- Single source of truth for tokens: `app/styles/theme.css` (config + `--color-*` palette) + `app/styles/utilities/colors.css` (glass variants + tone utilities) + `app/styles/utilities/tokens.css` (design tokens) + `app/styles/utilities/ui.css` (component geometry). Do not create new tokens ad-hoc in components; add missing color roles in `@theme` in `theme.css`, glass variants in `@theme` in `colors.css`.
 - Do not define static `*-hover`, `*-active`, `*-pressed`, `*-disabled` tokens — implement state layers via `color-mix()` in component CSS (see `styling.md` and the `@utility` section below). Exception: `--color-kit-play-primary-hover` is a runtime variable set from kit data.
 - Colors must use only OKLCH (or `color-mix()` in OKLCH). No HEX/RGB/HSL in tokens.
 - All percentage values in `color-mix()` are multiples of 5 (e.g. `30%`, `70%`, `20%`).
@@ -34,30 +35,30 @@
 
 | Token                        | Tailwind utility          | Value                                                           | Usage                                   |
 | ---------------------------- | ------------------------- | --------------------------------------------------------------- | --------------------------------------- |
-| `--color-surface`            | `bg-surface`              | `oklch(14% 0.019 274.6deg)`                                     | Application background, base surface.   |
-| `--color-on-surface`         | `text-on-surface`         | `oklch(95% 0.005 250deg)`                                       | Text on `surface`.                      |
+| `--color-surface`            | `bg-surface`              | `oklch(16% 0.015 264deg)`                                       | Application background, base surface.   |
+| `--color-on-surface`         | `text-on-surface`         | `oklch(93% 0.008 264deg)`                                       | Text on `surface`.                      |
 | `--color-on-surface-variant` | `text-on-surface-variant` | `color-mix(in oklch, var(--color-on-surface) 70%, transparent)` | Secondary text on `surface`.            |
-| `--color-elevation-1`        | `bg-elevation-1`          | `oklch(23% 0.024 273.4deg)`                                     | Lighter elevation (cards, sections).    |
-| `--color-on-elevation-1`     | `text-on-elevation-1`     | `oklch(93% 0.008 250deg)`                                       | Text on `elevation-1`.                  |
-| `--color-elevation-2`        | `bg-elevation-2`          | `oklch(30% 0.024 273.4deg)`                                     | Stronger elevation.                     |
-| `--color-on-elevation-2`     | `text-on-elevation-2`     | `oklch(92% 0.008 250deg)`                                       | Text on `elevation-2`.                  |
-| `--color-popover`            | `bg-popover`              | `oklch(24.5% 0.024 273.4deg)`                                   | Surface for dialogs/toasts.             |
-| `--color-on-popover`         | `text-on-popover`         | `oklch(92% 0.008 250deg)`                                       | Text on `popover`.                      |
-| `--color-float`              | `bg-float`                | `oklch(26.5% 0.025 273.4deg)`                                   | Floating chrome (nav, select dropdown). |
-| `--color-on-float`           | `text-on-float`           | `oklch(93% 0.008 250deg)`                                       | Text on `float`.                        |
+| `--color-elevation-1`        | `bg-elevation-1`          | `oklch(21% 0.018 264deg)`                                       | Lighter elevation (cards, sections).    |
+| `--color-on-elevation-1`     | `text-on-elevation-1`     | `oklch(93% 0.008 264deg)`                                       | Text on `elevation-1`.                  |
+| `--color-elevation-2`        | `bg-elevation-2`          | `oklch(26% 0.02 264deg)`                                        | Stronger elevation.                     |
+| `--color-on-elevation-2`     | `text-on-elevation-2`     | `oklch(92% 0.008 264deg)`                                       | Text on `elevation-2`.                  |
+| `--color-popover`            | `bg-popover`              | `oklch(23% 0.02 264deg)`                                        | Surface for dialogs/toasts.             |
+| `--color-on-popover`         | `text-on-popover`         | `oklch(92% 0.008 264deg)`                                       | Text on `popover`.                      |
+| `--color-float`              | `bg-float`                | `oklch(24% 0.02 264deg)`                                        | Floating chrome (nav, select dropdown). |
+| `--color-on-float`           | `text-on-float`           | `oklch(93% 0.008 264deg)`                                       | Text on `float`.                        |
 
 ### Primary / Secondary / Tertiary + containers
 
 | Token                            | Tailwind utility              | Value                                                                   | Usage                          |
 | -------------------------------- | ----------------------------- | ----------------------------------------------------------------------- | ------------------------------ |
-| `--color-primary`                | `bg-primary`                  | `oklch(81.1% 0.213 130.6deg)`                                           | Main CTA color (green).        |
-| `--color-on-primary`             | `text-on-primary`             | `oklch(18% 0.01 260deg)`                                                | Text on `primary`.             |
+| `--color-primary`                | `bg-primary`                  | `oklch(65% 0.19 262deg)`                                                | Main CTA color (blue).         |
+| `--color-on-primary`             | `text-on-primary`             | `oklch(15% 0.03 264deg)`                                                | Text on `primary`.             |
 | `--color-primary-container`      | `bg-primary-container`        | `color-mix(in oklch, var(--color-primary) 30%, var(--color-surface))`   | Subtle primary container.      |
-| `--color-on-primary-container`   | `text-on-primary-container`   | `oklch(18% 0.01 260deg)`                                                | Text on `primary-container`.   |
-| `--color-secondary`              | `bg-secondary`                | `oklch(80% 0.12 250deg)`                                                | Tonal secondary role.          |
-| `--color-on-secondary`           | `text-on-secondary`           | `oklch(18% 0.01 250deg)`                                                | Text on `secondary`.           |
+| `--color-on-primary-container`   | `text-on-primary-container`   | `oklch(90% 0.05 262deg)`                                                | Text on `primary-container`.   |
+| `--color-secondary`              | `bg-secondary`                | `oklch(78% 0.07 264deg)`                                                | Tonal secondary role.          |
+| `--color-on-secondary`           | `text-on-secondary`           | `oklch(16% 0.02 264deg)`                                                | Text on `secondary`.           |
 | `--color-secondary-container`    | `bg-secondary-container`      | `color-mix(in oklch, var(--color-secondary) 30%, var(--color-surface))` | Secondary container.           |
-| `--color-on-secondary-container` | `text-on-secondary-container` | `oklch(18% 0.01 250deg)`                                                | Text on `secondary-container`. |
+| `--color-on-secondary-container` | `text-on-secondary-container` | `oklch(90% 0.04 264deg)`                                                | Text on `secondary-container`. |
 | `--color-tertiary`               | `bg-tertiary`                 | `oklch(78% 0.14 300deg)`                                                | Tonal tertiary role.           |
 | `--color-on-tertiary`            | `text-on-tertiary`            | `oklch(18% 0.01 300deg)`                                                | Text on `tertiary`.            |
 | `--color-tertiary-container`     | `bg-tertiary-container`       | `color-mix(in oklch, var(--color-tertiary) 30%, var(--color-surface))`  | Tertiary container.            |
@@ -68,17 +69,17 @@
 | Token                          | Tailwind utility            | Value                                                                 | Usage                        |
 | ------------------------------ | --------------------------- | --------------------------------------------------------------------- | ---------------------------- |
 | `--color-error`                | `bg-error`                  | `oklch(60% 0.2 20deg)`                                                | Error / destructive state.   |
-| `--color-on-error`             | `text-on-error`             | `oklch(95% 0.005 250deg)`                                             | Text on `error`.             |
+| `--color-on-error`             | `text-on-error`             | `oklch(95% 0.005 264deg)`                                             | Text on `error`.             |
 | `--color-error-container`      | `bg-error-container`        | `color-mix(in oklch, var(--color-error) 30%, var(--color-surface))`   | Error container.             |
-| `--color-on-error-container`   | `text-on-error-container`   | `oklch(95% 0.005 250deg)`                                             | Text on `error-container`.   |
+| `--color-on-error-container`   | `text-on-error-container`   | `oklch(95% 0.005 264deg)`                                             | Text on `error-container`.   |
 | `--color-success`              | `bg-success`                | `oklch(70% 0.15 160deg)`                                              | Success state.               |
-| `--color-on-success`           | `text-on-success`           | `oklch(5% 0.01 250deg)`                                               | Text on `success`.           |
+| `--color-on-success`           | `text-on-success`           | `oklch(5% 0.01 264deg)`                                               | Text on `success`.           |
 | `--color-success-container`    | `bg-success-container`      | `color-mix(in oklch, var(--color-success) 30%, var(--color-surface))` | Success container.           |
 | `--color-on-success-container` | `text-on-success-container` | `oklch(85% 0.13 160deg)`                                              | Text on `success-container`. |
-| `--color-info`                 | `bg-info`                   | `oklch(65% 0.12 230deg)`                                              | Information state.           |
-| `--color-on-info`              | `text-on-info`              | `oklch(95% 0.005 250deg)`                                             | Text on `info`.              |
+| `--color-info`                 | `bg-info`                   | `oklch(65% 0.12 262deg)`                                              | Information state.           |
+| `--color-on-info`              | `text-on-info`              | `oklch(95% 0.005 264deg)`                                             | Text on `info`.              |
 | `--color-info-container`       | `bg-info-container`         | `color-mix(in oklch, var(--color-info) 30%, var(--color-surface))`    | Info container.              |
-| `--color-on-info-container`    | `text-on-info-container`    | `oklch(95% 0.005 250deg)`                                             | Text on `info-container`.    |
+| `--color-on-info-container`    | `text-on-info-container`    | `oklch(95% 0.005 264deg)`                                             | Text on `info-container`.    |
 | `--color-warning`              | `bg-warning`                | `oklch(75% 0.15 70deg)`                                               | Warning state.               |
 | `--color-on-warning`           | `text-on-warning`           | `oklch(15% 0.02 70deg)`                                               | Text on `warning`.           |
 | `--color-warning-container`    | `bg-warning-container`      | `color-mix(in oklch, var(--color-warning) 30%, var(--color-surface))` | Warning container.           |
@@ -86,35 +87,46 @@
 
 ### Outline, inverse, ghost, scrim
 
-| Token                        | Tailwind utility          | Value                         | Usage                                   |
-| ---------------------------- | ------------------------- | ----------------------------- | --------------------------------------- |
-| `--color-outline`            | `border-outline`          | `oklch(50% 0.021 274.3deg)`   | Main outline.                           |
-| `--color-outline-variant`    | `border-outline-variant`  | `oklch(38.5% 0.021 274.3deg)` | Subtler outline.                        |
-| `--color-inverse-surface`    | `bg-inverse-surface`      | `oklch(95% 0.005 250deg)`     | Inverse (light surface on dark).        |
-| `--color-on-inverse-surface` | `text-on-inverse-surface` | `oklch(18% 0.019 274.6deg)`   | Text on `inverse-surface`.              |
-| `--color-ghost`              | `bg-ghost`                | `oklch(100% 0 0deg)`          | White background for high-contrast CTA. |
-| `--color-on-ghost`           | `text-on-ghost`           | `var(--color-on-primary)`     | Text on `ghost`.                        |
-| `--color-scrim`              | `bg-scrim`                | `oklch(0% 0 0deg / 60%)`      | Dimming behind dialog/menu.             |
+| Token                        | Tailwind utility          | Value                     | Usage                                   |
+| ---------------------------- | ------------------------- | ------------------------- | --------------------------------------- |
+| `--color-outline`            | `border-outline`          | `oklch(52% 0.025 264deg)` | Main outline.                           |
+| `--color-outline-variant`    | `border-outline-variant`  | `oklch(35% 0.02 264deg)`  | Subtler outline.                        |
+| `--color-inverse-surface`    | `bg-inverse-surface`      | `oklch(95% 0.005 264deg)` | Inverse (light surface on dark).        |
+| `--color-on-inverse-surface` | `text-on-inverse-surface` | `oklch(18% 0.019 264deg)` | Text on `inverse-surface`.              |
+| `--color-ghost`              | `bg-ghost`                | `oklch(100% 0 0deg)`      | White background for high-contrast CTA. |
+| `--color-on-ghost`           | `text-on-ghost`           | `var(--color-on-primary)` | Text on `ghost`.                        |
+| `--color-scrim`              | `bg-scrim`                | `oklch(0% 0 0deg / 60%)`  | Dimming behind dialog/menu.             |
 
 ### Glass (auth/landing)
 
 | Token                           | Tailwind utility               | Value                                                               | Usage                        |
 | ------------------------------- | ------------------------------ | ------------------------------------------------------------------- | ---------------------------- |
-| `--color-glass`                 | `bg-glass`                     | `oklch(10% 0.018 274.6deg)`                                         | Base glass surface.          |
-| `--color-on-glass`              | `text-on-glass`                | `oklch(95% 0.005 250deg)`                                           | Text on `glass`.             |
+| `--color-glass`                 | `bg-glass`                     | `oklch(11% 0.015 264deg)`                                           | Base glass surface.          |
+| `--color-on-glass`              | `text-on-glass`                | `oklch(93% 0.008 264deg)`                                           | Text on `glass`.             |
 | `--color-on-glass-variant`      | `text-on-glass-variant`        | `color-mix(in oklch, var(--color-on-glass) 70%, transparent)`       | Secondary text on glass.     |
-| `--color-glass-elevation-1`     | `bg-glass-elevation-1`         | `oklch(13% 0.02 273.4deg)`                                          | Lighter glass elevation.     |
-| `--color-on-glass-elevation-1`  | `text-on-glass-elevation-1`    | `oklch(92% 0.008 250deg)`                                           | Text on `glass-elevation-1`. |
-| `--color-glass-elevation-2`     | `bg-glass-elevation-2`         | `oklch(16% 0.022 273.4deg)`                                         | Stronger glass elevation.    |
-| `--color-on-glass-elevation-2`  | `text-on-glass-elevation-2`    | `oklch(90% 0.008 250deg)`                                           | Text on `glass-elevation-2`. |
-| `--color-glass-outline`         | `border-glass-outline`         | `oklch(40% 0.021 274.3deg)`                                         | Glass outline.               |
-| `--color-glass-outline-variant` | `border-glass-outline-variant` | `oklch(28% 0.021 274.3deg)`                                         | Subtle glass outline.        |
+| `--color-glass-elevation-1`     | `bg-glass-elevation-1`         | `oklch(14% 0.017 264deg)`                                           | Lighter glass elevation.     |
+| `--color-on-glass-elevation-1`  | `text-on-glass-elevation-1`    | `oklch(92% 0.008 264deg)`                                           | Text on `glass-elevation-1`. |
+| `--color-glass-elevation-2`     | `bg-glass-elevation-2`         | `oklch(17% 0.019 264deg)`                                           | Stronger glass elevation.    |
+| `--color-on-glass-elevation-2`  | `text-on-glass-elevation-2`    | `oklch(90% 0.008 264deg)`                                           | Text on `glass-elevation-2`. |
+| `--color-glass-outline`         | `border-glass-outline`         | `oklch(38% 0.02 264deg)`                                            | Glass outline.               |
+| `--color-glass-outline-variant` | `border-glass-outline-variant` | `oklch(26% 0.02 264deg)`                                            | Subtle glass outline.        |
 | `--color-glass-error`           | `bg-glass-error`               | `color-mix(in oklch, var(--color-error) 20%, var(--color-glass))`   | Error on glass.              |
 | `--color-on-glass-error`        | `text-on-glass-error`          | `oklch(85% 0.18 20deg)`                                             | Text on `glass-error`.       |
 | `--color-glass-success`         | `bg-glass-success`             | `color-mix(in oklch, var(--color-success) 20%, var(--color-glass))` | Success on glass.            |
 | `--color-on-glass-success`      | `text-on-glass-success`        | `oklch(85% 0.13 160deg)`                                            | Text on `glass-success`.     |
 | `--color-glass-info`            | `bg-glass-info`                | `color-mix(in oklch, var(--color-info) 20%, var(--color-glass))`    | Info on glass.               |
-| `--color-on-glass-info`         | `text-on-glass-info`           | `oklch(85% 0.13 230deg)`                                            | Text on `glass-info`.        |
+| `--color-on-glass-info`         | `text-on-glass-info`           | `oklch(85% 0.13 262deg)`                                            | Text on `glass-info`.        |
+
+## Dynamic Tones (`*-tone-<color>/<pct>`)
+
+Defined in `app/styles/utilities/colors.css`. Scales the OKLCH lightness of any named `--color-*` token (palette roles, glass variants, and Tailwind default palette) by `<pct>/100` via CSS relative color syntax.
+
+- Syntax: `{property}-tone-{token}/{integer}` — e.g. `bg-tone-primary/125`, `text-tone-on-surface/75`, `bg-tone-elevation-1/125`.
+- Seven properties: `bg-tone-*` (background-color), `text-tone-*` (color), `border-tone-*` (border-color), `outline-tone-*` (outline-color), `ring-tone-*` (--tw-ring-color), `fill-tone-*` (fill), `stroke-tone-*` (stroke).
+- Modifier is a **nonnegative integer lightness percentage, NOT opacity**: `/100` = identity, `/50` = half lightness, `/125` = +25%, `/200` = double. Result clamps to `[0,1]`; `/0` is black.
+- Chroma, hue and origin alpha are preserved by the relative color syntax (browser may gamut-map out-of-range results). Works with variants (`hover:bg-tone-primary/125`) and `@apply`.
+- Emitted value: `oklch(from var(--color-{token}) clamp(0, calc(l * {pct} / 100), 1) c h)` — requires browser support for relative color syntax.
+- **NOT auto contrast** — a decorative shade helper, not a replacement for semantic `on-*` roles or `color-mix` state layers. Normal `bg-primary/50` etc. remain opacity modifiers.
 
 ### Kit-play (runtime vars, not `@theme`)
 
@@ -206,31 +218,31 @@ Above `1920px` fluid typography freezes to fixed values, and the root `font-size
 
 ## Component Size Tokens (rem)
 
-`--size-*` generates `size-*` (w+h). `--height-*` mirrors for `h-*`, `--width-*` mirrors for `w-*`. Values in `rem`.
+`--size-*` generates `size-*` (w+h). `--height-*` mirrors for `h-*`, `--width-*` mirrors for `w-*`. Values in `rem`, defined in `app/styles/utilities/ui.css`.
 
-| Component     | sm     | md     | lg     | xl  | Notes                                                           |
-| ------------- | ------ | ------ | ------ | --- | --------------------------------------------------------------- |
-| `btn`         | `4`    | `5.5`  | `7.5`  | —   | `size-*`, `height-*`, `width-*`                                 |
-| `icon-btn`    | `2.5`  | `3`    | `3.5`  | —   | square; `size-*`, `height-*`, `width-*`                         |
-| `fab`         | `2.5`  | `3.5`  | `6`    | —   | `size-*`, `height-*`, `width-*`                                 |
-| `chip`        | `2`    | `2.25` | `2.5`  | —   | `size-*`, `height-*`, `width-*`                                 |
-| `text-field`  | `4`    | `5.5`  | `7.5`  | —   | `size-*`, `height-*`, `width-*`                                 |
-| `seg-btn`     | `4`    | `5.5`  | `7.5`  | —   | height per item; `size-*`, `height-*`, `width-*`                |
-| `checkbox`    | `2.75` | `3.25` | `3.75` | —   | square; `size-*`, `height-*`, `width-*`                         |
-| `switch`      | `3.5`  | `4.5`  | `5.5`  | —   | width; `h-*` = `size-switch-*`; `size-*`, `height-*`, `width-*` |
-| `avatar`      | `2.5`  | `3`    | `4`    | `5` | square; `size-*`, `height-*`, `width-*`                         |
-| `badge`       | `1.25` | `1.5`  | `1.75` | —   | `width-*` only (no `size-*` / `height-*`)                       |
-| `list-item`   | `4`    | `5`    | `6`    | —   | `height-*` only (no `size-*` / `width-*`)                       |
-| `nav-bar`     | —      | `5`    | —      | —   | `height-*` only (single)                                        |
-| `top-app-bar` | `4`    | `7`    | `9.5`  | —   | `height-*` only                                                 |
-| `panel-btn`   | —      | `6`    | —      | —   | kit-play main/secondary action height; `height-*` only          |
+| Component     | sm     | md     | lg     | xl  | Notes                                                  |
+| ------------- | ------ | ------ | ------ | --- | ------------------------------------------------------ |
+| `btn`         | `4`    | `5.5`  | `7.5`  | —   | `size-*`, `h-*`                                        |
+| `icon-btn`    | `2.5`  | `3`    | `3.5`  | —   | square; `size-*`, `h-*`                                |
+| `fab`         | `2.5`  | `3.5`  | `6`    | —   | `size-*`, `h-*`                                        |
+| `chip`        | `2`    | `2.25` | `2.5`  | —   | `size-*`, `h-*`                                        |
+| `text-field`  | `4`    | `5.5`  | `7.5`  | —   | `size-*`, `h-*`                                        |
+| `seg-btn`     | `4`    | `5.5`  | `7.5`  | —   | height per item; `size-*`, `h-*`                       |
+| `checkbox`    | `2.75` | `3.25` | `3.75` | —   | square; `size-*`, `h-*`, `w-*`                         |
+| `switch`      | `3.5`  | `4.5`  | `5.5`  | —   | width; `h-*` = `size-switch-*`; `size-*`, `h-*`        |
+| `avatar`      | `2.5`  | `3`    | `4`    | `5` | square; `size-*`, `h-*`                                |
+| `badge`       | `1.25` | `1.5`  | `1.75` | —   | `size-*` (no `h-*` / `w-*` mirrors)                    |
+| `list-item`   | `4`    | `5`    | `6`    | —   | `size-*`, `h-*`                                        |
+| `nav-bar`     | —      | `5`    | —      | —   | `h-*` only (single)                                    |
+| `top-app-bar` | `4`    | `7`    | `9.5`  | —   | `h-*` only                                             |
+| `panel-btn`   | —      | `6`    | —      | —   | kit-play main/secondary action height; `size-*`, `h-*` |
 
 ## Motion (MD3)
 
 ### Easings (`@theme` → `ease-*`)
 
-| Var                      | Value                        | Usage               |
-| ------------------------ | ---------------------------- | ------------------- |
+| Var                     | Value                        | Usage               |
+| ----------------------- | ---------------------------- | ------------------- |
 | `--ease-ui`             | `cubic-bezier(0.2, 0, 0, 1)` | Default UI easing.  |
 | `--ease-ui-decelerated` | `cubic-bezier(0, 0, 0, 1)`   | Entrances / expand. |
 | `--ease-ui-accelerated` | `cubic-bezier(0.3, 0, 1, 1)` | Exits / collapse.   |
@@ -263,12 +275,12 @@ Above `1920px` fluid typography freezes to fixed values, and the root `font-size
 
 ### Letter spacing (`@theme` → `tracking-*`)
 
-| Var / Utility                           | Value     |
-| --------------------------------------- | --------- |
-| `--tracking-none` / `tracking-none`     | `0`       |
-| `--tracking-tight` / `tracking-tight`   | `-0.05em` |
-| `--tracking-loose` / `tracking-loose`   | `0.025em` |
-| `--tracking-wide` / `tracking-wide`     | `0.05em`  |
+| Var / Utility                         | Value     |
+| ------------------------------------- | --------- |
+| `--tracking-none` / `tracking-none`   | `0`       |
+| `--tracking-tight` / `tracking-tight` | `-0.05em` |
+| `--tracking-loose` / `tracking-loose` | `0.025em` |
+| `--tracking-wide` / `tracking-wide`   | `0.05em`  |
 
 ### Radius (`@theme` → `rounded-*`)
 
@@ -379,11 +391,11 @@ Own named width scale — `--container-unit-*` tokens in `@theme` (`app/styles/u
 
 ## Custom `@utility` (`utilities/*.css`)
 
-| Utility                          | File        | Definition                                                                                                         |
-| -------------------------------- | ----------- | ------------------------------------------------------------------------------------------------------------------ |
+| Utility                            | File        | Definition                                                                                                         |
+| ---------------------------------- | ----------- | ------------------------------------------------------------------------------------------------------------------ |
 | `uix-link-muted`                   | `links.css` | `text-on-surface-variant` + hover → `text-on-surface`                                                              |
 | `uix-link-muted-primary-underline` | `links.css` | `underline text-primary`                                                                                           |
-| `uix-link-primary`                 | `links.css` | `text-primary`                                                                                                     |
+| `uix-link-primary`                 | `links.css` | `font-medium no-underline text-primary duration-medium-3` + hover → `underline text-tone-primary/112` + focus → `outline-2 outline-offset-2 outline-primary rounded-sm` |
 | `uix-nav-link`                     | `links.css` | `px-2 py-1 rounded-sm text-on-surface-variant` + hover → `color-mix(surface 75%, transparent)` + `text-on-surface` |
 | `state-layer`                      | `ui.css`    | `position: relative; isolation: isolate`                                                                           |
 | `uix-ripple`                       | `ui.css`    | `position: absolute; inset: 0; overflow: hidden; pointer-events: none`                                             |

@@ -9,32 +9,32 @@ This file is the canonical index of all project rules. Detailed rules for each t
 ## Stack and design
 
 - React Router v8 · React 19 · Drizzle · Cloudflare Workers · Tailwind v4
-- Design: authentic Google MD3 / Material You, **light + dark** — dark palette is the `@theme` default, `html.light` overrides live in `app/styles/utilities/theme.css`; theme cookie `light`/`dark`/`system` — details in `md3-design.md`
+- Design: authentic Google MD3 / Material You, **light + dark** — dark palette is the `@theme` default, `html.light` overrides live in `app/styles/theme.css`; theme cookie `light`/`dark`/`system` — details in `md3-design.md`
 - **Pure React MD3** — no `@material/web` / `@lit-labs/ssr`; uix-ripple + state layer via `useRipple` + `<span>` overlay
 
 ## Architecture (directories)
 
-| Directory | What lives here | Who imports here |
-| --- | --- | --- |
+| Directory | What lives here                                                                         | Who imports here     |
+| --------- | --------------------------------------------------------------------------------------- | -------------------- |
 | `server/` | Pure server (never in browser): `services/`, `api/`, `database/`, `cloudflare/`, `lib/` | `$`/`@`, **not** `#` |
-| `app/` | Hybrid: `routes/`, `components/ui/`, `lib/`, `styles/` | `#`, `@`, `$` (all) |
-| `shared/` | Shared server + app: `constants/`, `validators/`, `utils/`, `enums/`, `locales/` | only `@` |
+| `app/`    | Hybrid: `routes/`, `components/ui/`, `lib/`, `styles/`                                  | `#`, `@`, `$` (all)  |
+| `shared/` | Shared server + app: `constants/`, `validators/`, `utils/`, `enums/`, `locales/`        | only `@`             |
 
 Full import boundaries → `aliases.md`.
 
 ## Import aliases
 
-| Alias | Target | Scope |
-| --- | --- | --- |
-| `#/` | `./app/*` | App |
-| `$/` | `./server/*` | Server |
-| `@/` | `./shared/*` | Shared |
+| Alias | Target       | Scope  |
+| ----- | ------------ | ------ |
+| `#/`  | `./app/*`    | App    |
+| `$/`  | `./server/*` | Server |
+| `@/`  | `./shared/*` | Shared |
 
-| From | Can import | Cannot import |
-| --- | --- | --- |
-| `server` | `$/`, `@/` | `#/` |
-| `app` | `#/`, `@/`, `$/` | — |
-| `shared` | `@/` | `#/`, `$/` |
+| From     | Can import       | Cannot import |
+| -------- | ---------------- | ------------- |
+| `server` | `$/`, `@/`       | `#/`          |
+| `app`    | `#/`, `@/`, `$/` | —             |
+| `shared` | `@/`             | `#/`, `$/`    |
 
 - Always use aliases between `app`/`server`/`shared` directories — never `../../`.
 - Within the same directory `./utils` is OK (relative within a module is more readable).
@@ -44,36 +44,36 @@ Details + OK/FORBIDDEN examples → `aliases.md`.
 
 ## Topic files (single source of truth per topic)
 
-| File | Topic |
-| --- | --- |
-| `md3-design.md` | MD3 concepts: color roles, elevation, state layer, uix-ripple, shape, motion, typography, anti-patterns |
-| `components.md` | React component implementation: BEM, CVA, `useRipple`, `data-state`, TSX structure, CSS layers |
-| `styling.md` | CSS mechanics: 3-tier hybrid, `@layer` cascade, `color-mix`, hover gating, property order, no-dupes, spacing |
-| `tokens.md` | Tokens: OKLCH colors, fluid typography, size tokens, motion, breakpoints, z-index, shadows, w-mod-unit |
-| `routes.md` | Routes: file types, section splitters, section order, `app/routes.ts`, loader/action/service |
-| `server.md` | Server + Services: BaseService, RouteService, decorators, DB, auth, cookies, rate limiting, KV cache, Zod validation |
-| `submit.md` | Form submission: `useSubmitAction`, typed submit, client/server validation |
-| `localization.md` | L10n: `getMessageByKey`, serialized keys |
-| `seo.md` | SEO: `createMeta`, noindex, JSON-LD |
-| `aliases.md` | Import aliases: boundaries, examples, prohibitions, diagnostics of bad imports |
-| `naming.md` | File/directory naming: `kebab-case` everywhere, per-module patterns, enforcement |
+| File              | Topic                                                                                                                |
+| ----------------- | -------------------------------------------------------------------------------------------------------------------- |
+| `md3-design.md`   | MD3 concepts: color roles, elevation, state layer, uix-ripple, shape, motion, typography, anti-patterns              |
+| `components.md`   | React component implementation: BEM, CVA, `useRipple`, `data-state`, TSX structure, CSS layers                       |
+| `styling.md`      | CSS mechanics: 3-tier hybrid, `@layer` cascade, `color-mix`, hover gating, property order, no-dupes, spacing         |
+| `tokens.md`       | Tokens: OKLCH colors, fluid typography, size tokens, motion, breakpoints, z-index, shadows, w-mod-unit               |
+| `routes.md`       | Routes: file types, section splitters, section order, `app/routes.ts`, loader/action/service                         |
+| `server.md`       | Server + Services: BaseService, RouteService, decorators, DB, auth, cookies, rate limiting, KV cache, Zod validation |
+| `submit.md`       | Form submission: `useSubmitAction`, typed submit, client/server validation                                           |
+| `localization.md` | L10n: `getMessageByKey`, serialized keys                                                                             |
+| `seo.md`          | SEO: `createMeta`, noindex, JSON-LD                                                                                  |
+| `aliases.md`      | Import aliases: boundaries, examples, prohibitions, diagnostics of bad imports                                       |
+| `naming.md`       | File/directory naming: `kebab-case` everywhere, per-module patterns, enforcement                                     |
 
 ## Naming
 
-| What | Convention |
-| --- | --- |
-| Files/directories | `kebab-case` → `naming.md` |
-| BEM custom | `block__elem--mod` |
-| BEM UI | `ui-*` |
-| Route class block (RARE) | `{route}` BEM block |
-| `@utility` | `kebab-case` |
+| What                     | Convention                                      |
+| ------------------------ | ----------------------------------------------- |
+| Files/directories        | `kebab-case` → `naming.md`                      |
+| BEM custom               | `block__elem--mod`                              |
+| BEM UI                   | `ui-*`                                          |
+| Route class block (RARE) | `{route}` BEM block                             |
+| `@utility`               | `kebab-case`                                    |
 | `@utility` style bundles | `uix-*` (`uix-link-primary`, `uix-header-hero`) |
-| MD3 component / React | `PascalCase` |
-| TS/JS symbols | `camelCase` |
-| CSS custom props | `--kebab-case` |
-| Size tokens | `--size-{comp}-*` |
-| Motion tokens | `--ease-*` / `--duration-*` |
-| Co-located styles | `*.css` (`button.css`, `users.css`) |
+| MD3 component / React    | `PascalCase`                                    |
+| TS/JS symbols            | `camelCase`                                     |
+| CSS custom props         | `--kebab-case`                                  |
+| Size tokens              | `--size-{comp}-*`                               |
+| Motion tokens            | `--ease-*` / `--duration-*`                     |
+| Co-located styles        | `*.css` (`button.css`, `users.css`)             |
 
 ## Exports and imports
 
@@ -107,12 +107,12 @@ Details + OK/FORBIDDEN examples → `aliases.md`.
 
 ## Formatting / lint
 
-| Command | What it does |
-| --- | --- |
-| `pnpm fmt` | Format JS/TS/JSX/TSX + sort imports with `oxfmt` (`sortImports` in `.oxfmtrc.json`) |
+| Command          | What it does                                                                                                                                              |
+| ---------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `pnpm fmt`       | Format JS/TS/JSX/TSX + sort imports with `oxfmt` (`sortImports` in `.oxfmtrc.json`)                                                                       |
 | `pnpm fmt:style` | 1. Fix CSS with `stylelint --fix` (properties order + `@apply` class order) <br> 2. Sort Tailwind classes in TSX/JSX/TS/JS with `tsx scripts/tw-order.ts` |
-| `pnpm lint` | Lint with `oxlint` |
-| `pnpm lint:fix` | `oxlint --fix && oxfmt --write` |
+| `pnpm lint`      | Lint with `oxlint`                                                                                                                                        |
+| `pnpm lint:fix`  | `oxlint --fix && oxfmt --write`                                                                                                                           |
 
 **Class order source of truth:** `scripts/tw-order.ts` → `ORDER_GROUPS` (mirrors `order/properties-order` from `stylelint.config.js`).
 

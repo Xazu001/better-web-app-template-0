@@ -7,21 +7,21 @@
 
 - `app/components/` — `ui/`, `custom/`, `pages/`
 - `app/lib/` — `hooks/`, `router/`, `utils/`, `seo/`
-- `app/styles/` — `main.css` (entry; `@layer reset, base, components, custom, routes, overrides;` on line 1), `theme.css` (`@theme` config + `--color-*` palette + `:root` + `@custom-media` only), `base/` (`reset,typography,scrollbar,toastify,overrides` — `@layer reset/base/overrides`), `utilities/` (`tokens` — `@theme` design tokens; `colors` — `@theme` glass variants; `theme` — light-mode `@layer base` overrides; `layout,links,ui,form` — `@utility`; `animations` — `@layer components` + keyframes), `components/` (`button,dialog,select` — shared `@layer components` shells)
+- `app/styles/` — `main.css` (entry; `@layer reset, base, components, custom, routes, overrides;` first), `theme.css` (`@theme` config + `--color-*` palette + `html.light` overrides + `:root` + `@custom-media`), `base/` (`reset,typography,scrollbar,toastify,overrides` — `@layer reset/base/overrides`), `utilities/` (`tokens` — `@theme` design tokens; `ui` — `@theme` component geometry + `@utility` overlay primitives; `colors` — `@theme` glass variants + tone utilities; `layout,links,form` — `@utility`; `animations` — `@layer components` + keyframes), `components/` (`button,dialog,select` — shared `@layer components` shells)
 - `app/routes/` — route files; `root.tsx` — root route (special, sees the whole tree)
 - `app/routes.ts` — central route registration for React Router v8
 
 ## Route file types
 
-| Suffix | Example | Environment | Purpose |
-| --- | --- | --- | --- |
-| `*.tsx` | `routes/admin/users.tsx` | Client + Server | Page component + `meta`/`links` + re-export `loader`/`action` from `*.server.tsx` |
-| `*.server.tsx` | `routes/admin/users.server.tsx` | Server only | `RouteService` + `loader`/`action`. Never imported by the client bundle (exception: re-export in `*.tsx`) |
-| `*.css` | `routes/admin/users.css` | — | Co-located styles. Rare — only named `@keyframes`/animations, shared sibling layout, complex `@media`, ordered `@apply` → `styling.md` |
-| `layout.tsx` | `routes/auth/layout.tsx` | Client + Server | Shared layout wrapper with `<Outlet />` |
-| `layout.server.tsx` | `routes/admin/layout.server.tsx` | Server only | `loader`/`action` for the layout (shared data for child routes) |
-| `layout.css` | `routes/main/layout.css` | — | Styles shared by child routes. Rare → `styling.md` |
-| `$.tsx` | `routes/$.tsx` | Client + Server | Catch-all 404 (`route("*", "routes/$.tsx")` in `app/routes.ts`) |
+| Suffix              | Example                          | Environment     | Purpose                                                                                                                                |
+| ------------------- | -------------------------------- | --------------- | -------------------------------------------------------------------------------------------------------------------------------------- |
+| `*.tsx`             | `routes/admin/users.tsx`         | Client + Server | Page component + `meta`/`links` + re-export `loader`/`action` from `*.server.tsx`                                                      |
+| `*.server.tsx`      | `routes/admin/users.server.tsx`  | Server only     | `RouteService` + `loader`/`action`. Never imported by the client bundle (exception: re-export in `*.tsx`)                              |
+| `*.css`             | `routes/admin/users.css`         | —               | Co-located styles. Rare — only named `@keyframes`/animations, shared sibling layout, complex `@media`, ordered `@apply` → `styling.md` |
+| `layout.tsx`        | `routes/auth/layout.tsx`         | Client + Server | Shared layout wrapper with `<Outlet />`                                                                                                |
+| `layout.server.tsx` | `routes/admin/layout.server.tsx` | Server only     | `loader`/`action` for the layout (shared data for child routes)                                                                        |
+| `layout.css`        | `routes/main/layout.css`         | —               | Styles shared by child routes. Rare → `styling.md`                                                                                     |
+| `$.tsx`             | `routes/$.tsx`                   | Client + Server | Catch-all 404 (`route("*", "routes/$.tsx")` in `app/routes.ts`)                                                                        |
 
 - **`.ts` is never used for routes** — loader/action-only files are `*.server.tsx` even if they contain only `loader` or `action`.
 - **Default styles:** inline Tailwind. Route `*.css` is the exception; UI/custom components always have co-located `*.css` (BEM); pages components inline by default. → `styling.md`
