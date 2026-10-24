@@ -1,0 +1,178 @@
+@theme {
+  /* Spacing scale — base unit for gap-*, p-*, m-*, w-*, h-*, inset-* etc.
+   * Tailwind v4 default: 0.25rem. Computed as calc(var(--spacing) * N).
+   * Raised to 0.75rem (3x vs default) because root font-size is smaller
+   * (fluid text) — spacing utilities use /3 values (rounded). */
+  --spacing: 0.75rem;
+
+  /* Breakpoints — paired with @custom-media --bp-*. Variants (phone:/tablet:/…)
+   * defined but unused until the user asks for them. */
+  --breakpoint-phone: 480px;
+  --breakpoint-tablet: 700px;
+  --breakpoint-desktop: 1020px;
+  --breakpoint-large-desktop: 1236px;
+  --breakpoint-xlarge-desktop: 1440px;
+  --breakpoint-2xlarge-desktop: 1680px;
+  --breakpoint-huge: 1920px;
+
+  /* Fonts — generate font-body / font-header */
+  --font-body: "Montserrat", sans-serif;
+  --font-header: "Syne", sans-serif;
+}
+
+/* Color palette (MD3 roles). Glass variants live in utilities/colors.css;
+ * light-mode overrides in utilities/theme.css. */
+@theme {
+  /* Surfaces (ex-background/card/secondary) */
+  --color-surface: oklch(16% 0.015 264deg);
+  --color-on-surface: oklch(93% 0.008 264deg);
+  --color-on-surface-variant: color-mix(in oklch, var(--color-on-surface) 70%, transparent);
+  --color-elevation-1: oklch(21% 0.018 264deg);
+  --color-on-elevation-1: oklch(93% 0.008 264deg);
+  --color-elevation-2: oklch(26% 0.02 264deg);
+  --color-on-elevation-2: oklch(92% 0.008 264deg);
+
+  /* Popover — floating dialog/toast surface (slightly above elevation-2 for prominence) */
+  --color-popover: oklch(23% 0.02 264deg);
+  --color-on-popover: oklch(92% 0.008 264deg);
+
+  /* Float — floating chrome: Nav (top app bar, translucent + blur) + Select content (dropdown).
+   * Mid-tone between elevation-1 and elevation-2 — distinct role for floating UI chrome. */
+  --color-float: oklch(24% 0.02 264deg);
+  --color-on-float: oklch(93% 0.008 264deg);
+
+  /* Primary (blue CTA — bright for dark surfaces) */
+  --color-primary: oklch(65% 0.19 262deg);
+  --color-on-primary: oklch(15% 0.03 264deg);
+  --color-primary-container: color-mix(in oklch, var(--color-primary) 30%, var(--color-surface));
+  --color-on-primary-container: oklch(90% 0.05 262deg);
+
+  /* Ghost — white background + dark text (like on-primary). For high-contrast CTA on dark surface. */
+  --color-ghost: oklch(100% 0 0deg);
+  --color-on-ghost: var(--color-on-primary);
+
+  /* Outline / border */
+  --color-outline: oklch(52% 0.025 264deg);
+  --color-outline-variant: oklch(35% 0.02 264deg);
+
+  /* States (ex-destructive / ghost) */
+  --color-error: oklch(60% 0.2 20deg);
+  --color-on-error: oklch(95% 0.005 264deg);
+  --color-error-container: color-mix(in oklch, var(--color-error) 30%, var(--color-surface));
+  --color-on-error-container: oklch(95% 0.005 264deg);
+  --color-success: oklch(70% 0.15 160deg);
+  --color-on-success: oklch(5% 0.01 264deg);
+  --color-success-container: color-mix(in oklch, var(--color-success) 30%, var(--color-surface));
+  --color-on-success-container: oklch(85% 0.13 160deg);
+  --color-info: oklch(65% 0.12 262deg);
+  --color-on-info: oklch(95% 0.005 264deg);
+  --color-info-container: color-mix(in oklch, var(--color-info) 30%, var(--color-surface));
+  --color-on-info-container: oklch(95% 0.005 264deg);
+  --color-warning: oklch(75% 0.15 70deg);
+  --color-on-warning: oklch(15% 0.02 70deg);
+  --color-warning-container: color-mix(in oklch, var(--color-warning) 30%, var(--color-surface));
+  --color-on-warning-container: oklch(90% 0.02 70deg);
+  --color-inverse-surface: oklch(95% 0.005 264deg);
+  --color-on-inverse-surface: oklch(18% 0.019 264deg);
+
+  /* Secondary / Tertiary (MD3 tonal roles) */
+  --color-secondary: oklch(78% 0.07 264deg);
+  --color-on-secondary: oklch(16% 0.02 264deg);
+  --color-secondary-container: color-mix(
+    in oklch,
+    var(--color-secondary) 30%,
+    var(--color-surface)
+  );
+  --color-on-secondary-container: oklch(90% 0.04 264deg);
+  --color-tertiary: oklch(78% 0.14 300deg);
+  --color-on-tertiary: oklch(18% 0.01 300deg);
+  --color-tertiary-container: color-mix(in oklch, var(--color-tertiary) 30%, var(--color-surface));
+  --color-on-tertiary-container: oklch(18% 0.01 300deg);
+
+  /* Scrim (dialog/menu overlay) */
+  --color-scrim: oklch(0% 0 0deg / 60%);
+}
+
+@custom-media --bp-phone (min-width: 480px);
+@custom-media --bp-tablet (min-width: 700px);
+@custom-media --bp-desktop (min-width: 1020px);
+@custom-media --bp-large-desktop (min-width: 1236px);
+@custom-media --bp-xlarge-desktop (min-width: 1440px);
+@custom-media --bp-2xlarge-desktop (min-width: 1680px);
+@custom-media --bp-huge (min-width: 1920px);
+@custom-media --bp-below-large-desktop (max-width: 1235px);
+
+:root {
+  /* Fluid typography — base font-size + fluid-text-* (clamp) */
+  --f-font-size: clamp(calc(18rem / 10.5), 15.5vw / 7.68, calc(32rem / 16));
+  --fluid-text-sm: clamp(1.75rem, 1.75vw, 1.75rem);
+  --fluid-text-md: clamp(1.75rem, 2vw, 2rem);
+  --fluid-text-lg: clamp(2rem, 2.5vw, 2.5rem);
+  --fluid-text-xl: clamp(2.5rem, 3vw, 3rem);
+  --fluid-text-2xl: clamp(3rem, 4vw, 4rem);
+  --fluid-text-3xl: clamp(3.5rem, 5.5vw, 5.5rem);
+  --fluid-text-4xl: clamp(4rem, 7vw, 7rem);
+
+  /* FIXME (plan section 3.2): min 1rem suspicious for 5xl — to verify with user */
+  --fluid-text-5xl: clamp(1rem, 9vw, 9rem);
+  --fluid-text-0: clamp(5rem, 16vw, 16.5rem);
+
+  /* w-mod-unit layout (grid 24 columns) */
+  --x-container-max-width: 1920px;
+  --x-w-mod-unit: calc(var(--x-container-max-width) / 24);
+  --spacing-x-site: 2.5rem;
+
+  /* Site top padding — mobile 24rem/1.5, desktop 24rem */
+  --spacing-top-site: 16rem;
+
+  font-size: calc(var(--f-font-size) * 0.25);
+}
+
+@media (--bp-phone) {
+  :root {
+    --spacing-x-site: 4rem;
+  }
+}
+
+@media (--bp-desktop) {
+  :root {
+    --spacing-x-site: 6rem;
+    --spacing-top-site: 24rem;
+  }
+}
+
+@media (--bp-large-desktop) {
+  :root {
+    --spacing-x-site: 4vw;
+  }
+}
+
+@media (--bp-huge) {
+  :root {
+    /* Fluid typography freezes to fixed values at huge */
+    --fluid-text-sm: 1.75rem;
+    --fluid-text-md: 2rem;
+    --fluid-text-lg: 2.5rem;
+    --fluid-text-xl: 3rem;
+    --fluid-text-2xl: 4rem;
+    --fluid-text-3xl: 5.5rem;
+    --fluid-text-4xl: 7rem;
+    --fluid-text-5xl: 9rem;
+    --fluid-text-0: 16.5rem;
+    --x-container-max-width: 95vw;
+
+    font-size: 8px;
+  }
+}
+
+@theme inline {
+  --text-sm: var(--fluid-text-sm);
+  --text-md: var(--fluid-text-md);
+  --text-lg: var(--fluid-text-lg);
+  --text-xl: var(--fluid-text-xl);
+  --text-2xl: var(--fluid-text-2xl);
+  --text-3xl: var(--fluid-text-3xl);
+  --text-4xl: var(--fluid-text-4xl);
+  --text-5xl: var(--fluid-text-5xl);
+  --text-0: var(--fluid-text-0);
+}

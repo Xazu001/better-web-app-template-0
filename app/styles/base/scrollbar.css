@@ -64,6 +64,36 @@
   }
 }
 
+/* Chromium doesn't clip ::-webkit-scrollbar to border-radius — the track
+   pokes past rounded corners on overlay surfaces (select popover, menu,
+   dialog). clip-path forces the scrollbar inside the rounded shape. */
+
+@layer base {
+  .ui-select__popover,
+  .play-select__popover,
+  .ui-menu__content,
+  .ui-dialog__content {
+    clip-path: inset(0 round var(--radius-md));
+  }
+
+  .ui-select__popover--sm,
+  .play-select__popover--items-sm,
+  .ui-menu__content--sm {
+    clip-path: inset(0 round var(--radius-sm));
+  }
+
+  .ui-select__popover--lg,
+  .play-select__popover--items-lg,
+  .ui-menu__content--lg {
+    clip-path: inset(0 round var(--radius-lg));
+  }
+
+  .ui-dialog__content,
+  .play-dialog__content {
+    clip-path: inset(0 round var(--radius-2xl));
+  }
+}
+
 @media (prefers-reduced-motion: reduce) {
   *::-webkit-scrollbar-thumb {
     transition: none;

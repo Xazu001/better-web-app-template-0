@@ -1,0 +1,11 @@
+@layer overrides {
+  /* Forced: hide native cursor on touch devices.
+   * Original: media("<=tablet") — screen-size based. Semantically more correct:
+   * pointer:coarse = devices without a mouse (touch). On a laptop with a trackpad
+   * the cursor stays visible. */
+  @media (pointer: coarse) {
+    * {
+      cursor: none;
+    }
+  }
+}

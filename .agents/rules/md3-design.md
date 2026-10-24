@@ -7,14 +7,14 @@
 - The app must look and behave like an **authentic Google product** (MD3 / Material You, dark), not "MD3-inspired".
 - Stack: pure React MD3 (without `@material/web`), React Router v8, React 19, Cloudflare Workers, Tailwind v4.
 - Implementation source of truth: `app/components/ui/*.tsx` + `*.css`.
-- Color tokens in `@theme` in `app/styles/tailwind.css` (OKLCH). Components in `app/components/ui/`.
+- Color tokens in `@theme` (OKLCH): palette in `app/styles/theme.css`, glass variants in `app/styles/utilities/colors.css`, light-mode overrides in `app/styles/utilities/theme.css`. Components in `app/components/ui/`.
 - `useRipple` hook: `app/lib/hooks/use-ripple.ts`.
 
 ## 1. Color roles (not "colors")
 
 MD3 uses a **role-based color system** (`surface`, `on-surface`, `primary`, `on-primary`, `outline`, `error`, …). These are not primary/secondary/tertiary palettes in the classic sense — every role has semantics: "what something lies on" and "what lies on it".
 
-### Real tokens from `@theme` in `app/styles/tailwind.css`
+### Real tokens from `@theme` (palette in `app/styles/theme.css`, glass variants in `app/styles/utilities/colors.css`)
 
 Tokens generate `bg-*`, `text-*`, `border-*` utilities. Groups below.
 
@@ -224,7 +224,7 @@ Ripple = **animated radial expansion** from the touch point (NOT from the center
 
 - `{block}__ripple` is the surface (`overflow-hidden`, `position: absolute`, `rounded-[inherit]`, `pointer-events-none`, `z-below`) — `surfaceRef` is attached here.
 - `useRipple` dynamically spawns `<span class="ripple__wave">` inside `.uix-ripple`.
-- `.ripple__wave` is defined top-level in `app/styles/tailwind.css` (line 434–451):
+- `.ripple__wave` is defined in `@layer components` in `app/styles/utilities/animations.css`:
 
 ```css
 @layer components {
@@ -302,7 +302,7 @@ In `useRipple.spawnRipple` (line 54–55): `window.matchMedia("(prefers-reduced-
 
 ## 5. Shape / radius
 
-Radius tokens in `@theme` (`app/styles/tailwind.css`, line 42–50):
+Radius tokens in `@theme` (`app/styles/utilities/tokens.css`):
 
 ```css
 --radius-unit: 1rem;
@@ -378,7 +378,7 @@ Every CSS/JS animation must honor `prefers-reduced-motion: reduce`:
 
 Fonts, weights, fluid `clamp()`, `@layer base` defaults → `tokens.md` § "Typography".
 
-Key rule: h1-h5 get `font-header font-semibold` in `@layer base` (`app/styles/tailwind.css`, line 400–427) — do not repeat in `className`/`@apply`. Full no-duplicate-styles rules → `styling.md` § "No-duplicate-styles".
+Key rule: h1-h5 get `font-header font-semibold` in `@layer base` (`app/styles/base/typography.css`) — do not repeat in `className`/`@apply`. Full no-duplicate-styles rules → `styling.md` § "No-duplicate-styles".
 
 ## 8. Icons
 

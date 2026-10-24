@@ -16,8 +16,8 @@
 - Page-specific components in `app/components/pages/**` — inline Tailwind by default (like routes). Co-located `.css` ONLY when complicated (`@keyframes`, selectors unexpressible with variants, complex `@media`) → BEM block `{page}-{component}` + `@apply`, `@layer custom` (or `routes` when purely route layout). Criteria → `components.md` § "Pages components (route-specific)".
 - **Decision test for a route element:**
   1. Default → inline Tailwind (any number of classes) — routes and pages components.
-  2. Pattern repeated 3+ times cross-route → `@utility` in `tailwind.css` or `app/styles/utilities/*.css` + rest inline.
-  3. Animation → `@keyframes` in `tailwind.css` (cross-route) or route `.css` (route-specific).
+  2. Pattern repeated 3+ times cross-route → `@utility` in `app/styles/utilities/*.css` + rest inline.
+  3. Animation → `@keyframes` in `utilities/animations.css` (cross-route) or route `.css` (route-specific).
   4. `@apply` in route `.css` → ONLY ordered.
 - **`@utility` extraction criteria:** pattern 3+ times in the same file OR 2+ times in different files, ≥3 classes, cross-route (generic, not specific to one route). Do not extract: route-specific layout, single classes, patterns 1-2x in one file.
 - **`uix-*` prefix:** repeating `@utility` style bundles in `app/styles/utilities/` — grouped styles applied directly in markup that don't fit as a component (links, headers bundling size+color+font, surface cards) — get the `uix-` prefix: `uix-link-primary`, `uix-link-muted`, `uix-nav-link`, `uix-elevation-1-bordered`, `uix-ripple`. Atomic primitives (`cont`, `px-site`, `input-*`, `state-layer`) stay unprefixed; UI-internal overlay primitives use `ui-` (`ui-ripple-surface`, `ui-state-layer`).
@@ -29,7 +29,7 @@
 
 ## Core rules
 
-- **Tailwind v4** — `@theme` + `@theme inline` + `@utility` in CSS, **not** `tailwind.config.js`. Entry CSS is `app/styles/main.css` (line 1), which imports `tailwindcss`, then `app/styles/tailwind.css` with `@theme`/`@utility` definitions and `@layer base`/`components`/`overrides`.
+- **Tailwind v4** — `@theme` + `@theme inline` + `@utility` in CSS, **not** `tailwind.config.js`. Entry CSS `app/styles/main.css` imports `tailwindcss`, then `app/styles/theme.css` (`@theme` config + color palette + `:root` + `@custom-media`); `@theme` glass variants in `app/styles/utilities/colors.css`, light-mode overrides in `app/styles/utilities/theme.css`; `@theme` design tokens + `@utility` + `@layer components` + cross-route keyframes live in `app/styles/utilities/*.css` (`tokens.css`, `animations.css`, …); global overrides (`pointer:coarse`) in `app/styles/base/overrides.css`; `@layer base` typography in `app/styles/base/typography.css`.
 - **Units:** `rem` (heights `--size-*`, spacing), `cqw` (animations). Size token values are in rem — they scale with `--f-font-size` (fluid root), do not override with hardcoded px.
 - **Component size tokens:**
   - **UI components** (`app/components/ui/*`) — ALWAYS component height tokens (`h-btn-md`, `h-text-field-md`, `h-chip-md`, `h-checkbox-md`, `h-switch-md`), never `h-10`/`h-12`. Square components (IconButton, Checkbox, Switch, Avatar) use `w-{comp}-{size}` / `h-{comp}-{size}` or `size-{comp}-{size}`.
@@ -124,10 +124,10 @@ The root is fluid (`--f-font-size`): `1rem ≈ 6.86–8px`, frozen at `8px` abov
 - **Percentages — only multiples of 5** (`0,5,10,…,100`). `8%→10%`, `12%→10%`, `18%→20%`, `78%→80%`, `97.5%→100%`. Applies to **both** mix percentages (`color 30%, surface`) and gradient/alpha stops. Overrides MD3 spec (state layers = 10/10/10) — visual difference is negligible, consistency wins.
 - **`in srgb`** — default, **always omit** (`color-mix(in srgb, A 50%, B)` ≡ `color-mix(A 50%, B)`). **`in oklch`** — keep (non-default; perceptually-uniform OKLCH interpolation for mixing OKLCH tokens, tonal container variants, alpha/lightness mixing `--color-*`). All `--color-*` are OKLCH → most `color-mix` uses `in oklch`. Never `in lab`/`lch`/`hsl`/`hwb`/`xyz`.
 - **`@apply` vs `var(--color-*)`:** if a utility exists for property+color → ALWAYS `@apply {prefix}-{color}` (`bg-primary`, `text-on-surface`, `border-on-primary`, `outline-2 outline-primary outline-offset-2`, `decoration-on-surface-variant`, `fill-primary`, `stroke-on-surface`). `var(--color-*)` ONLY: custom prop assignment (`--ripple-color: var(--color-primary)`), fallback chain, `color-mix(in oklch, …)`, `!important` 3rd-party override.
-- **Real examples from `@theme` in `app/styles/tailwind.css`:**
-  - `--color-on-surface-variant: color-mix(in oklch, var(--color-on-surface) 70%, transparent);` (line 227)
-  - `--color-primary-container: color-mix(in oklch, var(--color-primary) 30%, var(--color-surface));` (line 245)
-  - `--color-glass-error: color-mix(in oklch, var(--color-error) 20%, var(--color-glass));` (line 303)
+- **Real examples from `@theme` in `app/styles/theme.css`:**
+  - `--color-on-surface-variant: color-mix(in oklch, var(--color-on-surface) 70%, transparent);`
+  - `--color-primary-container: color-mix(in oklch, var(--color-primary) 30%, var(--color-surface));`
+  - `--color-glass-error: color-mix(in oklch, var(--color-error) 20%, var(--color-glass));` (`app/styles/utilities/colors.css`)
 
 ## @layer cascade (CRITICAL)
 
@@ -135,7 +135,7 @@ The root is fluid (`--f-font-size`): `1rem ≈ 6.86–8px`, frozen at `8px` abov
 /* app/styles/main.css — line 1, before @import */
 @layer reset, base, components, custom, routes, overrides;
 @import "tailwindcss";
-@import "./tailwind.css";
+@import "./theme.css";
 ```
 
 The declaration is also repeated in `app/root.tsx` (lines 92-96) as an inline `<style>` rendered before `<Links>`, so the layer order is established before the browser loads any co-located CSS:
@@ -252,7 +252,7 @@ Base class → **size variants `--sm`/`--md`/`--lg` (RIGHT after base, before ev
 - **Default size variant** = height token (`h-btn-md`) + text (`text-md`) + icon size only. `px`/`py`/`gap`/`rounded` stay on the base class (constant across sizes).
 - **Size-driven spacing & shape (per-component, on demand)** — when explicitly requested for a specific component, the size modifier ALSO overrides `px`/`py`/`gap`/`rounded` (each size gets its own values). Move these out of the base class into each `--sm`/`--md`/`--lg` modifier — never duplicate. Currently: `Select` (trigger + popover items), `Menu` (content + items). Full rules + examples → `components.md` § "Size-driven spacing & shape".
 
-- `@layer base` contains **ONLY** typography — layout padding explicitly (`px-site`, `pt-*`, `min-h-dvh`). In `app/styles/tailwind.css` (lines 395-432): `body` (`bg-surface font-body font-regular text-md leading-regular text-on-surface`), `h1-h5`/`.h0-h5` (`font-header font-semibold` + size), `strong` (`font-regular`).
+- `@layer base` contains **ONLY** typography — layout padding explicitly (`px-site`, `pt-*`, `min-h-dvh`). In `app/styles/base/typography.css` `@layer base`: `body` (`bg-surface font-body font-regular text-md leading-regular text-on-surface`), `h1-h5`/`.h0-h5` (`font-header font-semibold` + size), `strong` (`font-regular`).
 
 ## No-duplicate-styles (CRITICAL — every element, not just headings)
 
@@ -378,7 +378,7 @@ After `stylelint --fix` / `pnpm fmt:style` (order from `ORDER_GROUPS`):
 
 ## Animations (CRITICAL)
 
-- **Cross-route `@keyframes`:** top-level in `app/styles/tailwind.css` (outside `@layer`) — e.g. `ripple-anim`. Complex cross-route animations may also be React components.
+- **Cross-route `@keyframes`:** top-level in `app/styles/utilities/animations.css` (outside `@layer`) — e.g. `ripple-anim`, `legal-footer-marquee`, `nav-loading`. Complex cross-route animations may also be React components.
 - **Route-specific:** co-located route `.css` in `@layer routes`, BEM (route prefix = block) + `@keyframes`, e.g. `pulse-glow` in `app/routes/main/plans.css`.
 - **`@keyframes` ALWAYS requires `@media (prefers-reduced-motion: reduce) { animation: none }`.** Without exceptions.
 - Use tokens (`--ease-ui`, `--duration-*`), never hardcode `cubic-bezier(0.2,0,0,1)`/`300ms`.

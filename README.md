@@ -357,7 +357,7 @@ app/
   routes/            *.tsx + *.server.tsx split (loader/action live in .server.tsx)
   components/ui/     MD3 component set (BEM css + CVA variants)
   lib/               useSubmitAction · toast · seo/createMeta · hooks
-  styles/            tailwind.css tokens + main.css @layer cascade
+  styles/            theme.css palette + utilities/tokens.css + main.css @layer cascade
 shared/             constants · validators (zod) · message keys · enums · preferences
 .agents/             rules (conventions) + skills (gen-module, auto-test, …)
 ```

@@ -1,0 +1,193 @@
+@theme {
+  /* Font weights — generate font-light / … / font-semibold (families in theme.css) */
+  --font-weight-light: 300;
+  --font-weight-regular: 400;
+  --font-weight-medium: 500;
+  --font-weight-semibold: 600;
+
+  /* Line height — leading-* */
+  --leading-none: 1;
+  --leading-snug: 1.375;
+  --leading-regular: 1.5;
+  --leading-relaxed: 1.625;
+  --leading-relaxed-more: 1.75;
+  --leading-loose: 2;
+
+  /* Letter spacing — tracking-* */
+  --tracking-none: 0;
+  --tracking-tight: -0.05em;
+  --tracking-loose: 0.025em;
+  --tracking-wide: 0.05em;
+
+  /* Radius — rounded-* (rem, MD3 shape) */
+  --radius-unit: 1rem;
+  --radius-xs: calc(var(--radius-unit) * 1);
+  --radius-sm: calc(var(--radius-unit) * 2);
+  --radius-md: calc(var(--radius-unit) * 2.5);
+  --radius-lg: calc(var(--radius-unit) * 3);
+  --radius-xl: calc(var(--radius-unit) * 4);
+  --radius-2xl: calc(var(--radius-unit) * 6);
+  --radius-full: 9999px;
+
+  /* ── Unit scale — named width sizes (rem, fluid root) ──
+   * Tailwind v4 maps --container-* → w-unit-*, min-w-unit-*, max-w-unit-*.
+   * Own xl→6xl scale (40→80rem, step 8) for content widths/max-widths
+   * tied to the fluid typography. 1rem ≈ 6.86–8px (fluid root, frozen
+   * at 8px above 1920px). Prefer over arbitrary max-w-[…rem]. */
+  --container-unit-xl: 40rem;
+  --container-unit-2xl: 48rem;
+  --container-unit-3xl: 56rem;
+  --container-unit-4xl: 64rem;
+  --container-unit-5xl: 72rem;
+  --container-unit-6xl: 80rem;
+
+  /* Z-index — z-* (simplified, sorted) */
+  --z-index-below: -1;
+  --z-index-base: 0;
+  --z-index-raised: 1;
+  --z-index-content: 2;
+  --z-index-indicator: 10;
+  --z-index-floating-control: 20;
+  --z-index-sticky: 100;
+  --z-index-navigation: 340;
+  --z-index-cookie-banner: 409;
+  --z-index-modal: 410;
+  --z-index-toast: 500;
+  --z-index-page-reveal: 600;
+  --z-index-system-overlay: 999;
+
+  /* Default box shadows */
+  --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 5%);
+  --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 10%), 0 2px 4px -2px rgb(0 0 0 / 10%);
+  --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 10%), 0 4px 6px -4px rgb(0 0 0 / 10%);
+
+  /* Motion — ease-* + duration-* (MD3: cubic-bezier(0.2, 0, 0, 1), 75–400ms) */
+  --ease-ui: cubic-bezier(0.2, 0, 0, 1);
+  --ease-ui-decelerated: cubic-bezier(0, 0, 0, 1);
+  --ease-ui-accelerated: cubic-bezier(0.3, 0, 1, 1);
+  --transition-duration-short-1: 75ms;
+  --transition-duration-short-2: 100ms;
+  --transition-duration-short-3: 150ms;
+  --transition-duration-medium-1: 200ms;
+  --transition-duration-medium-2: 250ms;
+  --transition-duration-medium-3: 300ms;
+  --transition-duration-long-1: 350ms;
+  --transition-duration-long-2: 400ms;
+
+  /* ── Component size tokens (rem, not spacing scale) ──
+   * Tailwind v4 maps --size-* → size-* utilities (sets width+height).
+   * For height-only or width-only, --height-* / --width-* below generate
+   * h-* / w-* utilities. See plan section 3.14. */
+
+  /* Button heights */
+  --size-btn-sm: 4rem;
+  --size-btn-md: 5.5rem;
+  --size-btn-lg: 7.5rem;
+
+  /* IconButton (square) */
+  --size-icon-btn-sm: 2.5rem;
+  --size-icon-btn-md: 3rem;
+  --size-icon-btn-lg: 3.5rem;
+
+  /* Fab */
+  --size-fab-sm: 2.5rem;
+  --size-fab-md: 3.5rem;
+  --size-fab-lg: 6rem;
+
+  /* Chip */
+  --size-chip-sm: 2rem;
+  --size-chip-md: 2.25rem;
+  --size-chip-lg: 2.5rem;
+
+  /* TextField */
+  --size-text-field-sm: 4rem;
+  --size-text-field-md: 5.5rem;
+  --size-text-field-lg: 7.5rem;
+
+  /* SegmentedButton (height per item) */
+  --size-seg-btn-sm: 4rem;
+  --size-seg-btn-md: 5.5rem;
+  --size-seg-btn-lg: 7.5rem;
+
+  /* NavigationBar (bottom, mobile) */
+  --size-nav-bar: 5rem;
+
+  /* TopAppBar */
+  --size-top-app-bar-sm: 4rem;
+  --size-top-app-bar-md: 7rem;
+  --size-top-app-bar-lg: 9.5rem;
+
+  /* Checkbox / Radio (square/circle, touch target) */
+  --size-checkbox-sm: 2.75rem;
+  --size-checkbox-md: 3.25rem;
+  --size-checkbox-lg: 3.75rem;
+
+  /* Switch (width; height = size-switch-sm/md/lg) */
+  --size-switch-sm: 3.5rem;
+  --size-switch-md: 4.5rem;
+  --size-switch-lg: 5.5rem;
+
+  /* Avatar (square) */
+  --size-avatar-sm: 2.5rem;
+  --size-avatar-md: 3rem;
+  --size-avatar-lg: 4rem;
+  --size-avatar-xl: 5rem;
+
+  /* Badge (min-width, dot) */
+  --size-badge-sm: 1.25rem;
+  --size-badge-md: 1.5rem;
+  --size-badge-lg: 1.75rem;
+
+  /* ListItem (height) */
+  --size-list-item-sm: 4rem;
+  --size-list-item-md: 5rem;
+  --size-list-item-lg: 6rem;
+
+  /* Play panel button (kit-play main/secondary action height) */
+  --size-panel-btn: 6rem;
+
+  /* ── Height tokens (mirror --size-* for h-* utilities) ── */
+  --height-btn-sm: var(--size-btn-sm);
+  --height-btn-md: var(--size-btn-md);
+  --height-btn-lg: var(--size-btn-lg);
+  --height-icon-btn-sm: var(--size-icon-btn-sm);
+  --height-icon-btn-md: var(--size-icon-btn-md);
+  --height-icon-btn-lg: var(--size-icon-btn-lg);
+  --height-fab-sm: var(--size-fab-sm);
+  --height-fab-md: var(--size-fab-md);
+  --height-fab-lg: var(--size-fab-lg);
+  --height-chip-sm: var(--size-chip-sm);
+  --height-chip-md: var(--size-chip-md);
+  --height-chip-lg: var(--size-chip-lg);
+  --height-text-field-sm: var(--size-text-field-sm);
+  --height-text-field-md: var(--size-text-field-md);
+  --height-text-field-lg: var(--size-text-field-lg);
+  --height-seg-btn-sm: var(--size-seg-btn-sm);
+  --height-seg-btn-md: var(--size-seg-btn-md);
+  --height-seg-btn-lg: var(--size-seg-btn-lg);
+  --height-nav-bar: var(--size-nav-bar);
+  --height-top-app-bar-sm: var(--size-top-app-bar-sm);
+  --height-top-app-bar-md: var(--size-top-app-bar-md);
+  --height-top-app-bar-lg: var(--size-top-app-bar-lg);
+  --height-checkbox-sm: var(--size-checkbox-sm);
+  --height-checkbox-md: var(--size-checkbox-md);
+  --height-checkbox-lg: var(--size-checkbox-lg);
+  --height-switch-sm: var(--size-switch-sm);
+  --height-switch-md: var(--size-switch-md);
+  --height-switch-lg: var(--size-switch-lg);
+  --height-avatar-sm: var(--size-avatar-sm);
+  --height-avatar-md: var(--size-avatar-md);
+  --height-avatar-lg: var(--size-avatar-lg);
+  --height-avatar-xl: var(--size-avatar-xl);
+  --height-list-item-sm: var(--size-list-item-sm);
+  --height-list-item-md: var(--size-list-item-md);
+  --height-list-item-lg: var(--size-list-item-lg);
+  --height-panel-btn: var(--size-panel-btn);
+
+  /* ── Width tokens (mirror --size-* for w-* utilities) ──
+   * Only square components need w-* (checkbox). The rest use
+   * size-* (sets width+height) or h-* with w-auto/full. */
+  --width-checkbox-sm: var(--size-checkbox-sm);
+  --width-checkbox-md: var(--size-checkbox-md);
+  --width-checkbox-lg: var(--size-checkbox-lg);
+}

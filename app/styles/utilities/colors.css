@@ -1,0 +1,18 @@
+/* ── Glass variants — darker style for selected pages (auth, landing, …). */
+@theme {
+  --color-glass: oklch(11% 0.015 264deg);
+  --color-on-glass: oklch(93% 0.008 264deg);
+  --color-on-glass-variant: color-mix(in oklch, var(--color-on-glass) 70%, transparent);
+  --color-glass-elevation-1: oklch(14% 0.017 264deg);
+  --color-on-glass-elevation-1: oklch(92% 0.008 264deg);
+  --color-glass-elevation-2: oklch(17% 0.019 264deg);
+  --color-on-glass-elevation-2: oklch(90% 0.008 264deg);
+  --color-glass-outline: oklch(38% 0.02 264deg);
+  --color-glass-outline-variant: oklch(26% 0.02 264deg);
+  --color-glass-error: color-mix(in oklch, var(--color-error) 20%, var(--color-glass));
+  --color-on-glass-error: oklch(85% 0.18 20deg);
+  --color-glass-success: color-mix(in oklch, var(--color-success) 20%, var(--color-glass));
+  --color-on-glass-success: oklch(85% 0.13 160deg);
+  --color-glass-info: color-mix(in oklch, var(--color-info) 20%, var(--color-glass));
+  --color-on-glass-info: oklch(85% 0.13 262deg);
+}

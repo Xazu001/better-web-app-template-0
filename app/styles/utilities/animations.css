@@ -1,0 +1,45 @@
+@layer components {
+  .ripple__wave {
+    position: absolute;
+    background: color-mix(in oklch, var(--ripple-color, currentcolor) 60%, white);
+    border-radius: 50%;
+    opacity: 0.3;
+    transform: scale(0);
+    animation: ripple-anim 600ms var(--ease-ui) forwards;
+  }
+}
+
+/* Keyframes — top-level, NOT in @layer (they have no specificity) */
+@keyframes ripple-anim {
+  to {
+    opacity: 0;
+    transform: scale(4);
+  }
+}
+
+/* Legal footer marquee — signature scroll strip.
+ * Honored via motion-reduce:animate-none in TSX. */
+@keyframes legal-footer-marquee {
+  0% {
+    transform: translateX(0);
+  }
+
+  100% {
+    transform: translateX(-100%);
+  }
+}
+
+/* Nav logo loading pulse — used via animate-[nav-loading_...] in Nav. */
+@keyframes nav-loading {
+  0% {
+    filter: brightness(100%);
+  }
+
+  50% {
+    filter: brightness(60%);
+  }
+
+  100% {
+    filter: brightness(100%);
+  }
+}

@@ -1,6 +1,6 @@
 # Design Tokens — rules for using tokens from `app/styles/`
 
-> Source: `app/styles/tailwind.css` (`@theme`, `@theme inline`, `:root`, `@custom-media`, `@layer base/components/overrides`, keyframes) + `app/styles/base/*.css` (`@layer reset/base/custom/overrides`) + `app/styles/utilities/*.css` (`@utility`). The layer ordering declaration `@layer reset, base, components, custom, routes, overrides;` is in `app/styles/main.css` (line 1) and repeated in `app/root.tsx` as an inline `<style>`.
+> Source: `app/styles/theme.css` (`@theme` config + `--color-*` palette, `@theme inline`, `:root`, `@custom-media`) + `app/styles/utilities/colors.css` (`@theme` glass variants) + `app/styles/utilities/tokens.css` (`@theme` design tokens) + `app/styles/utilities/theme.css` (light-mode `@layer base` overrides) + `app/styles/utilities/animations.css` (`@layer components` + keyframes) + `app/styles/base/*.css` (`@layer reset/base/overrides`) + `app/styles/utilities/*.css` (`@utility`). The layer ordering declaration `@layer reset, base, components, custom, routes, overrides;` is in `app/styles/main.css` (line 1) and repeated in `app/root.tsx` as an inline `<style>`.
 > **Themes:** dark palette is the `@theme` default; `html.light` re-declares `--color-*` with light values in `app/styles/utilities/theme.css`. Theme cookie: `light`/`dark`/`system` (`server/lib/cookies/cookies.ts`). MD3 concepts (color roles, elevation, state layer) → `md3-design.md`. CSS mechanics (`@layer`, `color-mix`, hover gating) → `styling.md`. Component implementation (CVA, BEM, size variants) → `components.md`.
 
 ## Contents
@@ -21,7 +21,7 @@
 
 ## General Rules
 
-- The single source of truth for tokens is `app/styles/tailwind.css`. Do not create new tokens ad-hoc in components; if a role is missing, add it in `@theme` in `tailwind.css`.
+- Single source of truth for tokens: `app/styles/theme.css` (config + `--color-*` palette) + `app/styles/utilities/colors.css` (glass variants) + `app/styles/utilities/tokens.css` (design tokens). Do not create new tokens ad-hoc in components; add missing color roles in `@theme` in `theme.css`, glass variants in `@theme` in `colors.css`.
 - Do not define static `*-hover`, `*-active`, `*-pressed`, `*-disabled` tokens — implement state layers via `color-mix()` in component CSS (see `styling.md` and the `@utility` section below). Exception: `--color-kit-play-primary-hover` is a runtime variable set from kit data.
 - Colors must use only OKLCH (or `color-mix()` in OKLCH). No HEX/RGB/HSL in tokens.
 - All percentage values in `color-mix()` are multiples of 5 (e.g. `30%`, `70%`, `20%`).
@@ -257,7 +257,6 @@ Above `1920px` fluid typography freezes to fixed values, and the root `font-size
 | `--leading-none` / `leading-none`                 | `1`     |
 | `--leading-snug` / `leading-snug`                 | `1.375` |
 | `--leading-regular` / `leading-regular`           | `1.5`   |
-| `--leading-normal` / `leading-normal`             | `1.5`   |
 | `--leading-relaxed` / `leading-relaxed`           | `1.625` |
 | `--leading-relaxed-more` / `leading-relaxed-more` | `1.75`  |
 | `--leading-loose` / `leading-loose`               | `2`     |
@@ -268,7 +267,6 @@ Above `1920px` fluid typography freezes to fixed values, and the root `font-size
 | --------------------------------------- | --------- |
 | `--tracking-none` / `tracking-none`     | `0`       |
 | `--tracking-tight` / `tracking-tight`   | `-0.05em` |
-| `--tracking-normal` / `tracking-normal` | `100%`    |
 | `--tracking-loose` / `tracking-loose`   | `0.025em` |
 | `--tracking-wide` / `tracking-wide`     | `0.05em`  |
 
@@ -353,7 +351,7 @@ The grid is based on 24 columns, so `w-mod-unit-*` effectively takes values 1–
 
 ## Unit scale (`w-`/`min-w-`/`max-w-unit-*`)
 
-Own named width scale — `--container-unit-*` tokens in `@theme` (`app/styles/tailwind.css`). Tailwind v4 maps the `--container-*` namespace to utilities, so each token generates `w-unit-*`, `min-w-unit-*` and `max-w-unit-*` (no `@utility` needed). Values in **rem** — they scale with the fluid root (`--f-font-size`, 1rem ≈ 6.86–8px, frozen at 8px above 1920px).
+Own named width scale — `--container-unit-*` tokens in `@theme` (`app/styles/utilities/tokens.css`). Tailwind v4 maps the `--container-*` namespace to utilities, so each token generates `w-unit-*`, `min-w-unit-*` and `max-w-unit-*` (no `@utility` needed). Values in **rem** — they scale with the fluid root (`--f-font-size`, 1rem ≈ 6.86–8px, frozen at 8px above 1920px).
 
 | Size | Token                  | Value   | ≈ px at 8px root |
 | ---- | ---------------------- | ------- | ---------------- |

@@ -1,6 +1,6 @@
 @layer base {
   /* ── Theme switching ─────────────────────────────────────────
-   * The @theme block in tailwind.css defines the DARK palette as
+   * The @theme block in theme.css defines the DARK palette as
    * the default. `html.light` re-declares the same --color-* vars
    * with light values — utilities/components pick them up via var().
    */

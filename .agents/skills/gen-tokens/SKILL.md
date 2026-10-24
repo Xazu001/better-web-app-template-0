@@ -13,12 +13,14 @@ Tokens and utilities live exclusively in `app/styles/`:
 
 | What                                                                                                                                                                      | File                              |
 | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | --------------------------------- |
-| `@theme` (colors, fonts, radius, shadow, z-index, breakpoints, size-\*, motion, leading, tracking, spacing)                                                               | `app/styles/tailwind.css`         |
-| `@theme inline` (fluid typography mapping → `text-*` utility)                                                                                                             | `app/styles/tailwind.css`         |
-| `:root` fluid vars (`--fluid-text-*`, `--x-*`, `--spacing-*`) + `@media` overrides                                                                                        | `app/styles/tailwind.css`         |
-| `@custom-media --bp-*` (breakpoints)                                                                                                                                      | `app/styles/tailwind.css`         |
-| `@layer base` (body / h1-h5 / .h0-h5 / strong defaults)                                                                                                                   | `app/styles/tailwind.css`         |
-| `@layer components` (`.ripple__wave`) + keyframes (top-level)                                                                                                             | `app/styles/tailwind.css`         |
+| `@theme` config (colors, breakpoints, spacing, font families)                                                                                                              | `app/styles/theme.css`            |
+| `@theme` glass variants                                                                                                                                                   | `app/styles/utilities/colors.css` |
+| `@theme` design tokens (font weights, radius, shadow, z-index, size-\*, motion, leading, tracking)                                                                        | `app/styles/utilities/tokens.css` |
+| `@theme inline` (fluid typography mapping → `text-*` utility)                                                                                                             | `app/styles/theme.css`            |
+| `:root` fluid vars (`--fluid-text-*`, `--x-*`, `--spacing-*`) + `@media` overrides                                                                                        | `app/styles/theme.css`            |
+| `@custom-media --bp-*` (breakpoints)                                                                                                                                      | `app/styles/theme.css`            |
+| `@layer base` (body / h1-h5 / .h0-h5 / strong defaults)                                                                                                                   | `app/styles/base/typography.css`  |
+| `@layer components` (`.ripple__wave`) + keyframes (top-level)                                                                                                             | `app/styles/utilities/animations.css` |
 | `@utility` layout (cont, px-site, p-site, pt-top-site, section-full-width, w-mod-unit-\*, min-w-mod-unit-\*, max-w-mod-unit-\*, basis-mod-unit-\*, grid-cols-mod-unit-\*) | `app/styles/utilities/layout.css` |
 | `@utility` links (uix-link-muted, uix-link-muted-primary-underline, uix-nav-link)                                                                                                     | `app/styles/utilities/links.css`  |
 | `@utility` ui (state-layer, uix-ripple, ui-ripple-surface, ui-state-layer, uix-elevation-1-bordered)                                                                           | `app/styles/utilities/ui.css`    |
@@ -32,7 +34,7 @@ Tokens and utilities live exclusively in `app/styles/`:
 
 ## Steps
 
-1. Read `app/styles/tailwind.css` — extract every `--*` token from `@theme {}`, `@theme inline {}`, `:root {}`, `@custom-media --bp-*`, plus `@layer base` defaults, `@layer components` (`.ripple__wave`), keyframes (top-level). Then read `app/styles/utilities/*.css` and `app/styles/base/*.css` per the scope table.
+1. Read `app/styles/theme.css` + `app/styles/utilities/colors.css` + `app/styles/utilities/tokens.css` + `app/styles/utilities/animations.css` + `app/styles/base/typography.css` — extract every `--*` token from `@theme {}`, `@theme inline {}`, `:root {}`, `@custom-media --bp-*`, plus `@layer base` defaults, `@layer components` (`.ripple__wave`), keyframes (top-level). Then read `app/styles/utilities/*.css` and `app/styles/base/*.css` per the scope table.
 2. Overwrite `.agents/rules/tokens.md` with **only raw token keys + utility names + values** — no descriptions, no explanations, no prose. Sections separated by blank lines. Use tables or plain lists. Keep the file header (source pointers, Themes note, cross-links) and the `## Contents` table up to date.
 
 ## Output format (sections in `tokens.md`)
